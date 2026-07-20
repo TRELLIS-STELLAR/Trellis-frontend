@@ -157,7 +157,7 @@ export default function MetricsDashboardPage() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={6} sm={3} md={4}>
+            <Grid size={{ xs: 6, sm: 3, md: 4 }}>
                 <TextField
                 fullWidth
                 size="small"

@@ -164,7 +164,7 @@ export default function CreateAgent() {
                 {['Data Analysis', 'Content Generation', 'Code Generation', 'Automation', 'Translation', 'Summarization'].map((cap) => {
                   const isSelected = formData.capabilities.includes(cap);
                   return (
-                    <Grid item xs={12} sm={6} key={cap}>
+                    <Grid size={{ xs: 12, sm: 6 }} key={cap}>
                       <Button
                         fullWidth
                         variant={isSelected ? "contained" : "outlined"}

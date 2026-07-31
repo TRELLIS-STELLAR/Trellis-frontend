@@ -1,220 +1,172 @@
-# Contributing to Alian-Structure-frontend
+# Contributing to Alian Structure UI
 
-Thank you for your interest in contributing to Alian-Structure! We welcome contributions from the community, including bug reports, feature requests, documentation improvements, and code contributions.
+Thank you for your interest in contributing to Alian Structure UI! This document provides guidelines and instructions to help you contribute effectively to this AI agent marketplace with a beautiful cosmic UI theme.
 
-## Code of Conduct
+## 🚀 Tech Stack Overview
 
-Please treat all community members with respect and kindness. We're committed to providing a welcoming, inclusive environment for all contributors.
+Before you begin, familiarize yourself with our core technologies:
+- **Framework**: Next.js 16 (App Router)
+- **Language**: TypeScript 5.3
+- **UI Library**: Material UI (MUI) v9 with custom cosmic theme
+- **Styling**: TailwindCSS 3.3 + Emotion
+- **State Management**: Redux Toolkit + Zustand
+- **Blockchain**: Stellar SDK + Freighter wallet integration
+- **Data Fetching**: React Query + Axios
+- **Search**: Algolia
+- **Storage**: IPFS via nft.storage
+- **Testing**: Jest + React Testing Library
 
-## How to Contribute
+## 📋 Prerequisites
 
-### Reporting Bugs
+- Node.js 20.x or higher
+- npm or yarn package manager
+- Git
+- A Stellar testnet account (for blockchain features)
+- An Algolia account (for search features, optional)
 
-Found a bug? Please open an issue on GitHub with the following information:
+## 🛠️ Local Development Setup
 
-- **Description**: Clear explanation of the bug
-- **Steps to reproduce**: Detailed steps to replicate the issue
-- **Expected behavior**: What should happen
-- **Actual behavior**: What actually happens
-- **Environment**: OS, Node.js version, browser (if applicable)
-- **Screenshots/Logs**: Any relevant screenshots or error messages
-
-### Requesting Features
-
-Have an idea for a new feature? Open an issue with:
-
-- **Title**: Concise feature description
-- **Description**: Detailed explanation of the feature and why it would be useful
-- **Use case**: How would users benefit from this feature?
-- **Acceptance criteria**: What does "done" look like?
-
-### Submitting Code Changes
-
-#### Step 1: Fork and Clone
-
+1. **Fork and clone the repository**
 ```bash
-# Fork the repository on GitHub
-# Clone your fork
-git clone https://github.com/YOUR_USERNAME/Alian-Structure-frontend.git
-cd Alian-Structure-frontend
-
-# Add upstream remote
-git remote add upstream https://github.com/Alian-Structure/Alian-Structure-frontend.git
+git clone https://github.com/your-username/alian_structure-UI.git
+cd alian_structure-UI
 ```
 
-#### Step 2: Create a Feature Branch
-
+2. **Install dependencies**
 ```bash
-# Update main from upstream
-git fetch upstream
-git checkout main
-git rebase upstream/main
-
-# Create a new feature branch
-git checkout -b feature/your-feature-name
-# or for bug fixes
-git checkout -b fix/your-bug-fix-name
-```
-
-#### Step 3: Make Your Changes
-
-- Write clear, maintainable code
-- Follow the existing code style and conventions
-- Add comments for complex logic
-- Keep commits atomic and with descriptive messages
-- Update relevant documentation
-
-#### Step 4: Test Your Changes
-
-```bash
-# Install dependencies if needed
 npm install
+```
 
-# Run the development server
+3. **Set up environment variables**
+```bash
+cp .env.example .env.local
+```
+Edit `.env.local` with your API keys and configuration values. The required variables are documented in `.env.example`.
+
+4. **Start the development server**
+```bash
 npm run dev
-
-# Run tests
-npm run test
-
-# Build for production
-npm run build
 ```
+The application will be available at `http://localhost:3000`
 
-Ensure your changes:
-- Don't break existing functionality
-- Include tests for new features
-- Follow the project's code style
-
-#### Step 5: Commit and Push
-
+5. **Run tests**
 ```bash
-# Commit with clear message
-git commit -m "feat: add new feature" 
-# or
-git commit -m "fix: resolve issue with component"
-
-# Push to your fork
-git push origin feature/your-feature-name
+npm run test
 ```
 
-**Commit Message Format:**
-- `feat:` for new features
-- `fix:` for bug fixes
-- `docs:` for documentation changes
-- `style:` for code style changes (formatting, missing semicolons, etc.)
-- `refactor:` for code refactoring
-- `test:` for adding or updating tests
-- `chore:` for build, dependency, or configuration changes
-
-#### Step 6: Submit a Pull Request
-
-1. Go to the original repository
-2. Click "New Pull Request"
-3. Select your branch to compare with `main`
-4. Fill in the PR template with:
-   - Description of changes
-   - Related issues (use `Closes #123`)
-   - Type of change (feature/fix/docs/etc.)
-   - Testing instructions
-   - Screenshots (if UI-related)
-
-## Code Style Guide
-
-### JavaScript/TypeScript
-
-- Use **2 spaces** for indentation
-- Use `const` by default, `let` if reassignment is needed
-- Avoid `var`
-- Use meaningful variable names
-- Keep functions focused and small
-- Use arrow functions for callbacks
-
-Example:
-```typescript
-// Good
-const handleAgentCreation = (agentData: AgentConfig): void => {
-  validateAgentData(agentData);
-  createAgent(agentData);
-};
-
-// Avoid
-var handleAgentCreation = function(agentData) {
-  // logic here
-}
+6. **Run linting**
+```bash
+npm run lint
 ```
 
-### React Components
+## 📝 Code Standards
 
+### TypeScript
+- Use strict TypeScript for all new files
+- Define proper interfaces for all props and state
+- Avoid `any` type - use `unknown` when necessary
+- Leverage TypeScript's inference where possible
+
+### React/Next.js
 - Use functional components with hooks
-- Keep components small and focused
-- Use PropTypes or TypeScript for type safety
-- Name components with PascalCase
-- Place styles close to components (Tailwind CSS preferred)
+- Follow Next.js App Router conventions
+- Implement proper loading and error states
+- Optimize for performance with React.memo, useMemo, and useCallback
 
-Example:
-```typescript
-interface AgentCardProps {
-  name: string;
-  description: string;
-  onSelect: (id: string) => void;
-}
+### Styling
+- Use TailwindCSS for utility classes
+- Use MUI components for complex UI elements
+- Maintain the cosmic theme consistency (colors: bg-cosmic-dark, text-white, etc.)
+- Ensure responsive design works on all screen sizes
 
-const AgentCard: React.FC<AgentCardProps> = ({ name, description, onSelect }) => {
-  return (
-    <div className="bg-gradient-to-b from-blue-500 to-purple-600 p-4 rounded-lg">
-      <h3 className="text-white font-bold">{name}</h3>
-      <p className="text-gray-200">{description}</p>
-    </div>
-  );
-};
+### Git Commit Messages
+We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
+```
+type(scope): description
 
-export default AgentCard;
+[optional body]
+
+[optional footer]
 ```
 
-### CSS/Tailwind
+Types:
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Formatting, missing semicolons, etc.
+- `refactor`: Code change that neither fixes a bug nor adds a feature
+- `test`: Adding or fixing tests
+- `chore`: Build process or tooling changes
 
-- Use Tailwind CSS utility classes
-- Avoid custom CSS when Tailwind classes suffice
-- Use responsive prefixes (`sm:`, `md:`, `lg:`)
-- Maintain consistency with the cosmic theme
+## 🧪 Testing Guidelines
 
-## Testing
+- Write unit tests for all new features
+- Maintain test coverage above 80%
+- Test edge cases and error conditions
+- Use React Testing Library for component tests
+- Mock external API calls and blockchain interactions
 
-We encourage test coverage for all new features:
+## 🐛 Submitting Bug Reports
 
+When reporting bugs, please include:
+1. Steps to reproduce the issue
+2. Expected behavior
+3. Actual behavior
+4. Screenshots if applicable
+5. Browser and operating system details
+6. Console error messages
+
+## ✨ Submitting Feature Requests
+
+For new features, please:
+1. Check if the feature is already in our ROADMAP.md
+2. Provide a clear use case
+3. Describe the proposed solution
+4. Include mockups or sketches if possible
+5. Discuss feasibility in a GitHub issue first
+
+## 🔀 Pull Request Process
+
+1. Create a feature branch from `main`
 ```bash
-# Run all tests
-npm run test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Check coverage
-npm run test:coverage
+git checkout -b feature/your-feature-name
 ```
 
-## Documentation
+2. Make your changes, following our code standards
 
-- Update README.md if adding features or changing setup
-- Add JSDoc comments to complex functions
-- Document component props and state
-- Keep docs up-to-date with code changes
+3. Ensure all tests pass
+```bash
+npm run test
+npm run lint
+```
 
-## Getting Help
+4. Commit your changes using conventional commits
 
-- **GitHub Issues**: Ask questions in issue discussions
-- **GitHub Discussions**: Join community conversations
-- **Pull Request Reviews**: Our team will provide feedback on your PR
+5. Push to your fork and submit a pull request
 
-## Review Process
+6. Fill out the PR template completely
 
-1. Maintainers will review your PR within a few days
-2. You may be asked to make changes
-3. Once approved, your changes will be merged!
-4. Your contribution will be credited
+7. Wait for code review and address any feedback
 
-## License
+## 🔒 Security
 
-By contributing, you agree that your contributions will be licensed under the MIT License.
+- Never commit API keys or secrets to the repository
+- Report security vulnerabilities privately to the maintainers
+- Follow security best practices for all new code
+- Keep dependencies updated
 
-Thank you for helping make Alian-Structure better! 🚀✨
+## 📖 Documentation
+
+- Update README.md for any user-facing changes
+- Document new features in the appropriate places
+- Add JSDoc comments for complex functions
+- Update setup instructions if requirements change
+
+## 💬 Community
+
+- Join our discussions for questions and ideas
+- Be respectful and inclusive (see CODE_OF_CONDUCT.md)
+- Help others who are learning the codebase
+- Share your use cases and feedback
+
+Thank you for contributing to making Alian Structure UI a better platform! 🎉

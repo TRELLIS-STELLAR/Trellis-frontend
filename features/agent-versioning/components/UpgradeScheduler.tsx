@@ -20,7 +20,7 @@ export const UpgradeScheduler: React.FC<UpgradeSchedulerProps> = ({ proposals, o
   };
 
   return (
-    <div className="bg-slate-900 border border-indigo-500/30 rounded-xl p-6 shadow-[0_0_15px_rgba(99,102,241,0.2)] text-white">
+    <div className="bg-slate-900 border border-indigo-500/30 rounded-xl p-6 shadow-[0_0_15px_rgba(28,107,85,0.2)] text-white">
       <h2 className="text-2xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
         Upgrade Governance
       </h2>

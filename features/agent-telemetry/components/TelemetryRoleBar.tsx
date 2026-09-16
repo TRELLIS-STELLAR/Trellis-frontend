@@ -15,7 +15,7 @@ export function TelemetryRoleBar({ role, onRoleChange }: Props) {
   const caps = getTelemetryCapabilities(role);
 
   return (
-    <div className="rounded-lg border border-cosmic-purple/30 bg-cosmic-darker/60 p-4 space-y-3">
+    <div className="rounded-lg border border-trellis-vine/30 bg-trellis-deep/60 p-4 space-y-3">
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-sm text-gray-400 w-full sm:w-auto">Access role</span>
         <div className="flex flex-wrap gap-2">
@@ -27,8 +27,8 @@ export function TelemetryRoleBar({ role, onRoleChange }: Props) {
               className={clsx(
                 'px-3 py-1.5 rounded-md text-sm capitalize transition-smooth border',
                 role === r
-                  ? 'bg-cosmic-purple/30 border-cosmic-purple text-white'
-                  : 'border-cosmic-purple/20 text-gray-300 hover:border-cosmic-purple/50'
+                  ? 'bg-trellis-vine/30 border-trellis-vine text-white'
+                  : 'border-trellis-vine/20 text-gray-300 hover:border-trellis-vine/50'
               )}
             >
               {r}
@@ -38,7 +38,7 @@ export function TelemetryRoleBar({ role, onRoleChange }: Props) {
       </div>
       <p className="text-xs text-gray-500 leading-relaxed">
         In production, roles come from your identity provider — this demo stores the selection in{' '}
-        <code className="text-cosmic-cyan/80">sessionStorage</code>. Capabilities:{' '}
+        <code className="text-trellis-amber/80">sessionStorage</code>. Capabilities:{' '}
         {caps.canFilterByAgent ? 'per-agent filter · ' : ''}
         {caps.canViewErrorDetails ? 'error detail · ' : ''}
         {caps.canExport ? 'export · ' : ''}

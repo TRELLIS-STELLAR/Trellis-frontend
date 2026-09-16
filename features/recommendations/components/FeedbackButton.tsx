@@ -42,7 +42,7 @@ export const FeedbackButton: React.FC<FeedbackButtonProps> = ({ agentId }) => {
         ))}
       </div>
       {hasSubmitted && (
-        <span className="text-xs text-cosmic-cyan animate-pulse ml-2 px-2 py-1 bg-cosmic-cyan/10 rounded-full">
+        <span className="text-xs text-trellis-amber animate-pulse ml-2 px-2 py-1 bg-trellis-amber/10 rounded-full">
           Feedback sent!
         </span>
       )}

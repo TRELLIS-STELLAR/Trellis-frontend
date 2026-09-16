@@ -40,7 +40,7 @@ export default function AffiliateDashboardPage() {
       <div className="min-h-screen flex items-center justify-center px-4">
         <Card className="max-w-md w-full text-center">
           <h1 className="text-2xl font-bold text-white mb-4">Affiliate Dashboard</h1>
-          <p className="text-cosmic-purple/60 mb-6">
+          <p className="text-trellis-vine/60 mb-6">
             Connect your Stellar wallet to access the affiliate program and start earning commissions.
           </p>
           <Button variant="primary" size="lg" className="w-full">
@@ -56,7 +56,7 @@ export default function AffiliateDashboardPage() {
       <div className="min-h-screen flex items-center justify-center px-4">
         <Card className="max-w-md w-full text-center">
           <h1 className="text-2xl font-bold text-white mb-4">Program Not Active</h1>
-          <p className="text-cosmic-purple/60 mb-6">
+          <p className="text-trellis-vine/60 mb-6">
             Your affiliate program is not currently active. Please contact support or check back later.
           </p>
           <Button variant="outline" size="lg" className="w-full">
@@ -73,7 +73,7 @@ export default function AffiliateDashboardPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">Affiliate Dashboard</h1>
-          <p className="text-cosmic-purple/60">
+          <p className="text-trellis-vine/60">
             Manage your referrals, track commissions, and request payouts
           </p>
         </div>
@@ -95,15 +95,15 @@ export default function AffiliateDashboardPage() {
 
         {/* Program Guidelines */}
         {program && (
-          <Card className="mb-8 bg-cosmic-purple/5 border-cosmic-purple/30">
+          <Card className="mb-8 bg-trellis-vine/5 border-trellis-vine/30">
             <div className="flex items-start gap-4">
               <div className="text-2xl">📋</div>
               <div className="flex-1">
                 <h3 className="font-semibold text-white mb-2">Program Guidelines</h3>
-                <ul className="text-sm text-cosmic-purple/70 space-y-1">
+                <ul className="text-sm text-trellis-vine/70 space-y-1">
                   {program.guidelines.map((guideline: string, index: number) => (
                     <li key={index} className="flex items-start gap-2">
-                      <span className="text-cosmic-blue mt-1">•</span>
+                      <span className="text-trellis-leaf mt-1">•</span>
                       <span>{guideline}</span>
                     </li>
                   ))}

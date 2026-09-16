@@ -32,7 +32,7 @@ export default function ScoreRing({ score }: ScoreRingProps) {
             cy="80"
             r={radius}
             fill="none"
-            stroke="rgba(139, 92, 246, 0.15)"
+            stroke="rgba(79, 191, 155, 0.15)"
             strokeWidth="10"
           />
           <circle

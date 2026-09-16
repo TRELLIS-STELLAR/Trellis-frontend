@@ -1,14 +1,14 @@
 /* HUMANS.TXT */
     
-    Alian-Structure - AI Agent Marketplace
-    Website: https://Alian-Structure.com
-    Twitter: @Alian-Structure
+    Trellis - AI Agent Marketplace
+    Website: https://Trellis.com
+    Twitter: @Trellis
     Location: Global
     
     /* TEAM */
     
     Lead Developer: Oseji Fabian
-    Contact: fabian@Alian-Structure.com
+    Contact: fabian@Trellis.com
     
     /* THANKS */
     

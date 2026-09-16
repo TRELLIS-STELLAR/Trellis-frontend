@@ -28,32 +28,32 @@ export const QuotaVisualization: React.FC<{ userId: string }> = ({ userId }) => 
   return (
     <div className="grid md:grid-cols-2 gap-6 mb-12">
       {/* Daily Quota Card */}
-      <div className="p-6 rounded-2xl border border-cosmic-purple/20 bg-gradient-to-br from-[#0d122b] to-[#1a1c3d] relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-cosmic-purple/10 blur-3xl -z-10 group-hover:bg-cosmic-purple/20 transition-colors" />
+      <div className="p-6 rounded-2xl border border-trellis-vine/20 bg-gradient-to-br from-[#0d122b] to-[#1a1c3d] relative overflow-hidden group">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-trellis-vine/10 blur-3xl -z-10 group-hover:bg-trellis-vine/20 transition-colors" />
         
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400">Daily API Quota</h3>
-          <span className="text-xs px-2 py-1 bg-cosmic-purple/20 text-cosmic-purple rounded-md font-mono">
+          <span className="text-xs px-2 py-1 bg-trellis-vine/20 text-trellis-vine rounded-md font-mono">
             {data.currentUsage.toLocaleString()} / {data.totalLimit.toLocaleString()}
           </span>
         </div>
 
         <div className="relative h-4 bg-white/5 rounded-full overflow-hidden border border-white/5">
           <div 
-            className="absolute top-0 left-0 h-full bg-gradient-to-r from-cosmic-purple to-cosmic-blue transition-all duration-1000 shadow-[0_0_10px_rgba(139,92,246,0.5)]"
+            className="absolute top-0 left-0 h-full bg-gradient-to-r from-trellis-vine to-trellis-leaf transition-all duration-1000 shadow-[0_0_10px_rgba(79,191,155,0.5)]"
             style={{ width: `${usagePercent}%` }}
           />
         </div>
         
         <div className="flex justify-between mt-4 text-[10px] font-bold text-gray-500">
           <span>{usagePercent.toFixed(1)}% CONSUMED</span>
-          <span className="text-cosmic-cyan">{(100 - usagePercent).toFixed(1)}% REMAINING</span>
+          <span className="text-trellis-amber">{(100 - usagePercent).toFixed(1)}% REMAINING</span>
         </div>
       </div>
 
       {/* Real-time Rate Limit Card */}
-      <div className="p-6 rounded-2xl border border-cosmic-cyan/20 bg-gradient-to-br from-[#0d122b] to-[#102a3d] relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-cosmic-cyan/10 blur-3xl -z-10 group-hover:bg-cosmic-cyan/20 transition-colors" />
+      <div className="p-6 rounded-2xl border border-trellis-amber/20 bg-gradient-to-br from-[#0d122b] to-[#102a3d] relative overflow-hidden group">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-trellis-amber/10 blur-3xl -z-10 group-hover:bg-trellis-amber/20 transition-colors" />
 
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 font-mono">Real-time Rate</h3>
@@ -68,7 +68,7 @@ export const QuotaVisualization: React.FC<{ userId: string }> = ({ userId }) => 
           {history.length > 0 ? history.map((val, i) => (
              <div 
                key={i} 
-               className="flex-1 rounded-t-sm transition-all duration-500 bg-cosmic-cyan/50 hover:bg-cosmic-cyan"
+               className="flex-1 rounded-t-sm transition-all duration-500 bg-trellis-amber/50 hover:bg-trellis-amber"
                style={{ height: `${(val / data.rateLimit) * 100}%` }}
              />
           )) : (

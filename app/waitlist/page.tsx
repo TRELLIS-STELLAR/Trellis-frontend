@@ -107,23 +107,23 @@ export default function PremiumWaitlist() {
     return (
       <div className="min-h-screen flex items-center justify-center px-4 nebula-bg pt-20">
         <div className="max-w-2xl w-full text-center">
-          <Card className="p-12 border-cosmic-purple/50 bg-cosmic-dark/40 backdrop-blur-xl">
+          <Card className="p-12 border-trellis-vine/50 bg-trellis-ground/40 backdrop-blur-xl">
             <div className="mb-8">
               <div className="text-6xl mb-4 animate-float">✨</div>
               <h1 className="text-4xl font-bold mb-4 glow-text">{t('waitlist.success.title')}</h1>
-              <p className="text-xl text-cosmic-cyan mb-8">
+              <p className="text-xl text-trellis-amber mb-8">
                 {t('waitlist.success.message')}
               </p>
               {position && (
-                <div className="inline-block px-6 py-2 bg-cosmic-purple/20 rounded-full border border-cosmic-purple/30 mb-8">
-                  <span className="text-cosmic-nebula font-bold text-lg">
+                <div className="inline-block px-6 py-2 bg-trellis-vine/20 rounded-full border border-trellis-vine/30 mb-8">
+                  <span className="text-trellis-clay font-bold text-lg">
                     Position: #{position}
                   </span>
                 </div>
               )}
             </div>
             <div className="space-y-4">
-              <p className="text-cosmic-purple">
+              <p className="text-trellis-vine">
                 {t('waitlist.success.checkEmail')}
               </p>
               <Button 
@@ -146,26 +146,26 @@ export default function PremiumWaitlist() {
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-16">
           <div className="mb-6">
-            <div className="inline-flex items-center px-4 py-2 bg-cosmic-purple/20 rounded-full border border-cosmic-purple/30 mb-6 animate-pulse-slow">
-              <span className="text-cosmic-nebula text-sm font-semibold">{t('waitlist.limitedSpots')}</span>
+            <div className="inline-flex items-center px-4 py-2 bg-trellis-vine/20 rounded-full border border-trellis-vine/30 mb-6 animate-pulse-slow">
+              <span className="text-trellis-clay text-sm font-semibold">{t('waitlist.limitedSpots')}</span>
             </div>
           </div>
           
           <h1 className="text-5xl md:text-7xl font-bold mb-6 glow-text">
             {t('waitlist.title')}
-            <span className="block text-cosmic-nebula">{t('waitlist.subtitle')}</span>
+            <span className="block text-trellis-clay">{t('waitlist.subtitle')}</span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-cosmic-cyan mb-8 max-w-3xl mx-auto">
+          <p className="text-xl md:text-2xl text-trellis-amber mb-8 max-w-3xl mx-auto">
             {t('waitlist.description')}
           </p>
           
           <div className="flex flex-col sm:flex-row gap-8 justify-center mb-8">
-            <div className="flex items-center gap-2 text-cosmic-purple">
+            <div className="flex items-center gap-2 text-trellis-vine">
               <span className="text-2xl">👥</span>
               <span className="font-semibold">{t('waitlist.peopleWaiting')}</span>
             </div>
-            <div className="flex items-center gap-2 text-cosmic-purple">
+            <div className="flex items-center gap-2 text-trellis-vine">
               <span className="text-2xl">⏱️</span>
               <span className="font-semibold">{t('waitlist.earlyAccess')}</span>
             </div>
@@ -174,9 +174,9 @@ export default function PremiumWaitlist() {
 
         {/* Email Signup Form */}
         <div className="max-w-md mx-auto mb-24" id="email-form">
-          <Card className="text-center p-8 border-cosmic-purple/40 bg-cosmic-dark/40 backdrop-blur-lg">
-            <h2 className="text-2xl font-bold mb-4 text-cosmic-nebula">{t('waitlist.reserveSpot')}</h2>
-            <p className="text-cosmic-cyan mb-6">
+          <Card className="text-center p-8 border-trellis-vine/40 bg-trellis-ground/40 backdrop-blur-lg">
+            <h2 className="text-2xl font-bold mb-4 text-trellis-clay">{t('waitlist.reserveSpot')}</h2>
+            <p className="text-trellis-amber mb-6">
               {t('waitlist.reserveDescription')}
             </p>
             
@@ -187,7 +187,7 @@ export default function PremiumWaitlist() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={t('waitlist.emailPlaceholder')}
                 required
-                className="w-full px-4 py-3 bg-cosmic-dark/50 border border-cosmic-purple/30 rounded-lg text-white placeholder-cosmic-purple/50 focus:outline-none focus:border-cosmic-purple focus:ring-2 focus:ring-cosmic-purple/20 transition-smooth"
+                className="w-full px-4 py-3 bg-trellis-ground/50 border border-trellis-vine/30 rounded-lg text-white placeholder-trellis-vine/50 focus:outline-none focus:border-trellis-vine focus:ring-2 focus:ring-trellis-vine/20 transition-smooth"
               />
               
               {error && (
@@ -204,7 +204,7 @@ export default function PremiumWaitlist() {
               </Button>
             </form>
             
-            <p className="text-xs text-cosmic-purple/60 mt-4">
+            <p className="text-xs text-trellis-vine/60 mt-4">
               {t('waitlist.noSpam')}
             </p>
           </Card>
@@ -218,14 +218,14 @@ export default function PremiumWaitlist() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {benefits.map((benefit, index) => (
-              <Card key={index} className="text-center group hover:scale-105 transition-smooth p-6 border-cosmic-purple/20">
+              <Card key={index} className="text-center group hover:scale-105 transition-smooth p-6 border-trellis-vine/20">
                 <div className="text-5xl mb-6 group-hover:scale-110 transition-transform duration-300">
                   {benefit.icon}
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-cosmic-nebula">
+                <h3 className="text-2xl font-bold mb-4 text-trellis-clay">
                   {benefit.title}
                 </h3>
-                <p className="text-cosmic-cyan text-lg">
+                <p className="text-trellis-amber text-lg">
                   {benefit.description}
                 </p>
               </Card>
@@ -235,11 +235,11 @@ export default function PremiumWaitlist() {
 
         {/* CTA Section */}
         <div className="text-center">
-          <div className="inline-block p-12 bg-gradient-to-r from-cosmic-purple/10 to-cosmic-blue/10 rounded-3xl border border-cosmic-purple/30 backdrop-blur-md">
-            <h2 className="text-3xl font-bold mb-4 text-cosmic-nebula">
+          <div className="inline-block p-12 bg-gradient-to-r from-trellis-vine/10 to-trellis-leaf/10 rounded-3xl border border-trellis-vine/30 backdrop-blur-md">
+            <h2 className="text-3xl font-bold mb-4 text-trellis-clay">
               {t('waitlist.readyTitle')}
             </h2>
-            <p className="text-xl text-cosmic-cyan mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-trellis-amber mb-8 max-w-2xl mx-auto">
               {t('waitlist.readyDescription')}
             </p>
             <Button size="lg" onClick={() => document.getElementById('email-form')?.scrollIntoView({ behavior: 'smooth' })}>

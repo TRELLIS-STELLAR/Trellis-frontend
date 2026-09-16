@@ -28,7 +28,7 @@ export default function ClientProviders({ children }: { children: React.ReactNod
       <ReduxProvider>
         <QueryProvider>
           <StellarWalletProvider>
-            <div className="min-h-screen bg-gradient-to-br from-cosmic-dark via-cosmic-darker to-cosmic-dark">
+            <div className="min-h-screen bg-gradient-to-br from-trellis-ground via-trellis-deep to-trellis-ground">
               {/* Animated background stars */}
               <div className="fixed inset-0 pointer-events-none">
                 {Array.from({ length: 100 }).map((_, i) => (

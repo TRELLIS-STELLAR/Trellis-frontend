@@ -1,6 +1,6 @@
 # Affiliate Dashboard Feature
 
-A comprehensive affiliate program dashboard for Alian-Structure that enables affiliates to manage referrals, track commissions, and request payouts.
+A comprehensive affiliate program dashboard for Trellis that enables affiliates to manage referrals, track commissions, and request payouts.
 
 ## Features
 
@@ -243,7 +243,7 @@ npm test -- features/affiliate-dashboard
 - [x] API endpoints created and documented
 - [x] State management with Zustand store
 - [x] Responsive design with Tailwind CSS
-- [x] Cosmic theme integration
+- [x] Trellis theme integration
 - [x] Error handling and validation
 - [x] Loading states and animations
 - [x] TypeScript type safety
@@ -274,4 +274,4 @@ For issues or questions about the affiliate program:
 
 ## License
 
-Part of the Alian-Structure platform. See LICENSE file for details.
+Part of the Trellis platform. See LICENSE file for details.

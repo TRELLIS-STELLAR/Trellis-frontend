@@ -34,7 +34,7 @@ export default function Navigation() {
   return (
     <nav>
       {/* ... existing nav items ... */}
-      <Link href="/affiliates" className="hover:text-cosmic-purple">
+      <Link href="/affiliates" className="hover:text-trellis-vine">
         Affiliate Program
       </Link>
     </nav>
@@ -159,11 +159,11 @@ const MOCK_PROGRAM: AffiliateProgram = {
 
 ### Change Theme Colors
 
-The dashboard uses the cosmic theme from `app/globals.css`:
-- `cosmic-purple`: Primary color
-- `cosmic-blue`: Secondary color
-- `cosmic-cyan`: Accent color
-- `cosmic-nebula`: Highlight color
+The dashboard uses the Trellis theme from `app/globals.css`:
+- `trellis-vine`: Primary color
+- `trellis-leaf`: Secondary color
+- `trellis-amber`: Accent color
+- `trellis-clay`: Highlight color
 
 ### Add More Referrals
 
@@ -188,7 +188,7 @@ Edit `MOCK_REFERRALS` in `useAffiliateStore.ts` to add test data.
 
 ### Styling issues
 - Ensure Tailwind CSS is configured
-- Check that cosmic theme colors are defined in `globals.css`
+- Check that Trellis theme colors are defined in `globals.css`
 - Verify dark mode is enabled
 
 ## Next Steps

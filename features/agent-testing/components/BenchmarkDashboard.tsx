@@ -28,11 +28,11 @@ export const BenchmarkDashboard: React.FC<BenchmarkDashboardProps> = ({
 }) => {
   const chartData = [
     { name: "CPU Inst.", value: metrics.cpuInstructions, color: "#9333ea" },
-    { name: "RAM (KB)", value: metrics.ramBytes / 1024, color: "#3b82f6" },
+    { name: "RAM (KB)", value: metrics.ramBytes / 1024, color: "#2F9E7E" },
     {
       name: "Ledger Read",
       value: metrics.ledgerReadBytes / 1024,
-      color: "#06b6d4",
+      color: "#F0B460",
     },
     {
       name: "Ledger Write",
@@ -49,7 +49,7 @@ export const BenchmarkDashboard: React.FC<BenchmarkDashboardProps> = ({
         </div>
 
         <div className="md:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-4">
-          <div className="p-4 rounded-xl bg-cosmic-purple/5 border border-cosmic-purple/20">
+          <div className="p-4 rounded-xl bg-trellis-vine/5 border border-trellis-vine/20">
             <p className="text-gray-400 text-xs uppercase mb-1">Status</p>
             <p
               className={`text-xl font-bold ${status === "completed" ? "text-green-400" : "text-yellow-400"}`}
@@ -57,15 +57,15 @@ export const BenchmarkDashboard: React.FC<BenchmarkDashboardProps> = ({
               {status.toUpperCase()}
             </p>
           </div>
-          <div className="p-4 rounded-xl bg-cosmic-blue/5 border border-cosmic-blue/20">
+          <div className="p-4 rounded-xl bg-trellis-leaf/5 border border-trellis-leaf/20">
             <p className="text-gray-400 text-xs uppercase mb-1">
               Estimated Cost
             </p>
-            <p className="text-xl font-bold text-cosmic-cyan">
+            <p className="text-xl font-bold text-trellis-amber">
               {metrics.costXlm} XLM
             </p>
           </div>
-          <div className="p-4 rounded-xl bg-cosmic-cyan/5 border border-cosmic-cyan/20">
+          <div className="p-4 rounded-xl bg-trellis-amber/5 border border-trellis-amber/20">
             <p className="text-gray-400 text-xs uppercase mb-1">
               CPU Instructions
             </p>
@@ -76,7 +76,7 @@ export const BenchmarkDashboard: React.FC<BenchmarkDashboardProps> = ({
         </div>
       </div>
 
-      <div className="p-6 rounded-xl border border-cosmic-purple/30 nebula-bg shadow-xl">
+      <div className="p-6 rounded-xl border border-trellis-vine/30 nebula-bg shadow-xl">
         <h3 className="text-xl font-semibold mb-6 text-white">
           Resource Consumption Analysis
         </h3>
@@ -120,7 +120,7 @@ export const BenchmarkDashboard: React.FC<BenchmarkDashboardProps> = ({
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="p-6 rounded-xl border border-cosmic-purple/30 bg-black/40">
+        <div className="p-6 rounded-xl border border-trellis-vine/30 bg-black/40">
           <h4 className="text-sm font-semibold uppercase text-gray-500 mb-4 tracking-widest">
             Efficiency Breakdown
           </h4>
@@ -146,7 +146,7 @@ export const BenchmarkDashboard: React.FC<BenchmarkDashboardProps> = ({
           </ul>
         </div>
 
-        <div className="p-6 rounded-xl border border-cosmic-purple/30 bg-black/40">
+        <div className="p-6 rounded-xl border border-trellis-vine/30 bg-black/40">
           <h4 className="text-sm font-semibold uppercase text-gray-500 mb-4 tracking-widest">
             Performance Insights
           </h4>

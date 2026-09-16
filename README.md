@@ -1,19 +1,30 @@
-# 🌍 Alian Structure - Direct Aid Distribution Platform
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="public/brand/trellis-lockup-dark.png">
+    <img src="public/brand/trellis-lockup.png" alt="Trellis" width="331">
+  </picture>
+</p>
 
-> **Free, open-source humanitarian aid platform using Stellar blockchain for transparent, zero-friction direct aid from donors to people in need.**
+<h1 align="center">Trellis &middot; Direct Aid Distribution</h1>
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![TypeScript](https://img.shields.io/badge/typescript-5.0+-blue.svg)
-![Next.js](https://img.shields.io/badge/next.js-14+-black.svg)
-![Stellar](https://img.shields.io/badge/Stellar-blockchain-blue.svg)
-![Status](https://img.shields.io/badge/status-active%20development-brightgreen.svg)
+<p align="center">
+  <strong>Free, open-source humanitarian aid platform using the Stellar blockchain for<br>transparent, zero-friction direct aid from donors to people in need.</strong>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/license-MIT-1C6B55?style=flat-square" alt="License">
+  <img src="https://img.shields.io/badge/TypeScript-5.0%2B-14201C?style=flat-square" alt="TypeScript">
+  <img src="https://img.shields.io/badge/Next.js-16-1C6B55?style=flat-square" alt="Next.js">
+  <img src="https://img.shields.io/badge/Stellar-blockchain-14201C?style=flat-square" alt="Stellar">
+  <img src="https://img.shields.io/badge/status-active%20development-E39A3C?style=flat-square" alt="Status">
+</p>
 
 ---
 
 ## 📋 Table of Contents
 
 - [Overview](#overview)
-- [Why Alian Structure](#why-alian-structure)
+- [Why Trellis](#-why-trellis)
 - [Key Features](#key-features)
 - [Technology Stack](#technology-stack)
 - [Architecture](#architecture)
@@ -27,7 +38,7 @@
 
 ## 🎯 Overview
 
-**Alian Structure** is a revolutionary humanitarian aid platform that leverages the Stellar blockchain to solve the fundamental problems in charitable giving:
+**Trellis** is a revolutionary humanitarian aid platform that leverages the Stellar blockchain to solve the fundamental problems in charitable giving:
 
 ### The Problem
 Traditional aid systems suffer from:
@@ -37,7 +48,7 @@ Traditional aid systems suffer from:
 - **Verification Impossibility**: No way to prove aid reached intended recipients
 
 ### Our Solution
-Alian Structure enables:
+Trellis enables:
 - ✅ **Direct Delivery**: Donor → Recipient (zero intermediaries)
 - ✅ **Complete Transparency**: Immutable on-chain proof of delivery
 - ✅ **Financial Inclusion**: Stellar wallets accessible globally
@@ -46,7 +57,7 @@ Alian Structure enables:
 
 ---
 
-## 💡 Why Alian Structure
+## 💡 Why Trellis
 
 ### For Donors
 - 🔍 **Verification**: See exactly where your money goes via transaction hash
@@ -84,7 +95,7 @@ Alian Structure enables:
 - 🔐 **Secure Wallets**: Freighter, Albedo, Ledger wallet support
 
 ### User Experience
-- ✨ **Cosmic UI Theme**: Beautiful dark-mode interface with animations
+- ✨ **Trellis Design System**: Dark-first interface in vine and amber
 - 📱 **PWA Ready**: Offline support, installable app, background sync
 - ⚡ **Lightning Fast**: Advanced caching, optimized performance
 - 🔔 **Push Notifications**: Real-time updates on activities
@@ -225,8 +236,8 @@ Alian Structure enables:
 #### 1. Clone Repository
 
 ```bash
-git clone https://github.com/SourceXXL/alian_structure-UI.git
-cd alian_structure-UI
+git clone https://github.com/SourceXXL/trellis-ui.git
+cd trellis-ui
 ```
 
 #### 2. Install Dependencies
@@ -288,12 +299,12 @@ npm run test:coverage
 
 ```bash
 # Build Docker image
-docker build -t alian-structure:latest .
+docker build -t trellis-structure:latest .
 
 # Run container
 docker run -p 3000:3000 \
   -e NEXT_PUBLIC_API_URL=http://localhost:3001 \
-  alian-structure:latest
+  trellis-structure:latest
 ```
 
 ### With Docker Compose
@@ -314,7 +325,7 @@ docker-compose down
 ## 📁 Project Structure
 
 ```
-alian_structure-UI/
+trellis-ui/
 ├── app/                              # Next.js app directory
 │   ├── layout.tsx                   # Root layout
 │   ├── page.tsx                     # Home page
@@ -381,7 +392,7 @@ NEXT_PUBLIC_STELLAR_RPC_URL=https://soroban-testnet.stellar.org
 
 # Auth
 NEXT_PUBLIC_JWT_EXPIRY=7d
-SESSION_STORAGE_KEY=alian_session
+SESSION_STORAGE_KEY=trellis_session
 
 # Analytics (optional)
 NEXT_PUBLIC_ANALYTICS_ID=your-analytics-id
@@ -393,7 +404,7 @@ NEXT_PUBLIC_ENABLE_PWA=true
 
 ### Database Configuration
 
-See backend repository: [alian_structure-api](https://github.com/SourceXXL/alian_structure-api)
+See backend repository: [trellis-api](https://github.com/SourceXXL/trellis-api)
 
 ---
 
@@ -613,16 +624,16 @@ git push origin feature/your-feature
 ### Getting Help
 
 - 📖 **Documentation**: Check [docs/](./docs/) first
-- 🐛 **Issue Tracker**: [GitHub Issues](https://github.com/SourceXXL/alian_structure-UI/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/SourceXXL/alian_structure-UI/discussions)
-- 🔗 **Backend Repo**: [alian_structure-api](https://github.com/SourceXXL/alian_structure-api)
+- 🐛 **Issue Tracker**: [GitHub Issues](https://github.com/SourceXXL/trellis-ui/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/SourceXXL/trellis-ui/discussions)
+- 🔗 **Backend Repo**: [trellis-api](https://github.com/SourceXXL/trellis-api)
 
 ### Community Resources
 
-- 📧 Email: support@alianstructure.com
-- 🌐 Website: https://alianstructure.com
-- 🐦 Twitter: [@AlianStructure](https://twitter.com/AlianStructure)
-- 💬 Discord: [Join Server](https://discord.gg/alianstructure)
+- 📧 Email: support@trellisstructure.com
+- 🌐 Website: https://trellisstructure.com
+- 🐦 Twitter: [@TrellisStructure](https://twitter.com/TrellisStructure)
+- 💬 Discord: [Join Server](https://discord.gg/trellisstructure)
 
 ---
 
@@ -662,7 +673,7 @@ With the requirement to:
 
 ## 📈 Project Stats
 
-- **Repository**: [SourceXXL/alian_structure-UI](https://github.com/SourceXXL/alian_structure-UI)
+- **Repository**: [SourceXXL/trellis-ui](https://github.com/SourceXXL/trellis-ui)
 - **Language**: TypeScript
 - **License**: MIT
 - **Created**: 2026
@@ -676,6 +687,6 @@ With the requirement to:
 
 Building transparent, direct humanitarian aid one transaction at a time.
 
-[⭐ Star us on GitHub](https://github.com/SourceXXL/alian_structure-UI) • [🤝 Contribute](./CONTRIBUTING.md) • [📧 Contact](mailto:support@alianstructure.com)
+[⭐ Star us on GitHub](https://github.com/SourceXXL/trellis-ui) • [🤝 Contribute](./CONTRIBUTING.md) • [📧 Contact](mailto:support@trellisstructure.com)
 
 </div>

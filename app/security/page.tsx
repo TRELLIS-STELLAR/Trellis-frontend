@@ -81,7 +81,7 @@ export default function SecurityPage() {
         <div className="grid lg:grid-cols-4 gap-8">
           <div className="lg:col-span-1">
             <div className="sticky top-24">
-              <div className="p-6 rounded-xl border border-cosmic-purple/30 nebula-bg">
+              <div className="p-6 rounded-xl border border-trellis-vine/30 nebula-bg">
                 <h2 className="text-lg font-semibold glow-text mb-4">
                   Contract Scanner
                 </h2>
@@ -104,11 +104,11 @@ export default function SecurityPage() {
             {report ? (
               <SecurityDashboard report={report} onExport={handleExport} />
             ) : (
-              <div className="h-full flex flex-col items-center justify-center p-16 text-center rounded-2xl border-2 border-dashed border-cosmic-purple/20 bg-cosmic-purple/5 min-h-[500px]">
-                <div className="w-20 h-20 mb-6 rounded-full bg-cosmic-purple/10 flex items-center justify-center">
+              <div className="h-full flex flex-col items-center justify-center p-16 text-center rounded-2xl border-2 border-dashed border-trellis-vine/20 bg-trellis-vine/5 min-h-[500px]">
+                <div className="w-20 h-20 mb-6 rounded-full bg-trellis-vine/10 flex items-center justify-center">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-10 w-10 text-cosmic-purple"
+                    className="h-10 w-10 text-trellis-vine"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -138,7 +138,7 @@ export default function SecurityPage() {
                   ].map((item) => (
                     <div
                       key={item.label}
-                      className="p-3 rounded-lg bg-cosmic-purple/10"
+                      className="p-3 rounded-lg bg-trellis-vine/10"
                     >
                       <span className="text-2xl">{item.icon}</span>
                       <p className="text-xs text-gray-400 mt-1">{item.label}</p>

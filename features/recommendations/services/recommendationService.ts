@@ -19,7 +19,7 @@ export const recommendationService = {
             },
             {
               id: 'agent-2',
-              name: 'Cosmic Writer',
+              name: 'Canopy Writer',
               description: 'Generates creative content with a stellar twist.',
               explanation: 'Matches your frequent use of content generation tools and "Creative" skill tag.',
               topFeatures: ['Brand-aware content', 'Multi-language support', 'Image-to-text integration'],

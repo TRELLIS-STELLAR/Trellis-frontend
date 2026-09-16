@@ -96,8 +96,8 @@ export const BugReportForm: React.FC<BugReportFormProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           {/* Basic Information */}
-          <div className="bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg p-6 backdrop-blur-sm">
-            <h3 className="text-lg font-semibold mb-4 text-cosmic-blue">Basic Information</h3>
+          <div className="bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg p-6 backdrop-blur-sm">
+            <h3 className="text-lg font-semibold mb-4 text-trellis-leaf">Basic Information</h3>
             
             <div className="space-y-4">
               <div>
@@ -108,7 +108,7 @@ export const BugReportForm: React.FC<BugReportFormProps> = ({
                   type="text"
                   value={formData.title}
                   onChange={(e) => handleInputChange('title', e.target.value)}
-                  className="w-full px-3 py-2 bg-cosmic-purple/20 border border-cosmic-purple/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cosmic-blue focus:ring-1 focus:ring-cosmic-blue"
+                  className="w-full px-3 py-2 bg-trellis-vine/20 border border-trellis-vine/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-trellis-leaf focus:ring-1 focus:ring-trellis-leaf"
                   placeholder="Brief summary of the issue"
                 />
                 {errors.title && (
@@ -124,7 +124,7 @@ export const BugReportForm: React.FC<BugReportFormProps> = ({
                   value={formData.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}
                   rows={4}
-                  className="w-full px-3 py-2 bg-cosmic-purple/20 border border-cosmic-purple/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cosmic-blue focus:ring-1 focus:ring-cosmic-blue"
+                  className="w-full px-3 py-2 bg-trellis-vine/20 border border-trellis-vine/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-trellis-leaf focus:ring-1 focus:ring-trellis-leaf"
                   placeholder="Detailed description of the issue"
                 />
                 {errors.description && (
@@ -135,8 +135,8 @@ export const BugReportForm: React.FC<BugReportFormProps> = ({
           </div>
 
           {/* Bug Details */}
-          <div className="bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg p-6 backdrop-blur-sm">
-            <h3 className="text-lg font-semibold mb-4 text-cosmic-blue">Bug Details</h3>
+          <div className="bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg p-6 backdrop-blur-sm">
+            <h3 className="text-lg font-semibold mb-4 text-trellis-leaf">Bug Details</h3>
             
             <div className="space-y-4">
               <div>
@@ -147,7 +147,7 @@ export const BugReportForm: React.FC<BugReportFormProps> = ({
                   value={formData.stepsToReproduce}
                   onChange={(e) => handleInputChange('stepsToReproduce', e.target.value)}
                   rows={4}
-                  className="w-full px-3 py-2 bg-cosmic-purple/20 border border-cosmic-purple/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cosmic-blue focus:ring-1 focus:ring-cosmic-blue"
+                  className="w-full px-3 py-2 bg-trellis-vine/20 border border-trellis-vine/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-trellis-leaf focus:ring-1 focus:ring-trellis-leaf"
                   placeholder="1. Step one&#10;2. Step two&#10;3. Step three"
                 />
                 {errors.stepsToReproduce && (
@@ -163,7 +163,7 @@ export const BugReportForm: React.FC<BugReportFormProps> = ({
                   value={formData.expectedBehavior}
                   onChange={(e) => handleInputChange('expectedBehavior', e.target.value)}
                   rows={3}
-                  className="w-full px-3 py-2 bg-cosmic-purple/20 border border-cosmic-purple/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cosmic-blue focus:ring-1 focus:ring-cosmic-blue"
+                  className="w-full px-3 py-2 bg-trellis-vine/20 border border-trellis-vine/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-trellis-leaf focus:ring-1 focus:ring-trellis-leaf"
                   placeholder="What should have happened"
                 />
                 {errors.expectedBehavior && (
@@ -179,7 +179,7 @@ export const BugReportForm: React.FC<BugReportFormProps> = ({
                   value={formData.actualBehavior}
                   onChange={(e) => handleInputChange('actualBehavior', e.target.value)}
                   rows={3}
-                  className="w-full px-3 py-2 bg-cosmic-purple/20 border border-cosmic-purple/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cosmic-blue focus:ring-1 focus:ring-cosmic-blue"
+                  className="w-full px-3 py-2 bg-trellis-vine/20 border border-trellis-vine/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-trellis-leaf focus:ring-1 focus:ring-trellis-leaf"
                   placeholder="What actually happened"
                 />
                 {errors.actualBehavior && (
@@ -191,14 +191,14 @@ export const BugReportForm: React.FC<BugReportFormProps> = ({
 
           {/* Priority and Category */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg p-6 backdrop-blur-sm">
+            <div className="bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg p-6 backdrop-blur-sm">
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Priority Level *
               </label>
               <select
                 value={formData.priority}
                 onChange={(e) => handleInputChange('priority', e.target.value)}
-                className="w-full px-3 py-2 bg-cosmic-purple/20 border border-cosmic-purple/50 rounded-lg text-white focus:outline-none focus:border-cosmic-blue focus:ring-1 focus:ring-cosmic-blue"
+                className="w-full px-3 py-2 bg-trellis-vine/20 border border-trellis-vine/50 rounded-lg text-white focus:outline-none focus:border-trellis-leaf focus:ring-1 focus:ring-trellis-leaf"
               >
                 {PRIORITY_LEVELS.map(priority => (
                   <option key={priority.value} value={priority.value}>
@@ -208,14 +208,14 @@ export const BugReportForm: React.FC<BugReportFormProps> = ({
               </select>
             </div>
 
-            <div className="bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg p-6 backdrop-blur-sm">
+            <div className="bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg p-6 backdrop-blur-sm">
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Category *
               </label>
               <select
                 value={formData.category}
                 onChange={(e) => handleInputChange('category', e.target.value)}
-                className="w-full px-3 py-2 bg-cosmic-purple/20 border border-cosmic-purple/50 rounded-lg text-white focus:outline-none focus:border-cosmic-blue focus:ring-1 focus:ring-cosmic-blue"
+                className="w-full px-3 py-2 bg-trellis-vine/20 border border-trellis-vine/50 rounded-lg text-white focus:outline-none focus:border-trellis-leaf focus:ring-1 focus:ring-trellis-leaf"
               >
                 {BUG_CATEGORIES.map(category => (
                   <option key={category.value} value={category.value}>
@@ -227,8 +227,8 @@ export const BugReportForm: React.FC<BugReportFormProps> = ({
           </div>
 
           {/* Screenshots */}
-          <div className="bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg p-6 backdrop-blur-sm">
-            <h3 className="text-lg font-semibold mb-4 text-cosmic-blue">Screenshots</h3>
+          <div className="bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg p-6 backdrop-blur-sm">
+            <h3 className="text-lg font-semibold mb-4 text-trellis-leaf">Screenshots</h3>
             <ScreenshotUpload
               onScreenshotsChange={handleScreenshotsChange}
               maxFiles={5}
@@ -237,8 +237,8 @@ export const BugReportForm: React.FC<BugReportFormProps> = ({
           </div>
 
           {/* Contact Information */}
-          <div className="bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg p-6 backdrop-blur-sm">
-            <h3 className="text-lg font-semibold mb-4 text-cosmic-blue">Contact Information</h3>
+          <div className="bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg p-6 backdrop-blur-sm">
+            <h3 className="text-lg font-semibold mb-4 text-trellis-leaf">Contact Information</h3>
             
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -248,7 +248,7 @@ export const BugReportForm: React.FC<BugReportFormProps> = ({
                 type="email"
                 value={formData.reporterEmail}
                 onChange={(e) => handleInputChange('reporterEmail', e.target.value)}
-                className="w-full px-3 py-2 bg-cosmic-purple/20 border border-cosmic-purple/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cosmic-blue focus:ring-1 focus:ring-cosmic-blue"
+                className="w-full px-3 py-2 bg-trellis-vine/20 border border-trellis-vine/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-trellis-leaf focus:ring-1 focus:ring-trellis-leaf"
                 placeholder="your.email@example.com"
               />
               {errors.reporterEmail && (
@@ -261,14 +261,14 @@ export const BugReportForm: React.FC<BugReportFormProps> = ({
           </div>
 
           {/* Terms and Conditions */}
-          <div className="bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg p-6 backdrop-blur-sm">
+          <div className="bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg p-6 backdrop-blur-sm">
             <div className="flex items-start space-x-3">
               <input
                 type="checkbox"
                 id="agreeToTerms"
                 checked={formData.agreeToTerms}
                 onChange={(e) => handleInputChange('agreeToTerms', e.target.checked)}
-                className="mt-1 w-4 h-4 bg-cosmic-purple/20 border-cosmic-purple/50 rounded focus:ring-cosmic-blue focus:ring-1"
+                className="mt-1 w-4 h-4 bg-trellis-vine/20 border-trellis-vine/50 rounded focus:ring-trellis-leaf focus:ring-1"
               />
               <div className="flex-1">
                 <label htmlFor="agreeToTerms" className="text-sm text-gray-300">
@@ -311,10 +311,10 @@ export const BugReportForm: React.FC<BugReportFormProps> = ({
             />
 
             {reward && (
-              <div className="bg-gradient-to-r from-cosmic-purple to-cosmic-blue p-1 rounded-lg">
+              <div className="bg-gradient-to-r from-trellis-vine to-trellis-leaf p-1 rounded-lg">
                 <div className="bg-[rgb(var(--page-background))] rounded-lg p-4">
                   <h4 className="text-sm font-medium text-gray-300 mb-2">Potential Reward</h4>
-                  <div className="text-3xl font-bold text-cosmic-blue mb-2">
+                  <div className="text-3xl font-bold text-trellis-leaf mb-2">
                     {reward.totalReward} XLM
                   </div>
                   <p className="text-xs text-gray-400">
@@ -324,27 +324,27 @@ export const BugReportForm: React.FC<BugReportFormProps> = ({
               </div>
             )}
 
-            <div className="bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg p-4 backdrop-blur-sm">
-              <h4 className="text-sm font-medium text-cosmic-blue mb-3">Reporting Guidelines</h4>
+            <div className="bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg p-4 backdrop-blur-sm">
+              <h4 className="text-sm font-medium text-trellis-leaf mb-3">Reporting Guidelines</h4>
               <ul className="space-y-2 text-xs text-gray-300">
                 <li className="flex items-start space-x-2">
-                  <span className="text-cosmic-blue mt-1">•</span>
+                  <span className="text-trellis-leaf mt-1">•</span>
                   <span>Be as detailed as possible in your description</span>
                 </li>
                 <li className="flex items-start space-x-2">
-                  <span className="text-cosmic-blue mt-1">•</span>
+                  <span className="text-trellis-leaf mt-1">•</span>
                   <span>Include clear steps to reproduce the issue</span>
                 </li>
                 <li className="flex items-start space-x-2">
-                  <span className="text-cosmic-blue mt-1">•</span>
+                  <span className="text-trellis-leaf mt-1">•</span>
                   <span>Add screenshots when possible</span>
                 </li>
                 <li className="flex items-start space-x-2">
-                  <span className="text-cosmic-blue mt-1">•</span>
+                  <span className="text-trellis-leaf mt-1">•</span>
                   <span>Check for existing reports before submitting</span>
                 </li>
                 <li className="flex items-start space-x-2">
-                  <span className="text-cosmic-blue mt-1">•</span>
+                  <span className="text-trellis-leaf mt-1">•</span>
                   <span>Security issues should be reported privately</span>
                 </li>
               </ul>

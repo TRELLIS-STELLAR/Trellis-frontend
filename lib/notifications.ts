@@ -74,7 +74,7 @@ export class NotificationManager {
   private async loadPreferences(): Promise<void> {
     if (typeof window === 'undefined') return;
     try {
-      const stored = localStorage.getItem('Alian-Structure-notification-preferences');
+      const stored = localStorage.getItem('Trellis-notification-preferences');
       if (stored) {
         this.preferences = { ...this.preferences, ...JSON.parse(stored) };
       }
@@ -86,7 +86,7 @@ export class NotificationManager {
   private savePreferences(): void {
     if (typeof window === 'undefined') return;
     try {
-      localStorage.setItem('Alian-Structure-notification-preferences', JSON.stringify(this.preferences));
+      localStorage.setItem('Trellis-notification-preferences', JSON.stringify(this.preferences));
     } catch (error) {
       console.warn('Failed to save notification preferences:', error);
     }
@@ -199,7 +199,7 @@ export class NotificationManager {
         body: data.body,
         icon: data.icon || '/icons/icon-192x192.png',
         badge: data.badge || '/icons/icon-192x192.png',
-        tag: data.tag || 'Alian-Structure',
+        tag: data.tag || 'Trellis',
         requireInteraction: data.requireInteraction || false,
         silent: !this.preferences.soundEnabled,
         vibrate: this.preferences.vibrationEnabled ? [100, 50, 100] : undefined,
@@ -220,7 +220,7 @@ export class NotificationManager {
           body: data.body,
           icon: data.icon || '/icons/icon-192x192.png',
           badge: data.badge || '/icons/icon-192x192.png',
-          tag: data.tag || 'Alian-Structure',
+          tag: data.tag || 'Trellis',
           requireInteraction: data.requireInteraction || false,
           silent: !this.preferences.soundEnabled,
           // Vibrate may not exist on all Notification typings; coerce for compatibility

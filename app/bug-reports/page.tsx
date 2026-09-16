@@ -60,7 +60,7 @@ const BugReportsPage = () => {
       case 'approved':
         return 'text-green-400';
       case 'paid':
-        return 'text-cosmic-blue';
+        return 'text-trellis-leaf';
       case 'rejected':
         return 'text-red-400';
       default:
@@ -92,7 +92,7 @@ const BugReportsPage = () => {
       <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-cosmic-blue"></div>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-trellis-leaf"></div>
             <p className="mt-2 text-gray-400">Loading bug reports...</p>
           </div>
         </div>
@@ -129,29 +129,29 @@ const BugReportsPage = () => {
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg p-6 backdrop-blur-sm">
-            <div className="text-3xl font-bold text-cosmic-blue mb-2">
+          <div className="bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg p-6 backdrop-blur-sm">
+            <div className="text-3xl font-bold text-trellis-leaf mb-2">
               {data?.total || 0}
             </div>
             <div className="text-sm text-gray-300">Total Reports</div>
           </div>
           
-          <div className="bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg p-6 backdrop-blur-sm">
+          <div className="bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg p-6 backdrop-blur-sm">
             <div className="text-3xl font-bold text-green-400 mb-2">
               {data?.bugReports?.filter((r: BugReport) => r.status === 'resolved').length || 0}
             </div>
             <div className="text-sm text-gray-300">Resolved</div>
           </div>
           
-          <div className="bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg p-6 backdrop-blur-sm">
+          <div className="bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg p-6 backdrop-blur-sm">
             <div className="text-3xl font-bold text-yellow-400 mb-2">
               {data?.bugReports?.filter((r: BugReport) => r.status === 'under_review' || r.status === 'in_progress').length || 0}
             </div>
             <div className="text-sm text-gray-300">In Review</div>
           </div>
           
-          <div className="bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg p-6 backdrop-blur-sm">
-            <div className="text-3xl font-bold text-cosmic-blue mb-2">
+          <div className="bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg p-6 backdrop-blur-sm">
+            <div className="text-3xl font-bold text-trellis-leaf mb-2">
               {data?.bugReports?.reduce((sum: number, r: BugReport) => sum + r.rewardAmount, 0) || 0} XLM
             </div>
             <div className="text-sm text-gray-300">Total Rewards</div>
@@ -159,15 +159,15 @@ const BugReportsPage = () => {
         </div>
 
         {/* Filters and Controls */}
-        <div className="bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg p-6 backdrop-blur-sm mb-8">
+        <div className="bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg p-6 backdrop-blur-sm mb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setFilter('all')}
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   filter === 'all'
-                    ? 'bg-cosmic-purple text-white'
-                    : 'bg-cosmic-purple/20 text-gray-300 hover:bg-cosmic-purple/30'
+                    ? 'bg-trellis-vine text-white'
+                    : 'bg-trellis-vine/20 text-gray-300 hover:bg-trellis-vine/30'
                 }`}
               >
                 All
@@ -176,8 +176,8 @@ const BugReportsPage = () => {
                 onClick={() => setFilter('submitted')}
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   filter === 'submitted'
-                    ? 'bg-cosmic-purple text-white'
-                    : 'bg-cosmic-purple/20 text-gray-300 hover:bg-cosmic-purple/30'
+                    ? 'bg-trellis-vine text-white'
+                    : 'bg-trellis-vine/20 text-gray-300 hover:bg-trellis-vine/30'
                 }`}
               >
                 Submitted
@@ -186,8 +186,8 @@ const BugReportsPage = () => {
                 onClick={() => setFilter('under_review')}
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   filter === 'under_review'
-                    ? 'bg-cosmic-purple text-white'
-                    : 'bg-cosmic-purple/20 text-gray-300 hover:bg-cosmic-purple/30'
+                    ? 'bg-trellis-vine text-white'
+                    : 'bg-trellis-vine/20 text-gray-300 hover:bg-trellis-vine/30'
                 }`}
               >
                 Under Review
@@ -196,8 +196,8 @@ const BugReportsPage = () => {
                 onClick={() => setFilter('in_progress')}
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   filter === 'in_progress'
-                    ? 'bg-cosmic-purple text-white'
-                    : 'bg-cosmic-purple/20 text-gray-300 hover:bg-cosmic-purple/30'
+                    ? 'bg-trellis-vine text-white'
+                    : 'bg-trellis-vine/20 text-gray-300 hover:bg-trellis-vine/30'
                 }`}
               >
                 In Progress
@@ -206,8 +206,8 @@ const BugReportsPage = () => {
                 onClick={() => setFilter('resolved')}
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   filter === 'resolved'
-                    ? 'bg-cosmic-purple text-white'
-                    : 'bg-cosmic-purple/20 text-gray-300 hover:bg-cosmic-purple/30'
+                    ? 'bg-trellis-vine text-white'
+                    : 'bg-trellis-vine/20 text-gray-300 hover:bg-trellis-vine/30'
                 }`}
               >
                 Resolved
@@ -219,7 +219,7 @@ const BugReportsPage = () => {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'date' | 'priority' | 'reward')}
-                className="px-3 py-2 bg-cosmic-purple/20 border border-cosmic-purple/50 rounded-lg text-white focus:outline-none focus:border-cosmic-blue"
+                className="px-3 py-2 bg-trellis-vine/20 border border-trellis-vine/50 rounded-lg text-white focus:outline-none focus:border-trellis-leaf"
               >
                 <option value="date">Date</option>
                 <option value="priority">Priority</option>
@@ -231,10 +231,10 @@ const BugReportsPage = () => {
 
         {/* Bug Reports List */}
         {sortedReports.length === 0 ? (
-          <div className="bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg p-12 backdrop-blur-sm text-center">
-            <div className="w-16 h-16 bg-cosmic-purple/20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg p-12 backdrop-blur-sm text-center">
+            <div className="w-16 h-16 bg-trellis-vine/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg
-                className="w-8 h-8 text-cosmic-blue"
+                className="w-8 h-8 text-trellis-leaf"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -255,7 +255,7 @@ const BugReportsPage = () => {
             </p>
             <button
               onClick={() => window.location.href = '/bug-report'}
-              className="px-6 py-3 bg-cosmic-purple hover:bg-cosmic-purple/80 text-white rounded-lg transition-colors"
+              className="px-6 py-3 bg-trellis-vine hover:bg-trellis-vine/80 text-white rounded-lg transition-colors"
             >
               Submit Your First Bug Report
             </button>
@@ -265,7 +265,7 @@ const BugReportsPage = () => {
             {sortedReports.map((report: BugReport) => (
               <div
                 key={report.id}
-                className="bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg p-6 backdrop-blur-sm hover:border-cosmic-purple/50 transition-colors"
+                className="bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg p-6 backdrop-blur-sm hover:border-trellis-vine/50 transition-colors"
               >
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                   <div className="flex-1">
@@ -295,7 +295,7 @@ const BugReportsPage = () => {
                   
                   <div className="flex flex-col items-end gap-2">
                     <div className="text-right">
-                      <div className="text-2xl font-bold text-cosmic-blue">
+                      <div className="text-2xl font-bold text-trellis-leaf">
                         {report.rewardAmount} XLM
                       </div>
                       <div className={`text-sm ${getRewardStatusColor(report.rewardStatus)}`}>
@@ -304,7 +304,7 @@ const BugReportsPage = () => {
                     </div>
                     
                     <button
-                      className="px-4 py-2 bg-cosmic-purple/30 hover:bg-cosmic-purple/60 text-white rounded-lg transition-colors text-sm"
+                      className="px-4 py-2 bg-trellis-vine/30 hover:bg-trellis-vine/60 text-white rounded-lg transition-colors text-sm"
                     >
                       View Details
                     </button>
@@ -319,7 +319,7 @@ const BugReportsPage = () => {
         <div className="mt-8 flex justify-center">
           <button
             onClick={() => window.location.href = '/bug-report'}
-            className="px-6 py-3 bg-gradient-to-r from-cosmic-purple to-cosmic-blue hover:shadow-lg hover:shadow-cosmic-purple/50 text-white rounded-lg transition-all"
+            className="px-6 py-3 bg-gradient-to-r from-trellis-vine to-trellis-leaf hover:shadow-lg hover:shadow-trellis-vine/50 text-white rounded-lg transition-all"
           >
             Submit New Bug Report
           </button>

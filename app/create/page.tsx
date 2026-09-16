@@ -68,7 +68,7 @@ export default function CreateAgent() {
             Forge AI Agent
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Step {step} of 4: Define your agent&apos;s cosmic essence
+            Step {step} of 4: Define your agent&apos;s core traits
           </Typography>
         </Box>
 
@@ -95,7 +95,7 @@ export default function CreateAgent() {
             p: { xs: 3, sm: 5 }, 
             borderRadius: '24px', 
             backgroundColor: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(139, 92, 246, 0.2)',
+            border: '1px solid rgba(79, 191, 155, 0.2)',
             backdropFilter: 'blur(10px)',
             position: 'relative',
             overflow: 'hidden'
@@ -159,7 +159,7 @@ export default function CreateAgent() {
           {/* Step 3: Capabilities */}
           {step === 3 && (
             <Box className="space-y-6">
-              <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>Select Cosmic Capabilities</Typography>
+              <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>Select Capabilities</Typography>
               <Grid container spacing={2}>
                 {['Data Analysis', 'Content Generation', 'Code Generation', 'Automation', 'Translation', 'Summarization'].map((cap) => {
                   const isSelected = formData.capabilities.includes(cap);

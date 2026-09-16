@@ -26,13 +26,13 @@ export function TelemetryFilters({ filters, onChange, caps, knownAgents }: Props
     : ALL_SEVERITIES.filter((s) => s !== 'debug');
 
   return (
-    <div className="rounded-lg border border-cosmic-purple/30 bg-cosmic-darker/40 p-4 space-y-4">
+    <div className="rounded-lg border border-trellis-vine/30 bg-trellis-deep/40 p-4 space-y-4">
       <h2 className="text-lg font-medium text-white">Filters</h2>
 
       <div>
         <label className="block text-sm text-gray-400 mb-1">Agent</label>
         <select
-          className="w-full max-w-md rounded-md bg-cosmic-dark border border-cosmic-purple/30 px-3 py-2 text-sm disabled:opacity-50"
+          className="w-full max-w-md rounded-md bg-trellis-ground border border-trellis-vine/30 px-3 py-2 text-sm disabled:opacity-50"
           disabled={!caps.canFilterByAgent}
           value={filters.agentRef ?? ''}
           onChange={(e) =>
@@ -61,7 +61,7 @@ export function TelemetryFilters({ filters, onChange, caps, knownAgents }: Props
             <label key={t} className="inline-flex items-center gap-1.5 text-sm text-gray-300 cursor-pointer">
               <input
                 type="checkbox"
-                className="rounded border-cosmic-purple/40"
+                className="rounded border-trellis-vine/40"
                 checked={filters.types.length === 0 || filters.types.includes(t)}
                 onChange={() => {
                   if (filters.types.length === 0) {
@@ -91,7 +91,7 @@ export function TelemetryFilters({ filters, onChange, caps, knownAgents }: Props
             <label key={s} className="inline-flex items-center gap-1.5 text-sm text-gray-300 cursor-pointer">
               <input
                 type="checkbox"
-                className="rounded border-cosmic-purple/40"
+                className="rounded border-trellis-vine/40"
                 checked={filters.severities.length === 0 || filters.severities.includes(s)}
                 onChange={() => {
                   const pool = severityOptions;

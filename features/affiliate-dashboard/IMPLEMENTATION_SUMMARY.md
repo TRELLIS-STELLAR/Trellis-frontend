@@ -2,7 +2,7 @@
 
 ## Overview
 
-A production-ready affiliate dashboard for Alian-Structure that enables affiliates to manage referrals, track commissions, and request payouts. Built following project patterns and best practices.
+A production-ready affiliate dashboard for Trellis that enables affiliates to manage referrals, track commissions, and request payouts. Built following project patterns and best practices.
 
 ## What Was Delivered
 
@@ -92,7 +92,7 @@ app/api/affiliates/
 
 **UI Components**
 - Reusable Card and Button components
-- Cosmic theme integration
+- Trellis theme integration
 - Responsive design with Tailwind CSS
 - Loading states and animations
 - Dark/light mode support
@@ -181,7 +181,7 @@ app/api/affiliates/
 - ✅ API endpoints created and documented
 - ✅ State management with Zustand store
 - ✅ Responsive design with Tailwind CSS
-- ✅ Cosmic theme integration
+- ✅ Trellis theme integration
 - ✅ Error handling and validation
 - ✅ Loading states and animations
 - ✅ TypeScript type safety
@@ -194,7 +194,7 @@ app/api/affiliates/
 
 - **Framework**: Next.js 16.1.6 (App Router)
 - **Language**: TypeScript with strict mode
-- **Styling**: Tailwind CSS with cosmic theme
+- **Styling**: Tailwind CSS with the Trellis theme
 - **State Management**: Zustand + React Query
 - **Charts**: Recharts for data visualization
 - **Authentication**: Stellar wallet (Freighter, Albedo, Ledger)

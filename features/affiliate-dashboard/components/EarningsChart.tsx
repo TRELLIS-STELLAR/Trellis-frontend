@@ -25,7 +25,7 @@ export const EarningsChart: React.FC<EarningsChartProps> = ({ data, isLoading })
   if (isLoading) {
     return (
       <Card className="animate-pulse">
-        <div className="h-80 bg-cosmic-purple/20 rounded" />
+        <div className="h-80 bg-trellis-vine/20 rounded" />
       </Card>
     );
   }
@@ -33,7 +33,7 @@ export const EarningsChart: React.FC<EarningsChartProps> = ({ data, isLoading })
   if (!data || data.length === 0) {
     return (
       <Card className="text-center py-12">
-        <p className="text-cosmic-purple/60">No earnings data available</p>
+        <p className="text-trellis-vine/60">No earnings data available</p>
       </Card>
     );
   }
@@ -76,13 +76,13 @@ export const EarningsChart: React.FC<EarningsChartProps> = ({ data, isLoading })
         <h3 className="text-lg font-semibold mb-4 text-white">Earnings Trend</h3>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={mergedData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(139, 92, 246, 0.2)" />
-            <XAxis dataKey="date" stroke="rgba(139, 92, 246, 0.6)" />
-            <YAxis stroke="rgba(139, 92, 246, 0.6)" />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(79, 191, 155, 0.2)" />
+            <XAxis dataKey="date" stroke="rgba(79, 191, 155, 0.6)" />
+            <YAxis stroke="rgba(79, 191, 155, 0.6)" />
             <Tooltip
               contentStyle={{
                 backgroundColor: 'rgba(10, 14, 39, 0.9)',
-                border: '1px solid rgba(139, 92, 246, 0.5)',
+                border: '1px solid rgba(79, 191, 155, 0.5)',
                 borderRadius: '8px',
               }}
               labelStyle={{ color: 'rgb(139, 92, 246)' }}
@@ -106,13 +106,13 @@ export const EarningsChart: React.FC<EarningsChartProps> = ({ data, isLoading })
         <h3 className="text-lg font-semibold mb-4 text-white">Commission Sources</h3>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={mergedData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(139, 92, 246, 0.2)" />
-            <XAxis dataKey="date" stroke="rgba(139, 92, 246, 0.6)" />
-            <YAxis stroke="rgba(139, 92, 246, 0.6)" />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(79, 191, 155, 0.2)" />
+            <XAxis dataKey="date" stroke="rgba(79, 191, 155, 0.6)" />
+            <YAxis stroke="rgba(79, 191, 155, 0.6)" />
             <Tooltip
               contentStyle={{
                 backgroundColor: 'rgba(10, 14, 39, 0.9)',
-                border: '1px solid rgba(139, 92, 246, 0.5)',
+                border: '1px solid rgba(79, 191, 155, 0.5)',
                 borderRadius: '8px',
               }}
               labelStyle={{ color: 'rgb(139, 92, 246)' }}

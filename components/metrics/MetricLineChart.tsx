@@ -19,7 +19,10 @@ const formatTs = (tsSeconds: number) => {
 };
 
 const colorForIndex = (i: number) => {
-  const palette = ['#8b5cf6', '#06b6d4', '#22c55e', '#f59e0b', '#ef4444', '#3b82f6'];
+  const palette = [
+    'var(--series-1)', 'var(--series-2)', 'var(--series-3)',
+    'var(--series-4)', 'var(--series-5)', 'var(--series-6)',
+  ];
   return palette[i % palette.length];
 };
 
@@ -60,13 +63,13 @@ const MetricLineChart = React.memo(({
     <div style={{ width: '100%', height }}>
       <ResponsiveContainer>
         <LineChart data={data} margin={{ left: 6, right: 6, top: 10, bottom: 0 }}>
-          <CartesianGrid stroke="rgba(139,92,246,0.15)" strokeDasharray="4 4" />
+          <CartesianGrid stroke="rgba(79,191,155,0.15)" strokeDasharray="4 4" />
           <XAxis dataKey="label" tick={{ fill: '#cbd5e1', fontSize: 12 }} />
           <YAxis tick={{ fill: '#cbd5e1', fontSize: 12 }} />
           <Tooltip
             contentStyle={{
               background: 'rgba(2,6,23,0.9)',
-              border: '1px solid rgba(139,92,246,0.35)',
+              border: '1px solid rgba(79,191,155,0.35)',
               color: '#fff',
             }}
           />

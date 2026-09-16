@@ -35,10 +35,10 @@ export default function Learn() {
           {tutorials.map((tutorial) => (
             <div
               key={tutorial.id}
-              className="p-6 rounded-lg border border-cosmic-purple/30 hover:border-cosmic-cyan/60 hover:shadow-lg hover:shadow-cosmic-cyan/20 transition-smooth nebula-bg cursor-pointer group"
+              className="p-6 rounded-lg border border-trellis-vine/30 hover:border-trellis-amber/60 hover:shadow-lg hover:shadow-trellis-amber/20 transition-smooth nebula-bg cursor-pointer group"
             >
               <div className="text-4xl mb-4">📚</div>
-              <h3 className="text-xl font-semibold mb-2 glow-text group-hover:text-cosmic-cyan transition-smooth">
+              <h3 className="text-xl font-semibold mb-2 glow-text group-hover:text-trellis-amber transition-smooth">
                 {tutorial.title}
               </h3>
               <p className="text-gray-300 text-sm mb-4">{tutorial.description}</p>
@@ -52,7 +52,7 @@ export default function Learn() {
                 </span>
                 <span>⏱️ {tutorial.duration}</span>
               </div>
-              <button className="w-full mt-4 py-2 bg-cosmic-cyan/30 hover:bg-cosmic-cyan/60 rounded transition-smooth font-semibold">
+              <button className="w-full mt-4 py-2 bg-trellis-amber/30 hover:bg-trellis-amber/60 rounded transition-smooth font-semibold">
                 Start Learning
               </button>
             </div>

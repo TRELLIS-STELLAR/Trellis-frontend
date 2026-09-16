@@ -119,7 +119,7 @@ const MOCK_PAYOUT_REQUESTS: PayoutRequest[] = [
 
 const MOCK_PROGRAM: AffiliateProgram = {
   id: 'prog-001',
-  name: 'Alian-Structure Affiliate Program',
+  name: 'Trellis Affiliate Program',
   status: 'active',
   commissionStructure: {
     direct: 10,

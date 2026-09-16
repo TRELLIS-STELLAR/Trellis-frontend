@@ -19,7 +19,7 @@ export const ReferralTable: React.FC<ReferralTableProps> = ({ referrals, isLoadi
   if (isLoading) {
     return (
       <Card className="animate-pulse">
-        <div className="h-96 bg-cosmic-purple/20 rounded" />
+        <div className="h-96 bg-trellis-vine/20 rounded" />
       </Card>
     );
   }
@@ -27,7 +27,7 @@ export const ReferralTable: React.FC<ReferralTableProps> = ({ referrals, isLoadi
   if (!referrals || referrals.length === 0) {
     return (
       <Card className="text-center py-12">
-        <p className="text-cosmic-purple/60">No referrals yet. Start sharing your code!</p>
+        <p className="text-trellis-vine/60">No referrals yet. Start sharing your code!</p>
       </Card>
     );
   }
@@ -85,11 +85,11 @@ export const ReferralTable: React.FC<ReferralTableProps> = ({ referrals, isLoadi
         {/* Controls */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex gap-2">
-            <label className="text-sm text-cosmic-purple/60">Sort by:</label>
+            <label className="text-sm text-trellis-vine/60">Sort by:</label>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="bg-cosmic-dark/50 border border-cosmic-purple/30 rounded px-3 py-1 text-sm text-white focus:outline-none focus:border-cosmic-purple/60"
+              className="bg-trellis-ground/50 border border-trellis-vine/30 rounded px-3 py-1 text-sm text-white focus:outline-none focus:border-trellis-vine/60"
             >
               <option value="date">Date</option>
               <option value="commission">Commission</option>
@@ -98,11 +98,11 @@ export const ReferralTable: React.FC<ReferralTableProps> = ({ referrals, isLoadi
           </div>
 
           <div className="flex gap-2">
-            <label className="text-sm text-cosmic-purple/60">Filter:</label>
+            <label className="text-sm text-trellis-vine/60">Filter:</label>
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value as any)}
-              className="bg-cosmic-dark/50 border border-cosmic-purple/30 rounded px-3 py-1 text-sm text-white focus:outline-none focus:border-cosmic-purple/60"
+              className="bg-trellis-ground/50 border border-trellis-vine/30 rounded px-3 py-1 text-sm text-white focus:outline-none focus:border-trellis-vine/60"
             >
               <option value="all">All ({referrals.length})</option>
               <option value="active">Active ({referrals.filter((r) => r.status === 'active').length})</option>
@@ -116,22 +116,22 @@ export const ReferralTable: React.FC<ReferralTableProps> = ({ referrals, isLoadi
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-cosmic-purple/20">
-                <th className="text-left py-3 px-4 text-cosmic-purple/60 font-semibold">Code</th>
-                <th className="text-left py-3 px-4 text-cosmic-purple/60 font-semibold">User</th>
-                <th className="text-left py-3 px-4 text-cosmic-purple/60 font-semibold">Status</th>
-                <th className="text-right py-3 px-4 text-cosmic-purple/60 font-semibold">Commission</th>
-                <th className="text-left py-3 px-4 text-cosmic-purple/60 font-semibold">Date</th>
+              <tr className="border-b border-trellis-vine/20">
+                <th className="text-left py-3 px-4 text-trellis-vine/60 font-semibold">Code</th>
+                <th className="text-left py-3 px-4 text-trellis-vine/60 font-semibold">User</th>
+                <th className="text-left py-3 px-4 text-trellis-vine/60 font-semibold">Status</th>
+                <th className="text-right py-3 px-4 text-trellis-vine/60 font-semibold">Commission</th>
+                <th className="text-left py-3 px-4 text-trellis-vine/60 font-semibold">Date</th>
               </tr>
             </thead>
             <tbody>
               {sorted.map((referral) => (
                 <tr
                   key={referral.id}
-                  className="border-b border-cosmic-purple/10 hover:bg-cosmic-purple/5 transition-colors"
+                  className="border-b border-trellis-vine/10 hover:bg-trellis-vine/5 transition-colors"
                 >
                   <td className="py-3 px-4">
-                    <code className="bg-cosmic-dark/50 px-2 py-1 rounded text-cosmic-blue">
+                    <code className="bg-trellis-ground/50 px-2 py-1 rounded text-trellis-leaf">
                       {referral.referralCode}
                     </code>
                   </td>
@@ -139,7 +139,7 @@ export const ReferralTable: React.FC<ReferralTableProps> = ({ referrals, isLoadi
                     <div className="text-white truncate">
                       {referral.referredUserName || 'Unknown'}
                     </div>
-                    <div className="text-xs text-cosmic-purple/40 truncate">
+                    <div className="text-xs text-trellis-vine/40 truncate">
                       {referral.referredUserAddress.slice(0, 10)}...
                     </div>
                   </td>
@@ -152,10 +152,10 @@ export const ReferralTable: React.FC<ReferralTableProps> = ({ referrals, isLoadi
                       {referral.status}
                     </span>
                   </td>
-                  <td className="py-3 px-4 text-right font-semibold text-cosmic-blue">
+                  <td className="py-3 px-4 text-right font-semibold text-trellis-leaf">
                     {referral.commissionAmount} XLM
                   </td>
-                  <td className="py-3 px-4 text-cosmic-purple/60 text-xs">
+                  <td className="py-3 px-4 text-trellis-vine/60 text-xs">
                     {new Date(referral.createdAt).toLocaleDateString()}
                   </td>
                 </tr>
@@ -165,7 +165,7 @@ export const ReferralTable: React.FC<ReferralTableProps> = ({ referrals, isLoadi
         </div>
 
         {sorted.length === 0 && (
-          <div className="text-center py-8 text-cosmic-purple/60">
+          <div className="text-center py-8 text-trellis-vine/60">
             No referrals match the selected filter
           </div>
         )}

@@ -14,7 +14,7 @@ export default function CompliancePanel({ results }: CompliancePanelProps) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-3 gap-3">
-        <div className="p-3 rounded-lg border border-cosmic-purple/20 nebula-bg text-center">
+        <div className="p-3 rounded-lg border border-trellis-vine/20 nebula-bg text-center">
           <p className="text-2xl font-bold text-white">{summary.total}</p>
           <p className="text-xs text-gray-400">Total Rules</p>
         </div>

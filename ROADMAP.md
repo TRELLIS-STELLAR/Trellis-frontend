@@ -1,4 +1,4 @@
-# Alian Structure UI - Development Roadmap
+# Trellis UI - Development Roadmap
 
 This roadmap outlines our planned development priorities and milestones for the AI agent marketplace. We follow a quarterly planning cycle and welcome community contributions to help us achieve these goals.
 

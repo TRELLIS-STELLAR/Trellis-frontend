@@ -3,34 +3,46 @@
 @tailwind utilities;
 
 :root {
-  --color-cosmic-dark: 10 14 39;
-  --color-cosmic-darker: 5 7 15;
-  --color-cosmic-purple: 139 92 246;
-  --color-cosmic-blue: 59 130 246;
-  --color-cosmic-cyan: 6 182 212;
-  --color-cosmic-nebula: 217 70 239;
-  --page-background: 10 14 39;
-  --page-background-alt: 5 7 15;
-  --page-surface: 15 23 42;
-  --page-text: 255 255 255;
-  --page-text-muted: 203 213 225;
-  --page-border: 139 92 246;
+  --color-trellis-ground: 14 26 22;
+  --color-trellis-deep: 7 15 13;
+  --color-trellis-vine: 79 191 155;
+  --color-trellis-leaf: 47 158 126;
+  --color-trellis-amber: 240 180 96;
+  --color-trellis-clay: 224 138 76;
+  --page-background: 14 26 22;
+  --page-background-alt: 7 15 13;
+  --page-surface: 19 34 29;
+  --page-text: 247 245 240;
+  --page-text-muted: 178 197 189;
+  --page-border: 79 191 155;
+  --series-1: #199e70;
+  --series-2: #d95926;
+  --series-3: #3987e5;
+  --series-4: #c98500;
+  --series-5: #d55181;
+  --series-6: #9085e9;
   color-scheme: dark;
 }
 
 :root[data-theme='light'] {
-  --color-cosmic-dark: 247 248 252;
-  --color-cosmic-darker: 237 241 250;
-  --color-cosmic-purple: 99 102 241;
-  --color-cosmic-blue: 37 99 235;
-  --color-cosmic-cyan: 8 145 178;
-  --color-cosmic-nebula: 168 85 247;
-  --page-background: 247 248 252;
-  --page-background-alt: 226 232 240;
+  --color-trellis-ground: 247 245 240;
+  --color-trellis-deep: 236 232 224;
+  --color-trellis-vine: 28 107 85;
+  --color-trellis-leaf: 23 113 92;
+  --color-trellis-amber: 227 154 60;
+  --color-trellis-clay: 196 112 44;
+  --page-background: 247 245 240;
+  --page-background-alt: 236 232 224;
   --page-surface: 255 255 255;
-  --page-text: 15 23 42;
-  --page-text-muted: 71 85 105;
-  --page-border: 99 102 241;
+  --page-text: 20 32 28;
+  --page-text-muted: 91 110 102;
+  --page-border: 28 107 85;
+  --series-1: #1baf7a;
+  --series-2: #eb6834;
+  --series-3: #2a78d6;
+  --series-4: #eda100;
+  --series-5: #e87ba4;
+  --series-6: #4a3aa7;
   color-scheme: light;
 }
 
@@ -72,8 +84,8 @@ body {
   color: rgb(var(--page-text-muted)) !important;
 }
 
-:root[data-theme='light'] .bg-cosmic-dark,
-:root[data-theme='light'] .bg-cosmic-darker {
+:root[data-theme='light'] .bg-trellis-ground,
+:root[data-theme='light'] .bg-trellis-deep {
   background-color: rgb(var(--page-surface)) !important;
 }
 
@@ -89,9 +101,9 @@ body {
   background-color: rgb(var(--page-background-alt)) !important;
 }
 
-:root[data-theme='light'] .border-cosmic-purple\/10,
-:root[data-theme='light'] .border-cosmic-purple\/20,
-:root[data-theme='light'] .border-cosmic-purple\/30 {
+:root[data-theme='light'] .border-trellis-vine\/10,
+:root[data-theme='light'] .border-trellis-vine\/20,
+:root[data-theme='light'] .border-trellis-vine\/30 {
   border-color: rgb(var(--page-border)) !important;
 }
 
@@ -102,13 +114,35 @@ body {
   border-color: rgba(var(--page-border), 0.32) !important;
 }
 
-/* Cosmic glow effects */
+/* Solid brand fills are lighter than the old violet, so white text no longer
+   clears AA on them (white on dark-mode vine is 2.3:1). Ink text on solid fills;
+   light mode restores white on the two greens, which are dark there.
+   Alpha variants (bg-trellis-vine/20 etc.) are separate classes and keep white. */
+.bg-trellis-vine.text-white,
+.bg-trellis-leaf.text-white,
+.bg-trellis-amber.text-white,
+.bg-trellis-clay.text-white,
+.hover\:bg-trellis-vine:hover.text-white,
+.hover\:bg-trellis-leaf:hover.text-white,
+.hover\:bg-trellis-amber:hover.text-white,
+.hover\:bg-trellis-clay:hover.text-white {
+  color: rgb(20 32 28);
+}
+
+:root[data-theme='light'] .bg-trellis-vine.text-white,
+:root[data-theme='light'] .bg-trellis-leaf.text-white,
+:root[data-theme='light'] .hover\:bg-trellis-vine:hover.text-white,
+:root[data-theme='light'] .hover\:bg-trellis-leaf:hover.text-white {
+  color: rgb(247 245 240);
+}
+
+/* Ambient glow effects */
 .glow-text {
-  text-shadow: 0 0 10px rgba(139, 92, 246, 0.5), 0 0 20px rgba(59, 130, 246, 0.3);
+  text-shadow: 0 0 10px rgba(79, 191, 155, 0.5), 0 0 20px rgba(47, 158, 126, 0.3);
 }
 
 .glow-border {
-  box-shadow: inset 0 0 20px rgba(139, 92, 246, 0.2), 0 0 20px rgba(139, 92, 246, 0.3);
+  box-shadow: inset 0 0 20px rgba(79, 191, 155, 0.2), 0 0 20px rgba(79, 191, 155, 0.3);
 }
 
 .nebula-bg {
@@ -127,14 +161,14 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(79, 191, 155, 0.1);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(139, 92, 246, 0.5);
+  background: rgba(79, 191, 155, 0.5);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 92, 246, 0.8);
+  background: rgba(79, 191, 155, 0.8);
 }

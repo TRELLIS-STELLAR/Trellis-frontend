@@ -12,7 +12,7 @@ function severityClass(s: TelemetryEvent['severity']): string {
     case 'warn':
       return 'text-amber-200 border-amber-500/30 bg-amber-950/20';
     case 'info':
-      return 'text-cyan-200 border-cosmic-cyan/30 bg-cyan-950/10';
+      return 'text-cyan-200 border-trellis-amber/30 bg-cyan-950/10';
     default:
       return 'text-gray-400 border-gray-600/30 bg-gray-900/30';
   }
@@ -25,7 +25,7 @@ interface Props {
 export const TelemetryEventList = React.memo(({ events }: Props) => {
   if (events.length === 0) {
     return (
-      <p className="text-gray-500 text-sm py-8 text-center border border-dashed border-cosmic-purple/20 rounded-lg">
+      <p className="text-gray-500 text-sm py-8 text-center border border-dashed border-trellis-vine/20 rounded-lg">
         No events match the current filters. Adjust filters or wait for live telemetry.
       </p>
     );

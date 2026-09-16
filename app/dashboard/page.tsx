@@ -99,7 +99,7 @@ export default function MetricsDashboardPage() {
             Analytics Dashboard
           </Typography>
           <Typography variant="body1" sx={{ color: 'text.secondary', mb: 1, maxWidth: '800px' }}>
-            Real-time insights from the Alian-Structure engine. Monitor performance and business metrics with cosmic precision.
+            Real-time insights from the Trellis engine. Monitor performance and business metrics in real time.
           </Typography>
           <Typography variant="caption" sx={{ color: 'text.disabled', display: 'block' }}>
             Source: <span style={{ color: alpha(theme.palette.text.primary, 0.7), fontWeight: 600 }}>{source}</span>
@@ -182,8 +182,8 @@ export default function MetricsDashboardPage() {
         </Box>
 
         {selectedPanel ? (
-          <Box className="p-4 md:p-8 rounded-3xl border border-cosmic-purple/20 nebula-bg shadow-2xl relative overflow-hidden">
-            <Box className="absolute top-0 right-0 w-64 h-64 bg-cosmic-purple/5 blur-[80px] rounded-full -z-10" />
+          <Box className="p-4 md:p-8 rounded-3xl border border-trellis-vine/20 nebula-bg shadow-2xl relative overflow-hidden">
+            <Box className="absolute top-0 right-0 w-64 h-64 bg-trellis-vine/5 blur-[80px] rounded-full -z-10" />
             
             <Box sx={{ mb: 4 }}>
               <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }} className="glow-text">

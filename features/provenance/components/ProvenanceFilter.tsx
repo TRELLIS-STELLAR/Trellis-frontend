@@ -28,7 +28,7 @@ export default function ProvenanceFilter({
   };
 
   return (
-    <div className="p-6 rounded-xl border border-cosmic-purple/20 nebula-bg space-y-4">
+    <div className="p-6 rounded-xl border border-trellis-vine/20 nebula-bg space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Agent Filter */}
         <div className="space-y-1">
@@ -37,7 +37,7 @@ export default function ProvenanceFilter({
             name="agentId"
             value={filter.agentId || ""}
             onChange={handleChange}
-            className="w-full bg-cosmic-dark/50 border border-cosmic-purple/20 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cosmic-purple/50 transition-smooth"
+            className="w-full bg-trellis-ground/50 border border-trellis-vine/20 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-trellis-vine/50 transition-smooth"
           >
             <option value="">All Agents</option>
             {agents.map((agent) => (
@@ -53,7 +53,7 @@ export default function ProvenanceFilter({
             name="userId"
             value={filter.userId || ""}
             onChange={handleChange}
-            className="w-full bg-cosmic-dark/50 border border-cosmic-purple/20 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cosmic-purple/50 transition-smooth"
+            className="w-full bg-trellis-ground/50 border border-trellis-vine/20 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-trellis-vine/50 transition-smooth"
           >
             <option value="">All Users</option>
             {users.map((user) => (
@@ -69,7 +69,7 @@ export default function ProvenanceFilter({
             name="status"
             value={filter.status || ""}
             onChange={handleChange}
-            className="w-full bg-cosmic-dark/50 border border-cosmic-purple/20 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cosmic-purple/50 transition-smooth"
+            className="w-full bg-trellis-ground/50 border border-trellis-vine/20 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-trellis-vine/50 transition-smooth"
           >
             <option value="">All Statuses</option>
             <option value="success">Success</option>
@@ -87,15 +87,15 @@ export default function ProvenanceFilter({
             value={filter.searchQuery || ""}
             onChange={handleChange}
             placeholder="Search details..."
-            className="w-full bg-cosmic-dark/50 border border-cosmic-purple/20 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cosmic-purple/50 transition-smooth"
+            className="w-full bg-trellis-ground/50 border border-trellis-vine/20 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-trellis-vine/50 transition-smooth"
           />
         </div>
       </div>
 
-      <div className="flex flex-wrap justify-between items-center gap-4 pt-2 border-t border-cosmic-purple/10">
+      <div className="flex flex-wrap justify-between items-center gap-4 pt-2 border-t border-trellis-vine/10">
         <button
           onClick={onClear}
-          className="text-sm text-cosmic-purple hover:text-white transition-smooth"
+          className="text-sm text-trellis-vine hover:text-white transition-smooth"
         >
           Clear Filters
         </button>
@@ -103,13 +103,13 @@ export default function ProvenanceFilter({
         <div className="flex gap-2">
           <button
             onClick={onExportJSON}
-            className="px-4 py-2 bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg text-sm hover:bg-cosmic-purple/20 transition-smooth"
+            className="px-4 py-2 bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg text-sm hover:bg-trellis-vine/20 transition-smooth"
           >
             Export JSON
           </button>
           <button
             onClick={onExportCSV}
-            className="px-4 py-2 bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg text-sm hover:bg-cosmic-purple/20 transition-smooth"
+            className="px-4 py-2 bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg text-sm hover:bg-trellis-vine/20 transition-smooth"
           >
             Export CSV
           </button>

@@ -1,13 +1,13 @@
-# Contributing to Alian Structure UI
+# Contributing to Trellis UI
 
-Thank you for your interest in contributing to Alian Structure UI! This document provides guidelines and instructions to help you contribute effectively to this AI agent marketplace with a beautiful cosmic UI theme.
+Thank you for your interest in contributing to Trellis UI! This document provides guidelines and instructions to help you contribute effectively to this AI agent marketplace, built on the Trellis design system.
 
 ## 🚀 Tech Stack Overview
 
 Before you begin, familiarize yourself with our core technologies:
 - **Framework**: Next.js 16 (App Router)
 - **Language**: TypeScript 5.3
-- **UI Library**: Material UI (MUI) v9 with custom cosmic theme
+- **UI Library**: Material UI (MUI) v9 with the custom Trellis theme
 - **Styling**: TailwindCSS 3.3 + Emotion
 - **State Management**: Redux Toolkit + Zustand
 - **Blockchain**: Stellar SDK + Freighter wallet integration
@@ -28,8 +28,8 @@ Before you begin, familiarize yourself with our core technologies:
 
 1. **Fork and clone the repository**
 ```bash
-git clone https://github.com/your-username/alian_structure-UI.git
-cd alian_structure-UI
+git clone https://github.com/your-username/trellis-ui.git
+cd trellis-ui
 ```
 
 2. **Install dependencies**
@@ -76,7 +76,7 @@ npm run lint
 ### Styling
 - Use TailwindCSS for utility classes
 - Use MUI components for complex UI elements
-- Maintain the cosmic theme consistency (colors: bg-cosmic-dark, text-white, etc.)
+- Maintain the Trellis theme consistency (colors: bg-trellis-ground, text-white, etc.)
 - Ensure responsive design works on all screen sizes
 
 ### Git Commit Messages
@@ -169,4 +169,4 @@ npm run lint
 - Help others who are learning the codebase
 - Share your use cases and feedback
 
-Thank you for contributing to making Alian Structure UI a better platform! 🎉
+Thank you for contributing to making Trellis UI a better platform! 🎉

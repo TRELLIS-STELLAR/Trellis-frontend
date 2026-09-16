@@ -22,10 +22,10 @@ Object.defineProperty(navigator, 'clipboard', {
 describe('SocialShareService', () => {
   const mockConfig: SocialShareConfig = {
     platform: 'twitter',
-    url: 'https://Alian-Structure.com/ref/ABC12345',
-    title: 'Join me on Alian-Structure!',
+    url: 'https://Trellis.com/ref/ABC12345',
+    title: 'Join me on Trellis!',
     description: 'Discover amazing AI agents',
-    hashtags: ['Alian-Structure', 'AI'],
+    hashtags: ['Trellis', 'AI'],
   };
 
   beforeEach(() => {
@@ -39,7 +39,7 @@ describe('SocialShareService', () => {
       expect(url).toContain('twitter.com/intent/tweet');
       expect(url).toContain(encodeURIComponent(mockConfig.url));
       expect(url).toContain(encodeURIComponent(mockConfig.title));
-      expect(url).toContain('Alian-Structure,AI');
+      expect(url).toContain('Trellis,AI');
     });
 
     it('should generate Facebook share URL', () => {

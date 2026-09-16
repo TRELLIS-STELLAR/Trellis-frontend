@@ -34,7 +34,7 @@ export function AgentCard({ agent }: AgentCardProps) {
       sx={{
         p: { xs: 3, sm: 4 },
         borderRadius: '24px',
-        border: '1px solid rgba(139, 92, 246, 0.2)',
+        border: '1px solid rgba(79, 191, 155, 0.2)',
         backgroundColor: 'rgba(255,255,255,0.03)',
         backdropFilter: 'blur(10px)',
         transition: 'all 0.3s ease',
@@ -69,7 +69,7 @@ export function AgentCard({ agent }: AgentCardProps) {
       <Grid container spacing={4} alignItems="center">
         <Grid item xs={6} sm={3}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Box sx={{ p: 1, borderRadius: '12px', backgroundColor: 'rgba(139, 92, 246, 0.1)' }}>
+            <Box sx={{ p: 1, borderRadius: '12px', backgroundColor: 'rgba(79, 191, 155, 0.1)' }}>
               <PerformanceIcon sx={{ color: 'primary.main', fontSize: 20 }} />
             </Box>
             <Box>
@@ -80,12 +80,12 @@ export function AgentCard({ agent }: AgentCardProps) {
         </Grid>
         <Grid item xs={6} sm={3}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Box sx={{ p: 1, borderRadius: '12px', backgroundColor: 'rgba(6, 182, 212, 0.1)' }}>
-              <InteractionIcon sx={{ color: '#06b6d4', fontSize: 20 }} />
+            <Box sx={{ p: 1, borderRadius: '12px', backgroundColor: 'rgba(240, 180, 96, 0.1)' }}>
+              <InteractionIcon sx={{ color: '#F0B460', fontSize: 20 }} />
             </Box>
             <Box>
               <Typography variant="caption" sx={{ color: 'text.disabled', display: 'block' }}>Signal Hits</Typography>
-              <Typography variant="h5" sx={{ fontWeight: 800, color: '#06b6d4' }}>{agent.interactions}</Typography>
+              <Typography variant="h5" sx={{ fontWeight: 800, color: '#F0B460' }}>{agent.interactions}</Typography>
             </Box>
           </Box>
         </Grid>
@@ -98,10 +98,10 @@ export function AgentCard({ agent }: AgentCardProps) {
               sx={{ 
                 py: 1.5, 
                 borderRadius: '14px', 
-                backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                backgroundColor: 'rgba(79, 191, 155, 0.1)',
                 color: 'white',
                 boxShadow: 'none',
-                '&:hover': { backgroundColor: 'rgba(139, 92, 246, 0.2)' }
+                '&:hover': { backgroundColor: 'rgba(79, 191, 155, 0.2)' }
               }}
             >
               Monitor

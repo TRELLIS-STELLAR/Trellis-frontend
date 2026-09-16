@@ -22,7 +22,7 @@ export default function SessionRecovery() {
   };
 
   return (
-    <div className="p-6 rounded-xl border border-cosmic-purple/20 nebula-bg space-y-4">
+    <div className="p-6 rounded-xl border border-trellis-vine/20 nebula-bg space-y-4">
       <div className="flex items-center gap-3">
         <span className="text-2xl">🔄</span>
         <div>
@@ -35,7 +35,7 @@ export default function SessionRecovery() {
         <button
           onClick={handleRecover}
           disabled={recovering}
-          className="w-full py-2 bg-cosmic-dark/50 border border-cosmic-purple/30 rounded-lg text-sm font-bold hover:bg-cosmic-purple/10 transition-smooth disabled:opacity-50"
+          className="w-full py-2 bg-trellis-ground/50 border border-trellis-vine/30 rounded-lg text-sm font-bold hover:bg-trellis-vine/10 transition-smooth disabled:opacity-50"
         >
           {recovering ? "Recovering..." : "Recover Previous Session"}
         </button>

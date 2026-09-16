@@ -81,7 +81,7 @@ const ReferralShareModal: React.FC<ReferralShareModalProps> = ({
 
   const shareOnSocial = (platform: string) => {
     if (!referralLink) return;
-    const text = `Join me on Alian-Structure! Discover amazing AI agents and earn ${referralLink.reward} when you sign up!`;
+    const text = `Join me on Trellis! Discover amazing AI agents and earn ${referralLink.reward} when you sign up!`;
     const url = encodeURIComponent(referralLink.url);
     
     let shareUrl = '';
@@ -106,7 +106,7 @@ const ReferralShareModal: React.FC<ReferralShareModalProps> = ({
           backgroundColor: 'rgba(15, 15, 35, 0.95)',
           backdropFilter: 'blur(20px)',
           border: '1px solid rgba(255, 255, 255, 0.1)',
-          backgroundImage: 'radial-gradient(circle at top right, rgba(139, 92, 246, 0.15), transparent 70%)',
+          backgroundImage: 'radial-gradient(circle at top right, rgba(79, 191, 155, 0.15), transparent 70%)',
           color: 'white'
         }
       }}

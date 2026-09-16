@@ -65,8 +65,8 @@ export const WaitlistStatus: React.FC = () => {
         sx={{
           p: 3,
           borderRadius: '24px',
-          border: '1px solid rgba(139, 92, 246, 0.3)',
-          backgroundImage: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(6, 182, 212, 0.1) 100%)',
+          border: '1px solid rgba(79, 191, 155, 0.3)',
+          backgroundImage: 'linear-gradient(135deg, rgba(79, 191, 155, 0.15) 0%, rgba(240, 180, 96, 0.1) 100%)',
           backdropFilter: 'blur(10px)',
           display: 'flex',
           alignItems: 'center',
@@ -81,7 +81,7 @@ export const WaitlistStatus: React.FC = () => {
               Elite Waitlist Status
             </Typography>
           </Box>
-          <Typography variant="caption" sx={{ color: '#06b6d4', fontWeight: 600 }}>
+          <Typography variant="caption" sx={{ color: '#F0B460', fontWeight: 600 }}>
             Mission joined on {new Date(status.joinedAt!).toLocaleDateString()}
           </Typography>
         </Box>

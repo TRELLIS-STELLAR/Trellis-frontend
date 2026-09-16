@@ -46,7 +46,7 @@ Please describe the tests that you ran to verify your changes. Provide instructi
 - [ ] I have checked my code and corrected any misspellings
 - [ ] I have tested the changes on mobile devices
 - [ ] My changes maintain accessibility (a11y) standards
-- [ ] My changes follow the cosmic theme design system
+- [ ] My changes follow the Trellis design system
 
 ## Screenshots (if UI changes were made)
 

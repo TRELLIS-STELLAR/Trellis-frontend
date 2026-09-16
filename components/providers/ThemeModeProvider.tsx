@@ -18,7 +18,7 @@ type ThemeModeContextValue = {
   toggleMode: () => void;
 };
 
-const STORAGE_KEY = 'Alian-Structure-theme-mode';
+const STORAGE_KEY = 'trellis-theme-mode';
 
 const ThemeModeContext = createContext<ThemeModeContextValue | undefined>(undefined);
 
@@ -56,21 +56,23 @@ function buildTheme(mode: ThemeMode) {
     palette: {
       mode,
       primary: {
-        main: isDark ? '#8b5cf6' : '#6d28d9',
-        contrastText: '#ffffff',
+        main: isDark ? '#4FBF9B' : '#1C6B55',
+        // Dark-mode vine is a light green: ink text on it, not white (white is 2.3:1).
+        contrastText: isDark ? '#14201C' : '#FFFFFF',
       },
       secondary: {
-        main: isDark ? '#06b6d4' : '#0f766e',
+        main: isDark ? '#F0B460' : '#E39A3C',
+        contrastText: '#14201C',
       },
       background: {
-        default: isDark ? '#0a0e27' : '#f7f8fc',
-        paper: isDark ? '#10172b' : '#ffffff',
+        default: isDark ? '#0E1A16' : '#F7F5F0',
+        paper: isDark ? '#13221D' : '#FFFFFF',
       },
       text: {
-        primary: isDark ? '#f8fafc' : '#0f172a',
-        secondary: isDark ? '#cbd5e1' : '#475569',
+        primary: isDark ? '#F7F5F0' : '#14201C',
+        secondary: isDark ? '#B2C5BD' : '#5B6E66',
       },
-      divider: isDark ? 'rgba(139, 92, 246, 0.2)' : 'rgba(99, 102, 241, 0.2)',
+      divider: isDark ? 'rgba(79, 191, 155, 0.2)' : 'rgba(28, 107, 85, 0.2)',
     },
     shape: {
       borderRadius: 16,
@@ -92,8 +94,8 @@ function buildTheme(mode: ThemeMode) {
           },
           body: {
             minHeight: '100%',
-            backgroundColor: isDark ? '#0a0e27' : '#f7f8fc',
-            color: isDark ? '#f8fafc' : '#0f172a',
+            backgroundColor: isDark ? '#0E1A16' : '#F7F5F0',
+            color: isDark ? '#F7F5F0' : '#14201C',
             transition:
               'background-color 240ms ease, color 240ms ease, border-color 240ms ease',
           },
@@ -103,8 +105,8 @@ function buildTheme(mode: ThemeMode) {
             transitionTimingFunction: 'ease',
           },
           '::selection': {
-            backgroundColor: alpha(isDark ? '#8b5cf6' : '#6d28d9', 0.22),
-            color: isDark ? '#ffffff' : '#0f172a',
+            backgroundColor: alpha(isDark ? '#4FBF9B' : '#1C6B55', 0.22),
+            color: isDark ? '#FFFFFF' : '#14201C',
           },
         },
       },
@@ -112,9 +114,9 @@ function buildTheme(mode: ThemeMode) {
         styleOverrides: {
           root: {
             borderRadius: 9999,
-            border: isDark ? '1px solid rgba(139, 92, 246, 0.25)' : '1px solid rgba(99, 102, 241, 0.18)',
-            backgroundColor: isDark ? 'rgba(17, 24, 39, 0.72)' : 'rgba(255, 255, 255, 0.92)',
-            boxShadow: isDark ? '0 0 0 1px rgba(139, 92, 246, 0.08)' : 'none',
+            border: isDark ? '1px solid rgba(79, 191, 155, 0.25)' : '1px solid rgba(28, 107, 85, 0.18)',
+            backgroundColor: isDark ? 'rgba(19, 34, 29, 0.72)' : 'rgba(255, 255, 255, 0.92)',
+            boxShadow: isDark ? '0 0 0 1px rgba(79, 191, 155, 0.08)' : 'none',
           },
         },
       },

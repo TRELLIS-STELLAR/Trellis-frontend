@@ -8,7 +8,7 @@ let provenanceRecords: ProvenanceRecord[] = [
   {
     id: "pv-1",
     agentId: "ag-1",
-    agentName: "Cosmic Predictor",
+    agentName: "Canopy Predictor",
     userId: "user-123",
     userName: "Alex Explorer",
     action: "input_received",
@@ -19,7 +19,7 @@ let provenanceRecords: ProvenanceRecord[] = [
   {
     id: "pv-2",
     agentId: "ag-1",
-    agentName: "Cosmic Predictor",
+    agentName: "Canopy Predictor",
     userId: "user-123",
     userName: "Alex Explorer",
     action: "provider_call",
@@ -31,7 +31,7 @@ let provenanceRecords: ProvenanceRecord[] = [
   {
     id: "pv-3",
     agentId: "ag-1",
-    agentName: "Cosmic Predictor",
+    agentName: "Canopy Predictor",
     userId: "user-123",
     userName: "Alex Explorer",
     action: "on_chain_submission",

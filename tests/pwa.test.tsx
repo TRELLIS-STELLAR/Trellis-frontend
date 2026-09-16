@@ -82,10 +82,10 @@ describe('PWA Functionality', () => {
   describe('Manifest Validation', () => {
     it('should have valid manifest structure', () => {
       const manifest = {
-        name: 'Alian-Structure',
-        short_name: 'Alian-Structure',
-        theme_color: '#1a1a2e',
-        background_color: '#0f0f23',
+        name: 'Trellis',
+        short_name: 'Trellis',
+        theme_color: '#0E1A16',
+        background_color: '#070F0D',
         display: 'standalone',
         orientation: 'portrait',
         scope: '/',
@@ -104,7 +104,7 @@ describe('PWA Functionality', () => {
         ],
       };
 
-      expect(manifest.name).toBe('Alian-Structure');
+      expect(manifest.name).toBe('Trellis');
       expect(manifest.display).toBe('standalone');
       expect(manifest.icons).toHaveLength(8);
     });
@@ -152,8 +152,8 @@ describe('PWA Functionality', () => {
     it('should validate manifest fields', () => {
       const requiredFields = ['name', 'short_name', 'start_url', 'display'];
       const manifest = {
-        name: 'Alian-Structure',
-        short_name: 'Alian-Structure',
+        name: 'Trellis',
+        short_name: 'Trellis',
         start_url: '/',
         display: 'standalone',
       };

@@ -78,13 +78,13 @@ export default function TradingPage() {
         </p>
 
         {/* Indicator Controls */}
-        <div className="mb-8 p-6 rounded-xl border border-white/10 bg-cosmic-darker/30 backdrop-blur-sm">
+        <div className="mb-8 p-6 rounded-xl border border-white/10 bg-trellis-deep/30 backdrop-blur-sm">
           <h2 className="text-2xl font-bold mb-6 text-white">Indicator Settings</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Basic Indicators */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-cosmic-cyan">Moving Averages</h3>
+              <h3 className="text-lg font-semibold text-trellis-amber">Moving Averages</h3>
               <div className="space-y-2">
                 <label className="flex items-center space-x-2">
                   <input
@@ -98,7 +98,7 @@ export default function TradingPage() {
                     type="number"
                     value={indicators.sma?.period || 20}
                     onChange={(e) => updateIndicatorPeriod('sma', 'period', parseInt(e.target.value))}
-                    className="w-16 px-2 py-1 bg-cosmic-darker border border-white/20 rounded text-sm"
+                    className="w-16 px-2 py-1 bg-trellis-deep border border-white/20 rounded text-sm"
                     min="1"
                   />
                 </label>
@@ -114,7 +114,7 @@ export default function TradingPage() {
                     type="number"
                     value={indicators.ema?.period || 20}
                     onChange={(e) => updateIndicatorPeriod('ema', 'period', parseInt(e.target.value))}
-                    className="w-16 px-2 py-1 bg-cosmic-darker border border-white/20 rounded text-sm"
+                    className="w-16 px-2 py-1 bg-trellis-deep border border-white/20 rounded text-sm"
                     min="1"
                   />
                 </label>
@@ -123,7 +123,7 @@ export default function TradingPage() {
 
             {/* Oscillators */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-cosmic-cyan">Oscillators</h3>
+              <h3 className="text-lg font-semibold text-trellis-amber">Oscillators</h3>
               <div className="space-y-2">
                 <label className="flex items-center space-x-2">
                   <input
@@ -137,7 +137,7 @@ export default function TradingPage() {
                     type="number"
                     value={indicators.rsi?.period || 14}
                     onChange={(e) => updateIndicatorPeriod('rsi', 'period', parseInt(e.target.value))}
-                    className="w-16 px-2 py-1 bg-cosmic-darker border border-white/20 rounded text-sm"
+                    className="w-16 px-2 py-1 bg-trellis-deep border border-white/20 rounded text-sm"
                     min="1"
                   />
                 </label>
@@ -173,7 +173,7 @@ export default function TradingPage() {
 
             {/* Advanced Indicators */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-cosmic-cyan">Advanced</h3>
+              <h3 className="text-lg font-semibold text-trellis-amber">Advanced</h3>
               <div className="space-y-2">
                 <label className="flex items-center space-x-2">
                   <input
@@ -198,7 +198,7 @@ export default function TradingPage() {
 
             {/* Chart Options */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-cosmic-cyan">Chart Options</h3>
+              <h3 className="text-lg font-semibold text-trellis-amber">Chart Options</h3>
               <div className="space-y-2">
                 <button
                   onClick={() => setIndicators({
@@ -211,7 +211,7 @@ export default function TradingPage() {
                     williamsR: { period: 14, enabled: true },
                     cci: { period: 20, enabled: true },
                   })}
-                  className="w-full px-4 py-2 bg-cosmic-purple/20 border border-cosmic-purple/50 rounded-lg text-sm hover:bg-cosmic-purple/40 transition-all"
+                  className="w-full px-4 py-2 bg-trellis-vine/20 border border-trellis-vine/50 rounded-lg text-sm hover:bg-trellis-vine/40 transition-all"
                 >
                   Enable All
                 </button>
@@ -227,7 +227,7 @@ export default function TradingPage() {
         </div>
 
         {/* Trading Chart */}
-        <div className="p-6 rounded-xl border border-white/10 bg-cosmic-darker/30 backdrop-blur-sm">
+        <div className="p-6 rounded-xl border border-white/10 bg-trellis-deep/30 backdrop-blur-sm">
           <h2 className="text-2xl font-bold mb-6 text-white">Price Chart with Advanced Indicators</h2>
           <OptimizedTradingChart
             data={sampleData}
@@ -240,8 +240,8 @@ export default function TradingPage() {
 
         {/* Indicator Explanations */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="p-6 rounded-xl border border-white/10 bg-cosmic-darker/30 backdrop-blur-sm">
-            <h3 className="text-xl font-bold mb-4 text-cosmic-cyan">Stochastic Oscillator</h3>
+          <div className="p-6 rounded-xl border border-white/10 bg-trellis-deep/30 backdrop-blur-sm">
+            <h3 className="text-xl font-bold mb-4 text-trellis-amber">Stochastic Oscillator</h3>
             <p className="text-gray-300 text-sm">
               Momentum indicator comparing closing price to price range over a period.
               %K shows current momentum, %D is the signal line (SMA of %K).
@@ -249,8 +249,8 @@ export default function TradingPage() {
             </p>
           </div>
 
-          <div className="p-6 rounded-xl border border-white/10 bg-cosmic-darker/30 backdrop-blur-sm">
-            <h3 className="text-xl font-bold mb-4 text-cosmic-cyan">Williams %R</h3>
+          <div className="p-6 rounded-xl border border-white/10 bg-trellis-deep/30 backdrop-blur-sm">
+            <h3 className="text-xl font-bold mb-4 text-trellis-amber">Williams %R</h3>
             <p className="text-gray-300 text-sm">
               Momentum indicator similar to Stochastic but uses different calculation.
               Ranges from -100 to 0. Values above -20 indicate overbought,
@@ -258,8 +258,8 @@ export default function TradingPage() {
             </p>
           </div>
 
-          <div className="p-6 rounded-xl border border-white/10 bg-cosmic-darker/30 backdrop-blur-sm">
-            <h3 className="text-xl font-bold mb-4 text-cosmic-cyan">Commodity Channel Index (CCI)</h3>
+          <div className="p-6 rounded-xl border border-white/10 bg-trellis-deep/30 backdrop-blur-sm">
+            <h3 className="text-xl font-bold mb-4 text-trellis-amber">Commodity Channel Index (CCI)</h3>
             <p className="text-gray-300 text-sm">
               Versatile indicator measuring deviation from mean price.
               Values above +100 indicate overbought, below -100 indicate oversold.
@@ -267,8 +267,8 @@ export default function TradingPage() {
             </p>
           </div>
 
-          <div className="p-6 rounded-xl border border-white/10 bg-cosmic-darker/30 backdrop-blur-sm">
-            <h3 className="text-xl font-bold mb-4 text-cosmic-cyan">Performance Optimized</h3>
+          <div className="p-6 rounded-xl border border-white/10 bg-trellis-deep/30 backdrop-blur-sm">
+            <h3 className="text-xl font-bold mb-4 text-trellis-amber">Performance Optimized</h3>
             <p className="text-gray-300 text-sm">
               All indicators are calculated efficiently with memoization and
               debounced updates. Large datasets are automatically downsampled

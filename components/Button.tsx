@@ -19,9 +19,9 @@ export const Button: React.FC<ButtonProps> = ({
     'font-semibold rounded-lg transition-smooth focus:outline-none';
 
   const variantClasses = {
-    primary: 'bg-gradient-to-r from-cosmic-purple to-cosmic-blue hover:shadow-lg hover:shadow-cosmic-purple/50',
-    secondary: 'bg-cosmic-purple/30 hover:bg-cosmic-purple/60',
-    outline: 'border-2 border-cosmic-purple hover:bg-cosmic-purple/10',
+    primary: 'bg-gradient-to-r from-trellis-vine to-trellis-leaf hover:shadow-lg hover:shadow-trellis-vine/50',
+    secondary: 'bg-trellis-vine/30 hover:bg-trellis-vine/60',
+    outline: 'border-2 border-trellis-vine hover:bg-trellis-vine/10',
   };
 
   const sizeClasses = {

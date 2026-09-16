@@ -16,7 +16,7 @@ export default function NotFound() {
           </p>
           <Link
             href="/"
-            className="mt-4 px-6 py-3 rounded-lg bg-gradient-to-r from-cosmic-purple to-cosmic-blue font-semibold hover:shadow-lg hover:shadow-cosmic-purple/50 transition-smooth"
+            className="mt-4 px-6 py-3 rounded-lg bg-gradient-to-r from-trellis-vine to-trellis-leaf font-semibold hover:shadow-lg hover:shadow-trellis-vine/50 transition-smooth"
           >
             Return to Universe
           </Link>

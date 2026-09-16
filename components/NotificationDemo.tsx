@@ -19,7 +19,7 @@ export function NotificationDemo() {
     try {
       await showNotification({
         title: 'Test Notification 🚀',
-        body: 'This is a test notification from Alian-Structure!',
+        body: 'This is a test notification from Trellis!',
         tag: 'test',
         data: {
           type: 'general',
@@ -124,7 +124,7 @@ export function NotificationDemo() {
         <button
           onClick={handleTestBasicNotification}
           disabled={isLoading}
-          className="p-3 rounded-lg border border-cosmic-purple/30 bg-cosmic-purple/20 hover:bg-cosmic-purple/30 text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="p-3 rounded-lg border border-trellis-vine/30 bg-trellis-vine/20 hover:bg-trellis-vine/30 text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           📢 Basic Notification
         </button>

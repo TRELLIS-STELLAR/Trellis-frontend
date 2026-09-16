@@ -1,7 +1,7 @@
 {
-  "name": "Alian-Structure-frontend",
+  "name": "trellis-frontend",
   "version": "0.1.0",
-  "description": "Beautiful, immersive AI agent marketplace with cosmic UI theme",
+  "description": "AI agent marketplace on Stellar, built on the Trellis design system",
   "private": true,
   "scripts": {
     "dev": "next dev",

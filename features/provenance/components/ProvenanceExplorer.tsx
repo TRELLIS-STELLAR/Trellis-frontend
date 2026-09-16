@@ -67,7 +67,7 @@ export default function ProvenanceExplorer() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold glow-text leading-tight mb-2">Provenance Explorer</h1>
-          <p className="text-gray-400 text-sm">Visualize and audit every agent action in the Alian-Structure universe.</p>
+          <p className="text-gray-400 text-sm">Visualize and audit every agent action in the Trellis universe.</p>
         </div>
         <div className="flex gap-4">
           <div className="text-right">
@@ -92,13 +92,13 @@ export default function ProvenanceExplorer() {
           <div className="animate-spin text-4xl">✨</div>
         </div>
       ) : records.length === 0 ? (
-        <div className="text-center p-12 rounded-xl border border-cosmic-purple/20 nebula-bg">
+        <div className="text-center p-12 rounded-xl border border-trellis-vine/20 nebula-bg">
           <p className="text-gray-500 italic">No provenance records found Matching filters.</p>
         </div>
       ) : (
         <div className="relative">
           {/* Vertical line for timeline */}
-          <div className="absolute left-[2.25rem] md:left-1/2 top-4 bottom-4 w-px bg-gradient-to-b from-cosmic-purple/50 via-cosmic-purple/20 to-transparent hidden md:block" />
+          <div className="absolute left-[2.25rem] md:left-1/2 top-4 bottom-4 w-px bg-gradient-to-b from-trellis-vine/50 via-trellis-vine/20 to-transparent hidden md:block" />
 
           <div className="space-y-8 relative">
             {records.map((record, index) => (
@@ -108,14 +108,14 @@ export default function ProvenanceExplorer() {
                   ${index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"}`}
               >
                 {/* Visual Connector Dot */}
-                <div className="absolute left-[2rem] md:left-1/2 -ml-[0.5rem] w-4 h-4 rounded-full bg-cosmic-dark border-2 border-cosmic-purple/50 z-10 group-hover:scale-125 transition-smooth" />
+                <div className="absolute left-[2rem] md:left-1/2 -ml-[0.5rem] w-4 h-4 rounded-full bg-trellis-ground border-2 border-trellis-vine/50 z-10 group-hover:scale-125 transition-smooth" />
 
-                <div className={`w-full md:w-[calc(50%-2rem)] p-6 rounded-xl border border-cosmic-purple/20 nebula-bg hover:border-cosmic-purple/40 transition-smooth
+                <div className={`w-full md:w-[calc(50%-2rem)] p-6 rounded-xl border border-trellis-vine/20 nebula-bg hover:border-trellis-vine/40 transition-smooth
                   ${index % 2 === 0 ? "text-left" : "md:text-right"}`}
                 >
                   <div className={`flex flex-wrap gap-2 mb-3 items-center ${index % 2 === 0 ? "" : "md:flex-row-reverse"}`}>
                     <span className="text-xl">{getActionIcon(record.action)}</span>
-                    <span className="text-sm font-semibold text-cosmic-purple uppercase tracking-tight">
+                    <span className="text-sm font-semibold text-trellis-vine uppercase tracking-tight">
                       {record.action.replace(/_/g, " ")}
                     </span>
                     <span className={`px-2 py-0.5 rounded-full text-[10px] border font-bold uppercase ${getStatusColor(record.status)}`}>
@@ -128,7 +128,7 @@ export default function ProvenanceExplorer() {
                     {new Date(record.timestamp).toLocaleString()}
                   </p>
 
-                  <div className={`text-sm text-gray-300 space-y-2 mb-4 bg-cosmic-dark/30 p-3 rounded-lg border border-cosmic-purple/10 ${index % 2 === 0 ? "" : "md:text-left"}`}>
+                  <div className={`text-sm text-gray-300 space-y-2 mb-4 bg-trellis-ground/30 p-3 rounded-lg border border-trellis-vine/10 ${index % 2 === 0 ? "" : "md:text-left"}`}>
                     {record.details.input && (
                       <div>
                         <span className="text-[10px] text-gray-500 uppercase block mb-1">Input</span>
@@ -153,12 +153,12 @@ export default function ProvenanceExplorer() {
 
                   <div className={`flex flex-wrap gap-4 text-[10px] text-gray-500 uppercase font-bold tracking-widest ${index % 2 === 0 ? "" : "md:flex-row-reverse"}`}>
                     <div className="flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-cosmic-purple/40" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-trellis-vine/40" />
                       <span>User: {record.userName}</span>
                     </div>
                     {record.provider && (
                       <div className="flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-cosmic-purple/40" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-trellis-vine/40" />
                         <span>Provider: {record.provider}</span>
                       </div>
                     )}

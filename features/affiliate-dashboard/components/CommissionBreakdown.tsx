@@ -20,7 +20,7 @@ export const CommissionBreakdown: React.FC<CommissionBreakdownProps> = ({ data, 
   if (isLoading) {
     return (
       <Card className="animate-pulse">
-        <div className="h-80 bg-cosmic-purple/20 rounded" />
+        <div className="h-80 bg-trellis-vine/20 rounded" />
       </Card>
     );
   }
@@ -28,7 +28,7 @@ export const CommissionBreakdown: React.FC<CommissionBreakdownProps> = ({ data, 
   if (!data || data.length === 0) {
     return (
       <Card className="text-center py-12">
-        <p className="text-cosmic-purple/60">No commission data available</p>
+        <p className="text-trellis-vine/60">No commission data available</p>
       </Card>
     );
   }
@@ -56,7 +56,7 @@ export const CommissionBreakdown: React.FC<CommissionBreakdownProps> = ({ data, 
               labelLine={false}
               label={({ name, percentage }) => `${name} ${percentage.toFixed(1)}%`}
               outerRadius={80}
-              fill="#8b5cf6"
+              fill="var(--series-1)"
               dataKey="value"
             >
               {data.map((entry, index) => (
@@ -66,7 +66,7 @@ export const CommissionBreakdown: React.FC<CommissionBreakdownProps> = ({ data, 
             <Tooltip
               contentStyle={{
                 backgroundColor: 'rgba(10, 14, 39, 0.9)',
-                border: '1px solid rgba(139, 92, 246, 0.5)',
+                border: '1px solid rgba(79, 191, 155, 0.5)',
                 borderRadius: '8px',
               }}
               labelStyle={{ color: 'rgb(139, 92, 246)' }}
@@ -81,7 +81,7 @@ export const CommissionBreakdown: React.FC<CommissionBreakdownProps> = ({ data, 
         <h3 className="text-lg font-semibold mb-4 text-white">Breakdown Details</h3>
         <div className="space-y-4">
           {data.map((item, index) => (
-            <div key={index} className="pb-4 border-b border-cosmic-purple/10 last:border-0">
+            <div key={index} className="pb-4 border-b border-trellis-vine/10 last:border-0">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-3">
                   <div
@@ -90,16 +90,16 @@ export const CommissionBreakdown: React.FC<CommissionBreakdownProps> = ({ data, 
                   />
                   <span className="font-semibold text-white capitalize">{item.type} Commission</span>
                 </div>
-                <span className="text-cosmic-blue font-bold">{item.amount} XLM</span>
+                <span className="text-trellis-leaf font-bold">{item.amount} XLM</span>
               </div>
 
-              <div className="flex items-center justify-between text-sm text-cosmic-purple/60">
+              <div className="flex items-center justify-between text-sm text-trellis-vine/60">
                 <span>{item.count} referrals</span>
                 <span>{item.percentage.toFixed(1)}% of total</span>
               </div>
 
               {/* Progress bar */}
-              <div className="mt-2 h-2 bg-cosmic-purple/10 rounded-full overflow-hidden">
+              <div className="mt-2 h-2 bg-trellis-vine/10 rounded-full overflow-hidden">
                 <div
                   className="h-full transition-all duration-300"
                   style={{
@@ -112,10 +112,10 @@ export const CommissionBreakdown: React.FC<CommissionBreakdownProps> = ({ data, 
           ))}
 
           {/* Total */}
-          <div className="pt-4 border-t border-cosmic-purple/20">
+          <div className="pt-4 border-t border-trellis-vine/20">
             <div className="flex items-center justify-between">
               <span className="font-semibold text-white">Total Commissions</span>
-              <span className="text-lg font-bold text-cosmic-nebula">{totalAmount.toFixed(2)} XLM</span>
+              <span className="text-lg font-bold text-trellis-clay">{totalAmount.toFixed(2)} XLM</span>
             </div>
           </div>
         </div>

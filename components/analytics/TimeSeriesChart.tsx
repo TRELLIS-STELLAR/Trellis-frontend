@@ -19,21 +19,21 @@ const TimeSeriesChart = React.memo(({ dataset }: { dataset: AnalyticsDataset }) 
       <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={dataset.timeSeries}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(139, 92, 246, 0.2)" />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(79, 191, 155, 0.2)" />
             <XAxis dataKey="date" tick={{ fill: '#cbd5e1', fontSize: 12 }} />
             <YAxis tick={{ fill: '#cbd5e1', fontSize: 12 }} />
             <Tooltip
               contentStyle={{
                 backgroundColor: '#05070f',
-                border: '1px solid rgba(139, 92, 246, 0.4)',
+                border: '1px solid rgba(79, 191, 155, 0.4)',
                 borderRadius: '8px',
               }}
               labelStyle={{ color: '#ffffff' }}
             />
             <Legend />
-            <Line type="monotone" dataKey="contractInvocations" stroke="#8b5cf6" strokeWidth={2} dot={false} isAnimationActive={false} />
-            <Line type="monotone" dataKey="xlmRevenue" stroke="#06b6d4" strokeWidth={2} dot={false} isAnimationActive={false} />
-            <Line type="monotone" dataKey="successRate" stroke="#3b82f6" strokeWidth={2} dot={false} isAnimationActive={false} />
+            <Line type="monotone" dataKey="contractInvocations" stroke="var(--series-1)" strokeWidth={2} dot={false} isAnimationActive={false} />
+            <Line type="monotone" dataKey="xlmRevenue" stroke="var(--series-2)" strokeWidth={2} dot={false} isAnimationActive={false} />
+            <Line type="monotone" dataKey="successRate" stroke="var(--series-3)" strokeWidth={2} dot={false} isAnimationActive={false} />
           </LineChart>
         </ResponsiveContainer>
       </div>

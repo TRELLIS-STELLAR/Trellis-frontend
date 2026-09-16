@@ -48,8 +48,8 @@ export const RewardCalculator: React.FC<RewardCalculatorProps> = ({
   const selectedCategory = BUG_CATEGORIES.find((c) => c.value === category);
 
   return (
-    <div className="bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg p-6 backdrop-blur-sm">
-      <h3 className="text-lg font-semibold mb-4 text-cosmic-blue">
+    <div className="bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg p-6 backdrop-blur-sm">
+      <h3 className="text-lg font-semibold mb-4 text-trellis-leaf">
         Reward Estimation
       </h3>
 
@@ -68,10 +68,10 @@ export const RewardCalculator: React.FC<RewardCalculatorProps> = ({
           </span>
         </div>
 
-        <div className="border-t border-cosmic-purple/30 pt-4">
+        <div className="border-t border-trellis-vine/30 pt-4">
           <div className="flex justify-between items-center mb-2">
             <span className="text-gray-300">Estimated Reward:</span>
-            <span className="text-2xl font-bold text-cosmic-blue">
+            <span className="text-2xl font-bold text-trellis-leaf">
               {calculateReward.totalReward} XLM
             </span>
           </div>
@@ -89,7 +89,7 @@ export const RewardCalculator: React.FC<RewardCalculatorProps> = ({
           </p>
         </div>
 
-        <div className="bg-cosmic-purple/20 rounded p-3 mt-4">
+        <div className="bg-trellis-vine/20 rounded p-3 mt-4">
           <p className="text-xs text-gray-300">
             Rewards are paid in XLM and subject to review. Higher priority and
             security issues receive higher rewards.

@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Allow indexing of all content
-Sitemap: https://Alian-Structure.com/sitemap.xml
+Sitemap: https://Trellis.com/sitemap.xml
 
 # Block common non-content paths
 Disallow: /api/

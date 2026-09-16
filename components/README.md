@@ -1,6 +1,6 @@
 # Stellar Wallet Components
 
-This directory contains the React components for Stellar wallet integration in the Alian-Structure application.
+This directory contains the React components for Stellar wallet integration in the Trellis application.
 
 ## Components Overview
 
@@ -153,11 +153,11 @@ Each component handles errors gracefully:
 
 ## Styling
 
-All components use Tailwind CSS and match the cosmic theme:
+All components use Tailwind CSS and match the Trellis theme:
 
 - **Colors**: Cyan (🟦), Yellow (🟨), Purple (🟪)
-- **Border**: Cosmic purple with opacity
-- **Background**: Dark cosmic colors
+- **Border**: Vine green with opacity
+- **Background**: Dark vine-toned surfaces
 - **Transitions**: Smooth hover effects
 - **Responsive**: Mobile-friendly design
 

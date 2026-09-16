@@ -46,7 +46,7 @@ export default function ScanForm({ onScan, isLoading }: ScanFormProps) {
           value={contractId}
           onChange={(e) => setContractId(e.target.value)}
           placeholder="C..."
-          className="w-full px-4 py-2.5 rounded-lg bg-gray-800/60 border border-cosmic-purple/20 text-white placeholder-gray-500 focus:border-cosmic-purple/60 focus:outline-none transition-smooth text-sm font-mono"
+          className="w-full px-4 py-2.5 rounded-lg bg-gray-800/60 border border-trellis-vine/20 text-white placeholder-gray-500 focus:border-trellis-vine/60 focus:outline-none transition-smooth text-sm font-mono"
           required
         />
       </div>
@@ -58,7 +58,7 @@ export default function ScanForm({ onScan, isLoading }: ScanFormProps) {
         <select
           value={network}
           onChange={(e) => setNetwork(e.target.value as StellarNetwork)}
-          className="w-full px-4 py-2.5 rounded-lg bg-gray-800/60 border border-cosmic-purple/20 text-white focus:border-cosmic-purple/60 focus:outline-none transition-smooth text-sm"
+          className="w-full px-4 py-2.5 rounded-lg bg-gray-800/60 border border-trellis-vine/20 text-white focus:border-trellis-vine/60 focus:outline-none transition-smooth text-sm"
         >
           <option value="testnet">Testnet</option>
           <option value="futurenet">Futurenet</option>
@@ -72,7 +72,7 @@ export default function ScanForm({ onScan, isLoading }: ScanFormProps) {
             type="checkbox"
             checked={includeOptimizations}
             onChange={(e) => setIncludeOptimizations(e.target.checked)}
-            className="rounded border-cosmic-purple/40"
+            className="rounded border-trellis-vine/40"
           />
           <span className="text-sm text-gray-300">Optimizations</span>
         </label>
@@ -81,7 +81,7 @@ export default function ScanForm({ onScan, isLoading }: ScanFormProps) {
             type="checkbox"
             checked={includeCompliance}
             onChange={(e) => setIncludeCompliance(e.target.checked)}
-            className="rounded border-cosmic-purple/40"
+            className="rounded border-trellis-vine/40"
           />
           <span className="text-sm text-gray-300">Compliance</span>
         </label>
@@ -91,7 +91,7 @@ export default function ScanForm({ onScan, isLoading }: ScanFormProps) {
         <button
           type="button"
           onClick={() => setShowSource(!showSource)}
-          className="text-xs text-cosmic-cyan hover:text-white transition-smooth"
+          className="text-xs text-trellis-amber hover:text-white transition-smooth"
         >
           {showSource ? "▲ Hide" : "▼ Show"} Source Code (optional, improves
           accuracy)
@@ -102,7 +102,7 @@ export default function ScanForm({ onScan, isLoading }: ScanFormProps) {
             onChange={(e) => setSourceCode(e.target.value)}
             placeholder="Paste your Rust/Soroban contract source code here..."
             rows={8}
-            className="w-full mt-2 px-4 py-2.5 rounded-lg bg-gray-800/60 border border-cosmic-purple/20 text-white placeholder-gray-500 focus:border-cosmic-purple/60 focus:outline-none transition-smooth text-sm font-mono resize-y"
+            className="w-full mt-2 px-4 py-2.5 rounded-lg bg-gray-800/60 border border-trellis-vine/20 text-white placeholder-gray-500 focus:border-trellis-vine/60 focus:outline-none transition-smooth text-sm font-mono resize-y"
           />
         )}
       </div>
@@ -110,7 +110,7 @@ export default function ScanForm({ onScan, isLoading }: ScanFormProps) {
       <button
         type="submit"
         disabled={isLoading || !contractId.trim()}
-        className="w-full py-3 rounded-lg bg-gradient-to-r from-cosmic-purple to-cosmic-blue font-semibold hover:shadow-lg hover:shadow-cosmic-purple/50 transition-smooth disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+        className="w-full py-3 rounded-lg bg-gradient-to-r from-trellis-vine to-trellis-leaf font-semibold hover:shadow-lg hover:shadow-trellis-vine/50 transition-smooth disabled:opacity-50 disabled:cursor-not-allowed text-sm"
       >
         {isLoading ? (
           <span className="flex items-center justify-center gap-2">

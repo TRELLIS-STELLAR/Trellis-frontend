@@ -104,7 +104,7 @@ export const PayoutHistory: React.FC<PayoutHistoryProps> = ({
   if (isLoading) {
     return (
       <Card className="animate-pulse">
-        <div className="h-96 bg-cosmic-purple/20 rounded" />
+        <div className="h-96 bg-trellis-vine/20 rounded" />
       </Card>
     );
   }
@@ -115,10 +115,10 @@ export const PayoutHistory: React.FC<PayoutHistoryProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
             <h3 className="text-lg font-semibold text-white mb-2">Payout Management</h3>
-            <p className="text-sm text-cosmic-purple/60">
-              Pending: <span className="text-cosmic-blue font-semibold">{pendingEarnings} XLM</span>
+            <p className="text-sm text-trellis-vine/60">
+              Pending: <span className="text-trellis-leaf font-semibold">{pendingEarnings} XLM</span>
               {' | '}
-              Minimum: <span className="text-cosmic-purple font-semibold">{minimumPayout} XLM</span>
+              Minimum: <span className="text-trellis-vine font-semibold">{minimumPayout} XLM</span>
             </p>
           </div>
           <Button
@@ -133,17 +133,17 @@ export const PayoutHistory: React.FC<PayoutHistoryProps> = ({
 
         {/* Payout Form */}
         {showPayoutForm && (
-          <div className="mb-6 p-4 bg-cosmic-purple/10 rounded-lg border border-cosmic-purple/30">
+          <div className="mb-6 p-4 bg-trellis-vine/10 rounded-lg border border-trellis-vine/30">
             <h4 className="font-semibold text-white mb-4">Request Payout</h4>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm text-cosmic-purple/60 mb-2">Amount (XLM)</label>
+                <label className="block text-sm text-trellis-vine/60 mb-2">Amount (XLM)</label>
                 <input
                   type="number"
                   value={payoutAmount}
                   onChange={(e) => setPayoutAmount(e.target.value)}
                   placeholder={`Min: ${minimumPayout}, Max: ${pendingEarnings}`}
-                  className="w-full bg-cosmic-dark/50 border border-cosmic-purple/30 rounded px-4 py-2 text-white placeholder-cosmic-purple/40 focus:outline-none focus:border-cosmic-purple/60"
+                  className="w-full bg-trellis-ground/50 border border-trellis-vine/30 rounded px-4 py-2 text-white placeholder-trellis-vine/40 focus:outline-none focus:border-trellis-vine/60"
                   step="0.01"
                   min={minimumPayout}
                   max={pendingEarnings}
@@ -180,9 +180,9 @@ export const PayoutHistory: React.FC<PayoutHistoryProps> = ({
             {payouts.map((payout) => (
               <div
                 key={payout.id}
-                className={`p-4 rounded-lg border border-cosmic-purple/20 ${getStatusBg(
+                className={`p-4 rounded-lg border border-trellis-vine/20 ${getStatusBg(
                   payout.status
-                )} hover:border-cosmic-purple/40 transition-colors`}
+                )} hover:border-trellis-vine/40 transition-colors`}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -192,7 +192,7 @@ export const PayoutHistory: React.FC<PayoutHistoryProps> = ({
                       </span>
                       <div>
                         <p className="font-semibold text-white">{payout.amount} XLM</p>
-                        <p className="text-xs text-cosmic-purple/60">
+                        <p className="text-xs text-trellis-vine/60">
                           {new Date(payout.requestedAt).toLocaleDateString()} at{' '}
                           {new Date(payout.requestedAt).toLocaleTimeString()}
                         </p>
@@ -209,7 +209,7 @@ export const PayoutHistory: React.FC<PayoutHistoryProps> = ({
                       {payout.status}
                     </span>
                     {payout.transactionHash && (
-                      <p className="text-xs text-cosmic-purple/40 mt-2 truncate">
+                      <p className="text-xs text-trellis-vine/40 mt-2 truncate">
                         {payout.transactionHash}
                       </p>
                     )}
@@ -219,7 +219,7 @@ export const PayoutHistory: React.FC<PayoutHistoryProps> = ({
             ))}
           </div>
         ) : (
-          <div className="text-center py-8 text-cosmic-purple/60">
+          <div className="text-center py-8 text-trellis-vine/60">
             No payout requests yet
           </div>
         )}

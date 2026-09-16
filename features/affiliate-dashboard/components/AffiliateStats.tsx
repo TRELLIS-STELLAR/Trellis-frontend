@@ -15,7 +15,7 @@ export const AffiliateStats: React.FC<AffiliateStatsProps> = ({ stats, isLoading
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {Array.from({ length: 6 }).map((_, i) => (
           <Card key={i} className="animate-pulse">
-            <div className="h-20 bg-cosmic-purple/20 rounded" />
+            <div className="h-20 bg-trellis-vine/20 rounded" />
           </Card>
         ))}
       </div>
@@ -25,7 +25,7 @@ export const AffiliateStats: React.FC<AffiliateStatsProps> = ({ stats, isLoading
   if (!stats) {
     return (
       <Card className="text-center py-8">
-        <p className="text-cosmic-purple/60">No affiliate data available</p>
+        <p className="text-trellis-vine/60">No affiliate data available</p>
       </Card>
     );
   }
@@ -35,31 +35,31 @@ export const AffiliateStats: React.FC<AffiliateStatsProps> = ({ stats, isLoading
       label: 'Total Referrals',
       value: stats.totalReferrals.toString(),
       subtext: `${stats.activeReferrals} active`,
-      color: 'from-cosmic-blue to-cosmic-cyan',
+      color: 'from-trellis-leaf to-trellis-amber',
     },
     {
       label: 'Total Earnings',
       value: `${stats.totalEarnings} XLM`,
       subtext: 'All time',
-      color: 'from-cosmic-purple to-cosmic-nebula',
+      color: 'from-trellis-vine to-trellis-clay',
     },
     {
       label: 'Pending Earnings',
       value: `${stats.pendingEarnings} XLM`,
       subtext: 'Awaiting payout',
-      color: 'from-cosmic-nebula to-cosmic-purple',
+      color: 'from-trellis-clay to-trellis-vine',
     },
     {
       label: 'Total Payouts',
       value: `${stats.totalPayouts} XLM`,
       subtext: 'Withdrawn',
-      color: 'from-cosmic-cyan to-cosmic-blue',
+      color: 'from-trellis-amber to-trellis-leaf',
     },
     {
       label: 'Conversion Rate',
       value: `${stats.conversionRate.toFixed(1)}%`,
       subtext: 'Referral to active',
-      color: 'from-cosmic-purple to-cosmic-blue',
+      color: 'from-trellis-vine to-trellis-leaf',
     },
     {
       label: 'Active Status',
@@ -75,9 +75,9 @@ export const AffiliateStats: React.FC<AffiliateStatsProps> = ({ stats, isLoading
         <Card key={index} className="relative overflow-hidden">
           <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-5`} />
           <div className="relative z-10">
-            <p className="text-sm text-cosmic-purple/60 mb-2">{item.label}</p>
+            <p className="text-sm text-trellis-vine/60 mb-2">{item.label}</p>
             <p className="text-2xl font-bold text-white mb-1">{item.value}</p>
-            <p className="text-xs text-cosmic-purple/40">{item.subtext}</p>
+            <p className="text-xs text-trellis-vine/40">{item.subtext}</p>
           </div>
         </Card>
       ))}

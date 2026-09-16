@@ -28,28 +28,28 @@ class CacheManager {
 
   private initializeCacheConfigs() {
     this.cacheConfigs.set('static', {
-      name: 'Alian-Structure-static',
+      name: 'Trellis-static',
       version: 'v1.0.0',
       maxAge: 30 * 24 * 60 * 60, // 30 days
       maxEntries: 200,
     });
 
     this.cacheConfigs.set('api', {
-      name: 'Alian-Structure-api',
+      name: 'Trellis-api',
       version: 'v1.0.0',
       maxAge: 24 * 60 * 60, // 24 hours
       maxEntries: 100,
     });
 
     this.cacheConfigs.set('images', {
-      name: 'Alian-Structure-images',
+      name: 'Trellis-images',
       version: 'v1.0.0',
       maxAge: 90 * 24 * 60 * 60, // 90 days
       maxEntries: 500,
     });
 
     this.cacheConfigs.set('fonts', {
-      name: 'Alian-Structure-fonts',
+      name: 'Trellis-fonts',
       version: 'v1.0.0',
       maxAge: 365 * 24 * 60 * 60, // 1 year
       maxEntries: 50,
@@ -131,7 +131,7 @@ class CacheManager {
       const cacheNames = await caches.keys();
       await Promise.all(
         cacheNames
-          .filter(name => name.startsWith('Alian-Structure-'))
+          .filter(name => name.startsWith('Trellis-'))
           .map(name => caches.delete(name))
       );
     }
@@ -243,8 +243,8 @@ class CacheManager {
       '/portfolio',
     ];
 
-    const staticCache = await caches.open('Alian-Structure-static');
-    const runtimeCache = await caches.open('Alian-Structure-runtime');
+    const staticCache = await caches.open('Trellis-static');
+    const runtimeCache = await caches.open('Trellis-runtime');
     
     console.log('[Cache Manager] Starting critical asset preloading');
     
@@ -352,7 +352,7 @@ class CacheManager {
       // Add other common images used in the app
     ];
 
-    const imageCache = await caches.open('Alian-Structure-images');
+    const imageCache = await caches.open('Trellis-images');
     
     const imagePromises = commonImages.map(async (image) => {
       try {
@@ -385,7 +385,7 @@ class CacheManager {
       'https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2',
     ];
 
-    const fontCache = await caches.open('Alian-Structure-fonts');
+    const fontCache = await caches.open('Trellis-fonts');
     
     const fontPromises = fontUrls.map(async (fontUrl) => {
       try {
@@ -418,7 +418,7 @@ class CacheManager {
     // Prioritize user's frequently accessed routes
     const prioritizedRoutes = userRoutes.slice(0, 10); // Top 10 routes
     
-    const staticCache = await caches.open('Alian-Structure-static');
+    const staticCache = await caches.open('Trellis-static');
     
     const routePromises = prioritizedRoutes.map(async (route) => {
       try {
@@ -454,7 +454,7 @@ class CacheManager {
     // Clear old caches
     const cacheNames = await caches.keys();
     const oldCaches = cacheNames.filter(name => 
-      name.startsWith('Alian-Structure-') && !name.includes(newVersion)
+      name.startsWith('Trellis-') && !name.includes(newVersion)
     );
     
     await Promise.all(oldCaches.map(name => caches.delete(name)));

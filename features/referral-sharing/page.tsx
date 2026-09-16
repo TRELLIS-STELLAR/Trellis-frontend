@@ -109,10 +109,10 @@ const ReferralDashboard: React.FC<ReferralDashboardProps> = ({ userId }) => {
             py: 1.5,
             px: 4,
             borderRadius: '12px',
-            background: 'linear-gradient(135deg, #8B5CF6 0%, #3B82F6 100%)',
-            boxShadow: '0 4px 15px rgba(139, 92, 246, 0.4)',
+            background: 'linear-gradient(135deg, #4FBF9B 0%, #2F9E7E 100%)',
+            boxShadow: '0 4px 15px rgba(79, 191, 155, 0.4)',
             '&:hover': {
-              boxShadow: '0 6px 20px rgba(139, 92, 246, 0.6)',
+              boxShadow: '0 6px 20px rgba(79, 191, 155, 0.6)',
             }
           }}
         >
@@ -123,10 +123,10 @@ const ReferralDashboard: React.FC<ReferralDashboardProps> = ({ userId }) => {
       {/* Stats Cards */}
       <Grid container spacing={3} sx={{ mb: 6 }}>
         {[
-          { label: 'Total Signal Hits', value: stats?.totalClicks || 0, icon: StatsIcon, color: '#3B82F6' },
+          { label: 'Total Signal Hits', value: stats?.totalClicks || 0, icon: StatsIcon, color: '#2F9E7E' },
           { label: 'Successful Boardings', value: stats?.totalSignups || 0, icon: PeopleIcon, color: '#10B981' },
           { label: 'Total Earnings', value: `${stats?.totalRewards || 0} XLM`, icon: WalletIcon, color: '#F59E0B' },
-          { label: 'Conversion Orbit', value: `${((stats?.conversionRate || 0) * 100).toFixed(1)}%`, icon: RocketIcon, color: '#8B5CF6' }
+          { label: 'Conversion Orbit', value: `${((stats?.conversionRate || 0) * 100).toFixed(1)}%`, icon: RocketIcon, color: '#4FBF9B' }
         ].map((stat, i) => (
           <Grid size={{ xs: 12, sm: 6, md: 3 }} key={i}>
             <Paper

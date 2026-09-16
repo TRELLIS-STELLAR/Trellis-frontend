@@ -47,12 +47,12 @@ Several functions in the Stellar integration files are using `any` types. Let's 
 
 ---
 
-## Issue 3: Improve accessibility - Add alt text to all cosmic images
-**Title**: feat: Add proper alt text to all images in the cosmic theme
+## Issue 3: Improve accessibility - Add alt text to all theme images
+**Title**: feat: Add proper alt text to all images in the Trellis theme
 **Labels**: good first issue, accessibility, frontend
 **Description**:
 ```
-Many images across the codebase are missing alt text attributes, which hurts accessibility. Let's add descriptive alt text to all images in the cosmic UI components.
+Many images across the codebase are missing alt text attributes, which hurts accessibility. Let's add descriptive alt text to all images in the Trellis UI components.
 
 **Search for**: `<img` tags without alt attributes in components
 **Tech**: React, Material UI, accessibility
@@ -142,7 +142,7 @@ Currently if a page component throws an error, the entire app crashes. Let's cre
 **Difficulty**: Medium (but still approachable!)
 **Features needed**:
 1. Create ErrorBoundary class component
-2. Add fallback UI with cosmic theme styling
+2. Add fallback UI with Trellis theme styling
 3. Add "Try again" button that resets the error
 4. Implement error logging
 5. Wrap the main agents page with this component
@@ -214,7 +214,7 @@ Several utility functions in the `lib/utils.ts` file are missing JSDoc comments.
 ## Additional Good First Issues Ready to Create
 
 11. Fix TypeScript error in React Window virtualization component
-12. Add dark/light mode toggle (currently only cosmic dark exists)
+12. Add dark/light mode toggle (currently only the dark theme exists)
 13. Implement toast notifications for successful wallet connections
 14. Add input validation to search bar component
 15. Fix CSS overflow issues on the agent detail page

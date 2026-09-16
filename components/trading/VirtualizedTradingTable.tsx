@@ -68,20 +68,20 @@ const TableRow = React.memo<RowProps>(({ index, style, data }) => {
       style={{
         ...style,
         display: 'flex',
-        borderBottom: '1px solid rgba(139, 92, 246, 0.1)',
+        borderBottom: '1px solid rgba(79, 191, 155, 0.1)',
         alignItems: 'center',
         padding: '0 12px',
         fontSize: '12px',
-        backgroundColor: index % 2 === 0 ? 'transparent' : 'rgba(139, 92, 246, 0.05)',
+        backgroundColor: index % 2 === 0 ? 'transparent' : 'rgba(79, 191, 155, 0.05)',
       }}
     >
       <div style={{ flex: '0 0 140px', color: '#cbd5e1' }}>
         {formatCell.timestamp(item.timestamp)}
       </div>
-      <div style={{ flex: '0 0 100px', textAlign: 'right', color: '#8b5cf6' }}>
+      <div style={{ flex: '0 0 100px', textAlign: 'right', color: '#4FBF9B' }}>
         {formatCell.price(item.price)}
       </div>
-      <div style={{ flex: '0 0 80px', textAlign: 'right', color: '#06b6d4' }}>
+      <div style={{ flex: '0 0 80px', textAlign: 'right', color: '#F0B460' }}>
         {formatCell.volume(item.volume)}
       </div>
       <div style={{ flex: '0 0 80px', textAlign: 'right', color: '#22c55e' }}>
@@ -110,7 +110,7 @@ const TableHeader = React.memo(() => (
   <div 
     style={{
       display: 'flex',
-      borderBottom: '2px solid rgba(139, 92, 246, 0.3)',
+      borderBottom: '2px solid rgba(79, 191, 155, 0.3)',
       backgroundColor: 'rgba(2, 6, 23, 0.9)',
       padding: '8px 12px',
       fontSize: '12px',
@@ -177,7 +177,7 @@ const VirtualizedTradingTable: React.FC<VirtualizedTradingTableProps> = React.me
   }
 
   return (
-    <div style={{ border: '1px solid rgba(139, 92, 246, 0.2)', borderRadius: '8px' }}>
+    <div style={{ border: '1px solid rgba(79, 191, 155, 0.2)', borderRadius: '8px' }}>
       <TableHeader />
       <List
         height={height - 40} // Account for header height

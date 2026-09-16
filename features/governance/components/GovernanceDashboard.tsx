@@ -58,7 +58,7 @@ export function GovernanceDashboard({
         </div>
         <button
           onClick={onCreateProposal}
-          className="px-4 py-2 rounded-lg bg-gradient-to-r from-cosmic-purple to-cosmic-blue font-semibold hover:shadow-lg hover:shadow-cosmic-purple/40 transition-smooth disabled:opacity-50"
+          className="px-4 py-2 rounded-lg bg-gradient-to-r from-trellis-vine to-trellis-leaf font-semibold hover:shadow-lg hover:shadow-trellis-vine/40 transition-smooth disabled:opacity-50"
           disabled={!wallet}
         >
           Create Proposal
@@ -66,7 +66,7 @@ export function GovernanceDashboard({
       </header>
 
       <section className="grid md:grid-cols-3 gap-6">
-        <div className="p-4 rounded-lg border border-cosmic-purple/40 nebula-bg">
+        <div className="p-4 rounded-lg border border-trellis-vine/40 nebula-bg">
           <h2 className="text-lg font-semibold glow-text mb-2">Treasury (XLM)</h2>
           <p className="text-3xl font-bold">
             {treasuryBalance ? formatXlmAmount(treasuryBalance.balanceXlm) : '...'}
@@ -75,7 +75,7 @@ export function GovernanceDashboard({
             {config.treasuryAccount}
           </p>
         </div>
-        <div className="p-4 rounded-lg border border-cosmic-purple/40 nebula-bg">
+        <div className="p-4 rounded-lg border border-trellis-vine/40 nebula-bg">
           <h2 className="text-lg font-semibold glow-text mb-2">Quorum</h2>
           <p className="text-xl">
             {Math.round(config.minQuorumRatio * 100)}% required participation
@@ -84,7 +84,7 @@ export function GovernanceDashboard({
             {Math.round(config.requiredApprovalRatio * 100)}% approvals to pass
           </p>
         </div>
-        <div className="p-4 rounded-lg border border-cosmic-purple/40 nebula-bg">
+        <div className="p-4 rounded-lg border border-trellis-vine/40 nebula-bg">
           <h2 className="text-lg font-semibold glow-text mb-2">Network</h2>
           <p className="text-xl capitalize">{config.network}</p>
           <p className="text-sm text-gray-400">Multisig owner: {config.governanceAccount}</p>
@@ -115,7 +115,7 @@ export function GovernanceDashboard({
               return (
                 <div
                   key={proposal.id}
-                  className="p-4 rounded-lg border border-cosmic-purple/40 hover:border-cosmic-purple/70 transition-smooth nebula-bg"
+                  className="p-4 rounded-lg border border-trellis-vine/40 hover:border-trellis-vine/70 transition-smooth nebula-bg"
                 >
                   <div className="flex items-center justify-between gap-4">
                     <div>
@@ -150,7 +150,7 @@ export function GovernanceDashboard({
                     </div>
                     <div className="w-full h-2 bg-black/40 rounded-full overflow-hidden mt-1">
                       <div
-                        className="h-full bg-gradient-to-r from-emerald-400 to-cosmic-nebula transition-all"
+                        className="h-full bg-gradient-to-r from-emerald-400 to-trellis-clay transition-all"
                         style={{ width: `${approvalRatio * 100}%` }}
                       />
                     </div>
@@ -186,7 +186,7 @@ export function GovernanceDashboard({
                     {approved && proposal.status === 'active' && (
                       <button
                         onClick={() => onExecute(proposal)}
-                        className="ml-auto px-3 py-1 rounded-md bg-gradient-to-r from-cosmic-nebula to-cosmic-purple text-xs font-semibold hover:shadow-md hover:shadow-cosmic-purple/40"
+                        className="ml-auto px-3 py-1 rounded-md bg-gradient-to-r from-trellis-clay to-trellis-vine text-xs font-semibold hover:shadow-md hover:shadow-trellis-vine/40"
                       >
                         Execute On-Chain
                       </button>
@@ -208,7 +208,7 @@ export function GovernanceDashboard({
               treasuryHistory.map((tx) => (
                 <div
                   key={tx.id}
-                  className="p-3 rounded-lg border border-cosmic-purple/30 text-xs nebula-bg"
+                  className="p-3 rounded-lg border border-trellis-vine/30 text-xs nebula-bg"
                 >
                   <div className="flex justify-between mb-1">
                     <span

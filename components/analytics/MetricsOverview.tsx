@@ -17,15 +17,15 @@ export default function MetricsOverview({ dataset }: { dataset: AnalyticsDataset
       </Card>
       <Card>
         <p className="text-sm text-gray-400 mb-1">Success Rate</p>
-        <p className="text-3xl font-bold text-cosmic-cyan">{formatNumber(dataset.totals.successRate)}%</p>
+        <p className="text-3xl font-bold text-trellis-amber">{formatNumber(dataset.totals.successRate)}%</p>
       </Card>
       <Card>
         <p className="text-sm text-gray-400 mb-1">Avg Execution Cost</p>
-        <p className="text-3xl font-bold text-cosmic-purple">{formatNumber(dataset.totals.avgExecutionCostXlm, 7)} XLM</p>
+        <p className="text-3xl font-bold text-trellis-vine">{formatNumber(dataset.totals.avgExecutionCostXlm, 7)} XLM</p>
       </Card>
       <Card>
         <p className="text-sm text-gray-400 mb-1">XLM Revenue</p>
-        <p className="text-3xl font-bold text-cosmic-cyan">{formatNumber(dataset.totals.xlmRevenue, 4)} XLM</p>
+        <p className="text-3xl font-bold text-trellis-amber">{formatNumber(dataset.totals.xlmRevenue, 4)} XLM</p>
       </Card>
       <Card>
         <p className="text-sm text-gray-400 mb-1">Unique Accounts</p>
@@ -33,7 +33,7 @@ export default function MetricsOverview({ dataset }: { dataset: AnalyticsDataset
       </Card>
       <Card>
         <p className="text-sm text-gray-400 mb-1">Transaction Frequency</p>
-        <p className="text-3xl font-bold text-cosmic-purple">{formatNumber(dataset.totals.transactionFrequency, 2)}/day</p>
+        <p className="text-3xl font-bold text-trellis-vine">{formatNumber(dataset.totals.transactionFrequency, 2)}/day</p>
       </Card>
     </div>
   );

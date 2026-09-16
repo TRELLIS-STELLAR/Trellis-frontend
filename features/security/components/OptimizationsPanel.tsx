@@ -19,7 +19,7 @@ export default function OptimizationsPanel({
 }: OptimizationsPanelProps) {
   if (optimizations.length === 0) {
     return (
-      <div className="p-6 text-center rounded-lg border border-cosmic-purple/20 nebula-bg">
+      <div className="p-6 text-center rounded-lg border border-trellis-vine/20 nebula-bg">
         <p className="text-gray-400 text-sm">
           No resource optimizations suggested. Your contract is efficient.
         </p>
@@ -32,7 +32,7 @@ export default function OptimizationsPanel({
       {optimizations.map((opt, i) => (
         <div
           key={i}
-          className="p-4 rounded-lg border border-cosmic-purple/20 nebula-bg hover:border-cosmic-purple/40 transition-smooth"
+          className="p-4 rounded-lg border border-trellis-vine/20 nebula-bg hover:border-trellis-vine/40 transition-smooth"
         >
           <div className="flex items-start gap-3">
             <span className="text-xl mt-0.5">
@@ -67,7 +67,7 @@ export default function OptimizationsPanel({
                 </div>
                 <div>
                   <span className="text-gray-500">Savings</span>
-                  <p className="text-cosmic-cyan font-mono">
+                  <p className="text-trellis-amber font-mono">
                     {opt.estimatedSavings}
                   </p>
                 </div>

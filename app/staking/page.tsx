@@ -76,10 +76,10 @@ const poolData = supportedAssets.map((asset) => ({
 
 export default function StakingPage() {
   return (
-    <main className="pt-24 pb-16 min-h-screen bg-cosmic-dark">
+    <main className="pt-24 pb-16 min-h-screen bg-trellis-ground">
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         <div className="space-y-4 max-w-3xl">
-          <div className="inline-flex items-center rounded-full border border-cosmic-purple/30 bg-cosmic-purple/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-cosmic-purple">
+          <div className="inline-flex items-center rounded-full border border-trellis-vine/30 bg-trellis-vine/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-trellis-vine">
             Multi-asset staking
           </div>
           <h1 className="text-4xl md:text-6xl font-bold glow-text leading-tight">
@@ -93,8 +93,8 @@ export default function StakingPage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
-          <div className="rounded-2xl border border-cosmic-purple/20 bg-cosmic-dark/50 p-6">
-            <p className="text-xs uppercase tracking-[0.2em] text-cosmic-purple/80 mb-2">
+          <div className="rounded-2xl border border-trellis-vine/20 bg-trellis-ground/50 p-6">
+            <p className="text-xs uppercase tracking-[0.2em] text-trellis-vine/80 mb-2">
               Reward token
             </p>
             <h2 className="text-2xl font-bold text-white">{rewardToken.symbol}</h2>
@@ -102,8 +102,8 @@ export default function StakingPage() {
               Rewards accrue in {rewardToken.name} across all supported staking assets.
             </p>
           </div>
-          <div className="rounded-2xl border border-cosmic-purple/20 bg-cosmic-dark/50 p-6">
-            <p className="text-xs uppercase tracking-[0.2em] text-cosmic-purple/80 mb-2">
+          <div className="rounded-2xl border border-trellis-vine/20 bg-trellis-ground/50 p-6">
+            <p className="text-xs uppercase tracking-[0.2em] text-trellis-vine/80 mb-2">
               Emission rate
             </p>
             <h2 className="text-2xl font-bold text-white">90 / sec</h2>
@@ -111,8 +111,8 @@ export default function StakingPage() {
               Allocated to each token pool by reward weight.
             </p>
           </div>
-          <div className="rounded-2xl border border-cosmic-purple/20 bg-cosmic-dark/50 p-6">
-            <p className="text-xs uppercase tracking-[0.2em] text-cosmic-purple/80 mb-2">
+          <div className="rounded-2xl border border-trellis-vine/20 bg-trellis-ground/50 p-6">
+            <p className="text-xs uppercase tracking-[0.2em] text-trellis-vine/80 mb-2">
               Token interface
             </p>
             <h2 className="text-2xl font-bold text-white">SEP-41 ready</h2>
@@ -124,9 +124,9 @@ export default function StakingPage() {
 
         <section className="space-y-4">
           <h2 className="text-2xl font-bold text-white">Supported assets</h2>
-          <div className="overflow-hidden rounded-2xl border border-cosmic-purple/20 bg-cosmic-dark/40">
+          <div className="overflow-hidden rounded-2xl border border-trellis-vine/20 bg-trellis-ground/40">
             <table className="w-full text-left">
-              <thead className="bg-cosmic-dark/60 text-xs uppercase tracking-[0.2em] text-gray-400">
+              <thead className="bg-trellis-ground/60 text-xs uppercase tracking-[0.2em] text-gray-400">
                 <tr>
                   <th className="px-4 py-3">Asset</th>
                   <th className="px-4 py-3">Token</th>
@@ -138,7 +138,7 @@ export default function StakingPage() {
               </thead>
               <tbody>
                 {supportedAssets.map((asset) => (
-                  <tr key={asset.id} className="border-t border-cosmic-purple/10">
+                  <tr key={asset.id} className="border-t border-trellis-vine/10">
                     <td className="px-4 py-3 font-semibold text-white">{asset.id}</td>
                     <td className="px-4 py-3 text-gray-300">{asset.token.symbol}</td>
                     <td className="px-4 py-3 text-gray-300">{asset.rewardWeight}</td>
@@ -155,13 +155,13 @@ export default function StakingPage() {
         </section>
 
         <section className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-2xl border border-cosmic-purple/20 bg-cosmic-dark/40 p-6">
+          <div className="rounded-2xl border border-trellis-vine/20 bg-trellis-ground/40 p-6">
             <h2 className="text-2xl font-bold text-white mb-4">Reward split</h2>
             <div className="space-y-4">
               {poolData.map((pool) => (
                 <div
                   key={pool.assetId}
-                  className="rounded-xl border border-cosmic-purple/10 bg-black/20 p-4"
+                  className="rounded-xl border border-trellis-vine/10 bg-black/20 p-4"
                 >
                   <div className="flex items-center justify-between gap-4">
                     <div>
@@ -174,7 +174,7 @@ export default function StakingPage() {
                       <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
                         Emission
                       </p>
-                      <p className="text-lg font-bold text-cosmic-cyan">
+                      <p className="text-lg font-bold text-trellis-amber">
                         {pool.emissionPerSecond} / sec
                       </p>
                     </div>
@@ -184,13 +184,13 @@ export default function StakingPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-cosmic-purple/20 bg-cosmic-dark/40 p-6">
+          <div className="rounded-2xl border border-trellis-vine/20 bg-trellis-ground/40 p-6">
             <h2 className="text-2xl font-bold text-white mb-4">Ten second preview</h2>
             <div className="space-y-4">
               {previewAtTenSeconds.map((entry) => (
                 <div
                   key={`${entry.userId}-${entry.assetId}`}
-                  className="flex items-center justify-between rounded-xl border border-cosmic-purple/10 bg-black/20 px-4 py-3"
+                  className="flex items-center justify-between rounded-xl border border-trellis-vine/10 bg-black/20 px-4 py-3"
                 >
                   <div>
                     <p className="font-semibold text-white capitalize">{entry.userId}</p>
@@ -200,7 +200,7 @@ export default function StakingPage() {
                     <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
                       Reward preview
                     </p>
-                    <p className="text-lg font-bold text-cosmic-purple">
+                    <p className="text-lg font-bold text-trellis-vine">
                       {entry.reward.toFixed(2)} {rewardToken.symbol}
                     </p>
                   </div>

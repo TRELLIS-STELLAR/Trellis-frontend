@@ -45,7 +45,7 @@ interface Props {
 }
 
 const defaultColors = {
-  price: "#60a5fa",
+  price: "#4FBF9B",
   volume: "#93c5fd",
   positive: "#10b981",
   negative: "#ef4444",

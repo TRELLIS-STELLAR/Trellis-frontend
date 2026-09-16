@@ -19,15 +19,15 @@ export const BonusNotifications: React.FC = () => {
       {notifications.map((notif: any) => (
         <div
           key={notif.id}
-          className="p-4 rounded-lg bg-cosmic-darker border border-cosmic-purple/50 shadow-2xl shadow-cosmic-purple/20 animate-float-in flex items-start gap-4 backdrop-blur-xl"
+          className="p-4 rounded-lg bg-trellis-deep border border-trellis-vine/50 shadow-2xl shadow-trellis-vine/20 animate-float-in flex items-start gap-4 backdrop-blur-xl"
         >
-          <div className="w-10 h-10 rounded-full bg-cosmic-purple/20 flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 rounded-full bg-trellis-vine/20 flex items-center justify-center flex-shrink-0">
             <span className="text-xl">✨</span>
           </div>
           <div className="flex-1">
             <h4 className="font-bold text-white leading-tight">{notif.message}</h4>
             <p className="text-sm text-gray-400 mt-1">
-              You just earned <span className="text-cosmic-cyan font-bold">{notif.amount} XLM</span>
+              You just earned <span className="text-trellis-amber font-bold">{notif.amount} XLM</span>
             </p>
           </div>
           <button

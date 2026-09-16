@@ -3,16 +3,16 @@ import { useBonusStore } from '@/store/useBonusStore';
 import { BonusType } from '@/lib/types';
 
 const TYPE_COLORS: Record<BonusType, string> = {
-  [BonusType.REFERRAL]: 'text-cosmic-purple',
-  [BonusType.TRADING_VOLUME]: 'text-cosmic-cyan',
+  [BonusType.REFERRAL]: 'text-trellis-vine',
+  [BonusType.TRADING_VOLUME]: 'text-trellis-amber',
   [BonusType.STAKING]: 'text-green-400',
   [BonusType.LOYALTY]: 'text-yellow-400',
   [BonusType.QUEST]: 'text-pink-400',
 };
 
 const TYPE_BG: Record<BonusType, string> = {
-  [BonusType.REFERRAL]: 'bg-cosmic-purple/10 border-cosmic-purple/20',
-  [BonusType.TRADING_VOLUME]: 'bg-cosmic-cyan/10 border-cosmic-cyan/20',
+  [BonusType.REFERRAL]: 'bg-trellis-vine/10 border-trellis-vine/20',
+  [BonusType.TRADING_VOLUME]: 'bg-trellis-amber/10 border-trellis-amber/20',
   [BonusType.STAKING]: 'bg-green-400/10 border-green-400/20',
   [BonusType.LOYALTY]: 'bg-yellow-400/10 border-yellow-400/20',
   [BonusType.QUEST]: 'bg-pink-400/10 border-pink-400/20',
@@ -31,9 +31,9 @@ export const BonusBreakdown: React.FC = () => {
   }, {} as Record<string, { amount: number; count: number }>);
 
   return (
-    <div className="p-6 rounded-xl border border-white/10 bg-cosmic-darker/30 backdrop-blur-sm">
+    <div className="p-6 rounded-xl border border-white/10 bg-trellis-deep/30 backdrop-blur-sm">
       <h3 className="text-xl font-bold mb-6 text-white flex items-center gap-2">
-        <span className="w-1 h-6 bg-cosmic-purple rounded-full" />
+        <span className="w-1 h-6 bg-trellis-vine rounded-full" />
         Bonus Breakdown
       </h3>
       

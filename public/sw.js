@@ -1,9 +1,9 @@
 const CACHE_VERSION = 'v1.2.0';
-const STATIC_CACHE = `Alian-Structure-static-${CACHE_VERSION}`;
-const API_CACHE = `Alian-Structure-api-${CACHE_VERSION}`;
-const IMAGE_CACHE = `Alian-Structure-images-${CACHE_VERSION}`;
-const FONT_CACHE = `Alian-Structure-fonts-${CACHE_VERSION}`;
-const RUNTIME_CACHE = `Alian-Structure-runtime-${CACHE_VERSION}`;
+const STATIC_CACHE = `Trellis-static-${CACHE_VERSION}`;
+const API_CACHE = `Trellis-api-${CACHE_VERSION}`;
+const IMAGE_CACHE = `Trellis-images-${CACHE_VERSION}`;
+const FONT_CACHE = `Trellis-fonts-${CACHE_VERSION}`;
+const RUNTIME_CACHE = `Trellis-runtime-${CACHE_VERSION}`;
 
 // Critical assets to cache immediately on install
 const STATIC_ASSETS = [
@@ -110,7 +110,7 @@ self.addEventListener('activate', (event) => {
       caches.keys()
         .then((cacheNames) => {
           const oldCaches = cacheNames.filter((cacheName) => {
-            return cacheName.startsWith('Alian-Structure-') && 
+            return cacheName.startsWith('Trellis-') && 
                    !cacheName.includes(CACHE_VERSION);
           });
           
@@ -246,18 +246,18 @@ async function getOfflineFallback() {
     `<!DOCTYPE html>
     <html>
       <head>
-        <title>Offline - Alian-Structure</title>
+        <title>Offline - Trellis</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <style>
           body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-                 margin: 0; padding: 20px; background: #0f0f23; color: white; 
+                 margin: 0; padding: 20px; background: #070F0D; color: white; 
                  display: flex; align-items: center; justify-content: center; min-height: 100vh; }
           .container { text-align: center; max-width: 400px; }
           .icon { font-size: 4rem; margin-bottom: 1rem; }
           h1 { margin: 0 0 1rem 0; font-size: 1.5rem; }
           p { margin: 0 0 2rem 0; opacity: 0.8; }
-          .btn { background: #1a1a2e; color: white; border: none; padding: 12px 24px; 
+          .btn { background: #0E1A16; color: white; border: none; padding: 12px 24px; 
                  border-radius: 8px; cursor: pointer; text-decoration: none; display: inline-block; }
           .btn:hover { background: #2a2a3e; }
         </style>
@@ -624,7 +624,7 @@ self.addEventListener('push', (event) => {
     } catch (e) {
       // Fallback to text if JSON parsing fails
       notificationData = {
-        title: 'Alian-Structure',
+        title: 'Trellis',
         body: event.data.text(),
         icon: '/icons/icon-192x192.png',
         badge: '/icons/icon-192x192.png',
@@ -635,7 +635,7 @@ self.addEventListener('push', (event) => {
     }
     
     const options = {
-      body: notificationData.body || 'New notification from Alian-Structure',
+      body: notificationData.body || 'New notification from Trellis',
       icon: notificationData.icon || '/icons/icon-192x192.png',
       badge: notificationData.badge || '/icons/icon-192x192.png',
       tag: notificationData.tag || 'general',
@@ -653,7 +653,7 @@ self.addEventListener('push', (event) => {
     
     event.waitUntil(
       self.registration.showNotification(
-        notificationData.title || 'Alian-Structure',
+        notificationData.title || 'Trellis',
         options
       )
     );
@@ -774,7 +774,7 @@ async function getCacheStats() {
   const cacheNames = await caches.keys();
   
   for (const cacheName of cacheNames) {
-    if (cacheName.startsWith('Alian-Structure-')) {
+    if (cacheName.startsWith('Trellis-')) {
       const cache = await caches.open(cacheName);
       const keys = await cache.keys();
       
@@ -814,9 +814,9 @@ async function getCacheStats() {
 // Clear all caches
 async function clearAllCaches() {
   const cacheNames = await caches.keys();
-  const alianStructureCaches = cacheNames.filter(name => name.startsWith('Alian-Structure-'));
+  const trellisStructureCaches = cacheNames.filter(name => name.startsWith('Trellis-'));
   
-  await Promise.all(alianStructureCaches.map(name => caches.delete(name)));
+  await Promise.all(trellisStructureCaches.map(name => caches.delete(name)));
   console.log('[SW] All caches cleared');
 }
 

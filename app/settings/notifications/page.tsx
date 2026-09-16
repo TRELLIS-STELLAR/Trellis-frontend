@@ -22,7 +22,7 @@ export default function NotificationSettingsPage() {
 
         {/* Additional Information */}
         <div className="space-y-6">
-          <div className="p-6 rounded-lg border border-cosmic-purple/30 bg-cosmic-purple/10">
+          <div className="p-6 rounded-lg border border-trellis-vine/30 bg-trellis-vine/10">
             <h2 className="text-xl font-semibold text-white mb-3">About Notifications</h2>
             <div className="space-y-3 text-gray-300">
               <p>
@@ -40,7 +40,7 @@ export default function NotificationSettingsPage() {
             </div>
           </div>
 
-          <div className="p-6 rounded-lg border border-cosmic-blue/30 bg-cosmic-blue/10">
+          <div className="p-6 rounded-lg border border-trellis-leaf/30 bg-trellis-leaf/10">
             <h2 className="text-xl font-semibold text-white mb-3">Privacy & Security</h2>
             <div className="space-y-3 text-gray-300">
               <p>

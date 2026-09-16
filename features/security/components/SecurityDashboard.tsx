@@ -28,14 +28,14 @@ export default function SecurityDashboard({
   return (
     <div className="space-y-8">
       <div className="grid lg:grid-cols-3 gap-6">
-        <div className="p-6 rounded-xl border border-cosmic-purple/30 nebula-bg flex flex-col items-center">
+        <div className="p-6 rounded-xl border border-trellis-vine/30 nebula-bg flex flex-col items-center">
           <h3 className="text-lg font-semibold glow-text mb-4">
             Security Score
           </h3>
           <ScoreRing score={report.score} />
         </div>
 
-        <div className="p-6 rounded-xl border border-cosmic-purple/30 nebula-bg">
+        <div className="p-6 rounded-xl border border-trellis-vine/30 nebula-bg">
           <h3 className="text-lg font-semibold glow-text mb-4">Summary</h3>
           <p className="text-sm text-gray-300 mb-4">{report.summary}</p>
           <div className="grid grid-cols-2 gap-3">
@@ -68,19 +68,19 @@ export default function SecurityDashboard({
           </div>
         </div>
 
-        <div className="p-6 rounded-xl border border-cosmic-purple/30 nebula-bg">
+        <div className="p-6 rounded-xl border border-trellis-vine/30 nebula-bg">
           <h3 className="text-lg font-semibold glow-text mb-4">
             Badges & Certifications
           </h3>
           <SecurityBadges badges={report.badges} />
-          <div className="mt-4 pt-4 border-t border-cosmic-purple/20">
+          <div className="mt-4 pt-4 border-t border-trellis-vine/20">
             <p className="text-xs text-gray-500 mb-2">Export Report</p>
             <div className="flex gap-2">
               {(["json", "csv", "markdown"] as const).map((fmt) => (
                 <button
                   key={fmt}
                   onClick={() => onExport(fmt)}
-                  className="px-3 py-1.5 rounded text-xs font-medium border border-cosmic-purple/30 hover:bg-cosmic-purple/10 transition-smooth uppercase"
+                  className="px-3 py-1.5 rounded text-xs font-medium border border-trellis-vine/30 hover:bg-trellis-vine/10 transition-smooth uppercase"
                 >
                   {fmt}
                 </button>
@@ -91,7 +91,7 @@ export default function SecurityDashboard({
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
-        <div className="p-6 rounded-xl border border-cosmic-purple/30 nebula-bg">
+        <div className="p-6 rounded-xl border border-trellis-vine/30 nebula-bg">
           <h3 className="text-lg font-semibold glow-text mb-4">
             Vulnerabilities ({report.vulnerabilities.length})
           </h3>
@@ -99,7 +99,7 @@ export default function SecurityDashboard({
         </div>
 
         <div className="space-y-6">
-          <div className="p-6 rounded-xl border border-cosmic-purple/30 nebula-bg">
+          <div className="p-6 rounded-xl border border-trellis-vine/30 nebula-bg">
             <h3 className="text-lg font-semibold glow-text mb-4">
               Stellar Compliance
             </h3>
@@ -107,7 +107,7 @@ export default function SecurityDashboard({
           </div>
 
           {report.optimizations.length > 0 && (
-            <div className="p-6 rounded-xl border border-cosmic-purple/30 nebula-bg">
+            <div className="p-6 rounded-xl border border-trellis-vine/30 nebula-bg">
               <h3 className="text-lg font-semibold glow-text mb-4">
                 XLM Resource Optimizations ({report.optimizations.length})
               </h3>
@@ -118,7 +118,7 @@ export default function SecurityDashboard({
       </div>
 
       {report.auditHistory.length > 0 && (
-        <div className="p-6 rounded-xl border border-cosmic-purple/30 nebula-bg">
+        <div className="p-6 rounded-xl border border-trellis-vine/30 nebula-bg">
           <h3 className="text-lg font-semibold glow-text mb-4">
             Audit History
           </h3>
@@ -126,7 +126,7 @@ export default function SecurityDashboard({
         </div>
       )}
 
-      <div className="p-4 rounded-lg border border-cosmic-purple/10 bg-cosmic-purple/5">
+      <div className="p-4 rounded-lg border border-trellis-vine/10 bg-trellis-vine/5">
         <div className="flex items-center justify-between text-xs text-gray-500">
           <span>Report ID: {report.id}</span>
           <span>Contract: {report.contractId}</span>

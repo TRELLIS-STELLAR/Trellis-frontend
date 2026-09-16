@@ -11,7 +11,7 @@ interface AuditHistoryProps {
 export default function AuditHistory({ audits }: AuditHistoryProps) {
   if (audits.length === 0) {
     return (
-      <div className="p-6 text-center rounded-lg border border-cosmic-purple/20 nebula-bg">
+      <div className="p-6 text-center rounded-lg border border-trellis-vine/20 nebula-bg">
         <p className="text-gray-500 text-sm">
           No audit history available for this contract.
         </p>
@@ -28,7 +28,7 @@ export default function AuditHistory({ audits }: AuditHistoryProps) {
       {sorted.map((audit) => (
         <div
           key={audit.id}
-          className="p-4 rounded-lg border border-cosmic-purple/20 nebula-bg hover:border-cosmic-purple/40 transition-smooth"
+          className="p-4 rounded-lg border border-trellis-vine/20 nebula-bg hover:border-trellis-vine/40 transition-smooth"
         >
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">

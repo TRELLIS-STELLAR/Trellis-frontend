@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Upgraded to Next.js 16
 - Upgraded to React 18.2
 - Migrated to Material UI v9
-- Improved cosmic theme implementation
+- Improved Trellis theme implementation
 - Enhanced responsive design across all pages
 
 ### Fixed
@@ -38,7 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Initial project setup with Next.js
-- Cosmic dark theme implementation
+- Trellis dark theme implementation
 - Basic AI agent marketplace structure
 - User authentication system
 - Agent listing and detail pages
@@ -49,7 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Messaging system between users and creators
 
 ### Technical Features
-- TailwindCSS configuration for cosmic design system
+- TailwindCSS configuration for the Trellis design system
 - Component library with reusable UI elements
 - API integration layer
 - Database models and schemas
@@ -57,7 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Caching strategy implementation
 - Error boundary components
 - Loading state skeletons
-- Animation system for cosmic effects
+- Animation system for ambient effects
 
 ## [0.0.1] - 2023-11-01
 

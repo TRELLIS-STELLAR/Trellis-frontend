@@ -94,8 +94,8 @@ export const ScreenshotUpload: React.FC<ScreenshotUploadProps> = ({
       <div
         className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
           dragActive
-            ? 'border-cosmic-blue bg-cosmic-blue/10'
-            : 'border-cosmic-purple/50 hover:border-cosmic-purple hover:bg-cosmic-purple/5'
+            ? 'border-trellis-leaf bg-trellis-leaf/10'
+            : 'border-trellis-vine/50 hover:border-trellis-vine hover:bg-trellis-vine/5'
         }`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
@@ -112,9 +112,9 @@ export const ScreenshotUpload: React.FC<ScreenshotUploadProps> = ({
         />
         
         <div className="space-y-4">
-          <div className="mx-auto w-12 h-12 rounded-full bg-cosmic-purple/20 flex items-center justify-center">
+          <div className="mx-auto w-12 h-12 rounded-full bg-trellis-vine/20 flex items-center justify-center">
             <svg
-              className="w-6 h-6 text-cosmic-blue"
+              className="w-6 h-6 text-trellis-leaf"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -140,7 +140,7 @@ export const ScreenshotUpload: React.FC<ScreenshotUploadProps> = ({
           <button
             type="button"
             onClick={openFileDialog}
-            className="px-4 py-2 bg-cosmic-purple hover:bg-cosmic-purple/80 text-white rounded-lg transition-colors"
+            className="px-4 py-2 bg-trellis-vine hover:bg-trellis-vine/80 text-white rounded-lg transition-colors"
           >
             Select Files
           </button>
@@ -162,7 +162,7 @@ export const ScreenshotUpload: React.FC<ScreenshotUploadProps> = ({
             {screenshots.map((file, index) => (
               <div
                 key={index}
-                className="relative group bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg overflow-hidden"
+                className="relative group bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg overflow-hidden"
               >
                 <div className="aspect-video relative">
                   <img

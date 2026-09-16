@@ -34,7 +34,7 @@ export const RecommendationCarousel: React.FC = () => {
     <section className="py-20">
       <div className="flex justify-between items-end mb-12">
         <div className="space-y-4">
-          <h2 className="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-cosmic-purple via-cosmic-blue to-cosmic-cyan">
+          <h2 className="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-trellis-vine via-trellis-leaf to-trellis-amber">
              Personalized Directives
           </h2>
           <p className="text-gray-400 text-lg max-w-2xl leading-relaxed">
@@ -43,7 +43,7 @@ export const RecommendationCarousel: React.FC = () => {
         </div>
         <div className="hidden md:flex gap-4">
           <div className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-xs text-gray-400 font-bold uppercase tracking-widest flex items-center gap-2">
-            <span className="w-2 h-2 bg-cosmic-cyan rounded-full animate-ping" />
+            <span className="w-2 h-2 bg-trellis-amber rounded-full animate-ping" />
             Live Engine Active
           </div>
         </div>
@@ -51,7 +51,7 @@ export const RecommendationCarousel: React.FC = () => {
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 relative">
         {/* Background glow for the whole section */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-cosmic-purple/5 blur-[120px] rounded-full -z-10 pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-trellis-vine/5 blur-[120px] rounded-full -z-10 pointer-events-none" />
         
         {recommendations.map((agent) => (
           <RecommendationCard key={agent.id} agent={agent} />

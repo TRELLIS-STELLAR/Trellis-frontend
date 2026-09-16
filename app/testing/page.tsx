@@ -52,7 +52,7 @@ export default function TestingPage() {
         </header>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-1 border-r border-cosmic-purple/10 pr-0 lg:pr-8">
+          <div className="lg:col-span-1 border-r border-trellis-vine/10 pr-0 lg:pr-8">
             <TestCaseBuilder
               onRun={(data) => runTestMutation.mutate(data)}
               isLoading={runTestMutation.isLoading}
@@ -75,7 +75,7 @@ export default function TestingPage() {
                   </h3>
                   <button
                     onClick={handleExport}
-                    className="text-cosmic-cyan hover:text-white text-sm font-medium transition-smooth border border-cosmic-cyan/30 px-4 py-1.5 rounded-full hover:bg-cosmic-cyan/10"
+                    className="text-trellis-amber hover:text-white text-sm font-medium transition-smooth border border-trellis-amber/30 px-4 py-1.5 rounded-full hover:bg-trellis-amber/10"
                   >
                     Export JSON
                   </button>
@@ -96,8 +96,8 @@ export default function TestingPage() {
                 )}
               </div>
             ) : (
-              <div className="h-full flex flex-col items-center justify-center p-12 text-center rounded-2xl border-2 border-dashed border-cosmic-purple/20 bg-cosmic-purple/5">
-                <div className="w-16 h-16 mb-6 rounded-full bg-cosmic-purple/10 flex items-center justify-center text-cosmic-purple">
+              <div className="h-full flex flex-col items-center justify-center p-12 text-center rounded-2xl border-2 border-dashed border-trellis-vine/20 bg-trellis-vine/5">
+                <div className="w-16 h-16 mb-6 rounded-full bg-trellis-vine/10 flex items-center justify-center text-trellis-vine">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-8 w-8"

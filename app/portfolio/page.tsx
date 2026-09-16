@@ -56,7 +56,7 @@ export default function Portfolio() {
         <Box sx={{ mt: 8 }}>
           <Typography variant="h5" sx={{ fontWeight: 700, mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
             Deployed Units
-            <Chip label={agents.length} size="small" sx={{ backgroundColor: 'rgba(139, 92, 246, 0.2)', color: 'primary.light', fontWeight: 700 }} />
+            <Chip label={agents.length} size="small" sx={{ backgroundColor: 'rgba(79, 191, 155, 0.2)', color: 'primary.light', fontWeight: 700 }} />
           </Typography>
           
           <Box className="space-y-6">

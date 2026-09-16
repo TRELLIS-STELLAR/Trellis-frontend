@@ -177,7 +177,7 @@ const PerformanceBenchmark: React.FC<PerformanceBenchmarkProps> = React.memo(({ 
 
   return (
     <div style={{ padding: '20px', backgroundColor: 'rgba(2, 6, 23, 0.9)', borderRadius: '12px', color: '#cbd5e1' }}>
-      <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px', color: '#8b5cf6' }}>
+      <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px', color: '#4FBF9B' }}>
         Trading Chart Performance Benchmark
       </h2>
       
@@ -187,7 +187,7 @@ const PerformanceBenchmark: React.FC<PerformanceBenchmarkProps> = React.memo(({ 
           disabled={isRunning}
           style={{
             padding: '12px 24px',
-            backgroundColor: isRunning ? '#4b5563' : '#8b5cf6',
+            backgroundColor: isRunning ? '#4b5563' : '#4FBF9B',
             color: '#fff',
             border: 'none',
             borderRadius: '8px',
@@ -202,7 +202,7 @@ const PerformanceBenchmark: React.FC<PerformanceBenchmarkProps> = React.memo(({ 
 
       {testResults.length > 0 && (
         <div style={{ marginBottom: '20px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '10px', color: '#06b6d4' }}>
+          <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '10px', color: '#F0B460' }}>
             Test Results:
           </h3>
           <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)', padding: '12px', borderRadius: '8px', fontFamily: 'monospace', fontSize: '12px' }}>
@@ -217,18 +217,18 @@ const PerformanceBenchmark: React.FC<PerformanceBenchmarkProps> = React.memo(({ 
 
       {averageMetrics && (
         <div>
-          <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '10px', color: '#06b6d4' }}>
+          <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '10px', color: '#F0B460' }}>
             Average Performance:
           </h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-            <div style={{ backgroundColor: 'rgba(139, 92, 246, 0.1)', padding: '12px', borderRadius: '8px' }}>
-              <h4 style={{ color: '#8b5cf6', fontWeight: 'bold', marginBottom: '8px' }}>Chart</h4>
+            <div style={{ backgroundColor: 'rgba(79, 191, 155, 0.1)', padding: '12px', borderRadius: '8px' }}>
+              <h4 style={{ color: '#4FBF9B', fontWeight: 'bold', marginBottom: '8px' }}>Chart</h4>
               <div>FPS: {averageMetrics.chart.avgFPS.toFixed(1)}</div>
               <div>Render Time: {averageMetrics.chart.avgRenderTime.toFixed(2)}ms</div>
               <div>Memory: {averageMetrics.chart.avgMemory.toFixed(0)}KB</div>
             </div>
-            <div style={{ backgroundColor: 'rgba(6, 182, 212, 0.1)', padding: '12px', borderRadius: '8px' }}>
-              <h4 style={{ color: '#06b6d4', fontWeight: 'bold', marginBottom: '8px' }}>Table</h4>
+            <div style={{ backgroundColor: 'rgba(240, 180, 96, 0.1)', padding: '12px', borderRadius: '8px' }}>
+              <h4 style={{ color: '#F0B460', fontWeight: 'bold', marginBottom: '8px' }}>Table</h4>
               <div>FPS: {averageMetrics.table.avgFPS.toFixed(1)}</div>
               <div>Render Time: {averageMetrics.table.avgRenderTime.toFixed(2)}ms</div>
               <div>Memory: {averageMetrics.table.avgMemory.toFixed(0)}KB</div>

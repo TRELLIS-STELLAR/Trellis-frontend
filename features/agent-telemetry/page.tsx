@@ -117,7 +117,7 @@ export default function AgentTelemetryDashboardPage() {
                 {status === 'open' ? 'Live' : status}
               </span>
               {usingMock && (
-                <span className="text-xs text-gray-500 border border-cosmic-purple/20 rounded px-2 py-1">
+                <span className="text-xs text-gray-500 border border-trellis-vine/20 rounded px-2 py-1">
                   Mock stream (set NEXT_PUBLIC_TELEMETRY_WS_URL for real WebSocket)
                 </span>
               )}

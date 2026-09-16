@@ -83,15 +83,15 @@ export const Navigation: React.FC = () => {
   };
 
   return (
-    <nav className="fixed top-0 w-full z-50 backdrop-blur-md bg-cosmic-dark/80 border-b border-cosmic-purple/20">
+    <nav className="fixed top-0 w-full z-50 backdrop-blur-md bg-trellis-ground/80 border-b border-trellis-vine/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link
             href="/"
             className="flex items-center gap-2 hover:opacity-80 transition-smooth"
           >
-            <span className="text-2xl text-cosmic-purple font-bold">*</span>
-            <span className="glow-text font-bold text-xl tracking-tight">Alian-Structure</span>
+            <span className="text-2xl text-trellis-vine font-bold">*</span>
+            <span className="glow-text font-bold text-xl tracking-tight">Trellis</span>
           </Link>
 
           {/* Desktop Menu */}
@@ -100,10 +100,10 @@ export const Navigation: React.FC = () => {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium hover:text-cosmic-purple transition-smooth relative group"
+                className="text-sm font-medium hover:text-trellis-vine transition-smooth relative group"
               >
                 {link.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-cosmic-purple transition-all group-hover:w-full" />
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-trellis-vine transition-all group-hover:w-full" />
               </Link>
             ))}
           </div>
@@ -145,10 +145,10 @@ export const Navigation: React.FC = () => {
         PaperProps={{
           sx: {
             width: "280px",
-            backgroundColor: "#0f0f23",
-            backgroundImage: "linear-gradient(180deg, #1a1a2e 0%, #0f0f23 100%)",
+            backgroundColor: "#070F0D",
+            backgroundImage: "linear-gradient(180deg, #0E1A16 0%, #070F0D 100%)",
             color: "white",
-            borderLeft: "1px solid rgba(139, 92, 246, 0.2)",
+            borderLeft: "1px solid rgba(79, 191, 155, 0.2)",
           },
         }}
       >

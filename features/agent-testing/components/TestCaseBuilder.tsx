@@ -42,7 +42,7 @@ export const TestCaseBuilder: React.FC<TestCaseBuilderProps> = ({
   };
 
   return (
-    <div className="p-8 rounded-xl border border-cosmic-purple/30 nebula-bg shadow-2xl">
+    <div className="p-8 rounded-xl border border-trellis-vine/30 nebula-bg shadow-2xl">
       <h2 className="text-3xl font-bold mb-6 glow-text">Test Case Builder</h2>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -56,7 +56,7 @@ export const TestCaseBuilder: React.FC<TestCaseBuilderProps> = ({
               name="name"
               required
               placeholder="e.g. Transfer Validation"
-              className="w-full bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg px-4 py-3 text-white focus:border-cosmic-blue focus:ring-1 focus:ring-cosmic-blue outline-none transition-smooth"
+              className="w-full bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg px-4 py-3 text-white focus:border-trellis-leaf focus:ring-1 focus:ring-trellis-leaf outline-none transition-smooth"
               value={formData.name}
               onChange={handleChange}
             />
@@ -68,7 +68,7 @@ export const TestCaseBuilder: React.FC<TestCaseBuilderProps> = ({
             </label>
             <select
               name="network"
-              className="w-full bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg px-4 py-3 text-white focus:border-cosmic-blue focus:ring-1 focus:ring-cosmic-blue outline-none transition-smooth"
+              className="w-full bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg px-4 py-3 text-white focus:border-trellis-leaf focus:ring-1 focus:ring-trellis-leaf outline-none transition-smooth"
               value={formData.network}
               onChange={handleChange}
             >
@@ -87,7 +87,7 @@ export const TestCaseBuilder: React.FC<TestCaseBuilderProps> = ({
             name="contractId"
             required
             placeholder="C..."
-            className="w-full bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg px-4 py-3 text-white focus:border-cosmic-blue focus:ring-1 focus:ring-cosmic-blue outline-none transition-smooth font-mono"
+            className="w-full bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg px-4 py-3 text-white focus:border-trellis-leaf focus:ring-1 focus:ring-trellis-leaf outline-none transition-smooth font-mono"
             value={formData.contractId}
             onChange={handleChange}
           />
@@ -103,7 +103,7 @@ export const TestCaseBuilder: React.FC<TestCaseBuilderProps> = ({
               name="functionName"
               required
               placeholder="e.g. hello"
-              className="w-full bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg px-4 py-3 text-white focus:border-cosmic-blue focus:ring-1 focus:ring-cosmic-blue outline-none transition-smooth"
+              className="w-full bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg px-4 py-3 text-white focus:border-trellis-leaf focus:ring-1 focus:ring-trellis-leaf outline-none transition-smooth"
               value={formData.functionName}
               onChange={handleChange}
             />
@@ -118,7 +118,7 @@ export const TestCaseBuilder: React.FC<TestCaseBuilderProps> = ({
             name="args"
             placeholder='["arg1", 123]'
             rows={4}
-            className="w-full bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg px-4 py-3 text-white focus:border-cosmic-blue focus:ring-1 focus:ring-cosmic-blue outline-none transition-smooth font-mono"
+            className="w-full bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg px-4 py-3 text-white focus:border-trellis-leaf focus:ring-1 focus:ring-trellis-leaf outline-none transition-smooth font-mono"
             value={formData.args}
             onChange={handleChange}
           />

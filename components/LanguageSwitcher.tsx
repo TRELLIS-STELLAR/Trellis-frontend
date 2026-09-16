@@ -41,16 +41,16 @@ export const LanguageSwitcher: React.FC = () => {
       {/* Dropdown Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 bg-cosmic-purple/20 border border-cosmic-purple/30 rounded-lg hover:bg-cosmic-purple/30 transition-smooth focus:outline-none focus:ring-2 focus:ring-cosmic-purple/50"
+        className="flex items-center gap-2 px-3 py-2 bg-trellis-vine/20 border border-trellis-vine/30 rounded-lg hover:bg-trellis-vine/30 transition-smooth focus:outline-none focus:ring-2 focus:ring-trellis-vine/50"
         aria-label="Select language"
         aria-expanded={isOpen}
       >
         <span className="text-lg">{currentLanguage.flag}</span>
-        <span className="text-sm font-medium text-cosmic-cyan hidden sm:block">
+        <span className="text-sm font-medium text-trellis-amber hidden sm:block">
           {currentLanguage.nativeName}
         </span>
         <svg
-          className={`w-4 h-4 text-cosmic-purple transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 text-trellis-vine transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -69,7 +69,7 @@ export const LanguageSwitcher: React.FC = () => {
           />
           
           {/* Menu */}
-          <div className="absolute right-0 mt-2 w-48 bg-cosmic-dark border border-cosmic-purple/30 rounded-lg shadow-lg shadow-cosmic-purple/20 z-20 overflow-hidden">
+          <div className="absolute right-0 mt-2 w-48 bg-trellis-ground border border-trellis-vine/30 rounded-lg shadow-lg shadow-trellis-vine/20 z-20 overflow-hidden">
             <div className="py-1">
               {languages.map((language) => (
                 <button
@@ -77,17 +77,17 @@ export const LanguageSwitcher: React.FC = () => {
                   onClick={() => handleLanguageChange(language.code)}
                   className={`w-full flex items-center gap-3 px-4 py-2 text-sm transition-smooth ${
                     language.code === i18n.language
-                      ? 'bg-cosmic-purple/20 text-cosmic-nebula'
-                      : 'text-cosmic-cyan hover:bg-cosmic-purple/10'
+                      ? 'bg-trellis-vine/20 text-trellis-clay'
+                      : 'text-trellis-amber hover:bg-trellis-vine/10'
                   }`}
                 >
                   <span className="text-lg">{language.flag}</span>
                   <div className="flex flex-col items-start">
                     <span className="font-medium">{language.nativeName}</span>
-                    <span className="text-xs text-cosmic-purple/60">{language.name}</span>
+                    <span className="text-xs text-trellis-vine/60">{language.name}</span>
                   </div>
                   {language.code === i18n.language && (
-                    <svg className="w-4 h-4 text-cosmic-nebula ml-auto" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-4 h-4 text-trellis-clay ml-auto" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   )}

@@ -24,7 +24,7 @@ export const PolicyManager: React.FC = () => {
 
   return (
     <div className="py-12">
-      <h2 className="text-3xl font-extrabold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-cosmic-purple to-cosmic-blue">
+      <h2 className="text-3xl font-extrabold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-trellis-vine to-trellis-leaf">
         Governance & Policy Management
       </h2>
 
@@ -34,23 +34,23 @@ export const PolicyManager: React.FC = () => {
           {policies.map((policy) => (
             <div 
               key={policy.id} 
-              className="p-6 rounded-xl border border-white/5 bg-white/5 backdrop-blur-md flex justify-between items-center transition-all hover:border-cosmic-purple/30 group"
+              className="p-6 rounded-xl border border-white/5 bg-white/5 backdrop-blur-md flex justify-between items-center transition-all hover:border-trellis-vine/30 group"
             >
               <div>
                 <h4 className="text-xl font-bold text-white mb-1">{policy.name}</h4>
                 <p className="text-xs text-gray-400 mb-3">{policy.description}</p>
                 <div className="flex gap-4">
-                  <span className="text-[10px] uppercase font-bold text-cosmic-cyan flex items-center gap-1">
+                  <span className="text-[10px] uppercase font-bold text-trellis-amber flex items-center gap-1">
                     <span className="text-sm">🎫</span> {policy.quotaLimit.toLocaleString()} Requests/Day
                   </span>
-                  <span className="text-[10px] uppercase font-bold text-cosmic-purple flex items-center gap-1">
+                  <span className="text-[10px] uppercase font-bold text-trellis-vine flex items-center gap-1">
                     <span className="text-sm">⚡</span> {policy.rateLimit} Req/Sec
                   </span>
                 </div>
               </div>
               <button 
                 onClick={() => setEditingPolicy({...policy})} 
-                className="px-4 py-2 bg-white/10 hover:bg-cosmic-purple/30 border border-white/10 rounded-lg text-xs font-bold transition-smooth"
+                className="px-4 py-2 bg-white/10 hover:bg-trellis-vine/30 border border-white/10 rounded-lg text-xs font-bold transition-smooth"
               >
                 Edit Policy
               </button>
@@ -62,7 +62,7 @@ export const PolicyManager: React.FC = () => {
         <div className="h-fit">
           <div className="p-8 rounded-2xl border border-white/10 bg-[#0d122b] sticky top-24 shadow-2xl">
              <h3 className="text-lg font-bold mb-6 text-white flex items-center gap-2">
-                <span className="w-1.5 h-6 bg-cosmic-cyan rounded-full" />
+                <span className="w-1.5 h-6 bg-trellis-amber rounded-full" />
                 {editingPolicy ? `Updating: ${editingPolicy.name}` : 'Select a Policy to Manage'}
              </h3>
 
@@ -72,7 +72,7 @@ export const PolicyManager: React.FC = () => {
                    <label className="block text-[10px] uppercase font-black text-gray-500 mb-2">Daily Quota Limit</label>
                    <input 
                      type="number" 
-                     className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-cosmic-cyan transition-colors"
+                     className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-trellis-amber transition-colors"
                      value={editingPolicy.quotaLimit}
                      onChange={(e) => setEditingPolicy({...editingPolicy, quotaLimit: Number(e.target.value)})}
                    />
@@ -81,7 +81,7 @@ export const PolicyManager: React.FC = () => {
                     <label className="block text-[10px] uppercase font-black text-gray-500 mb-2">Rate Limit (req/s)</label>
                     <input 
                       type="number" 
-                      className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-cosmic-cyan transition-colors"
+                      className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-trellis-amber transition-colors"
                       value={editingPolicy.rateLimit}
                       onChange={(e) => setEditingPolicy({...editingPolicy, rateLimit: Number(e.target.value)})}
                     />
@@ -89,7 +89,7 @@ export const PolicyManager: React.FC = () => {
                  <div className="pt-4 flex gap-3">
                    <button 
                      type="submit" 
-                     className="flex-1 py-3 bg-cosmic-purple hover:bg-cosmic-blue text-white rounded-xl text-xs font-bold transition-smooth shadow-lg shadow-cosmic-purple/20"
+                     className="flex-1 py-3 bg-trellis-vine hover:bg-trellis-leaf text-white rounded-xl text-xs font-bold transition-smooth shadow-lg shadow-trellis-vine/20"
                    >
                      Apply Changes
                    </button>
@@ -105,7 +105,7 @@ export const PolicyManager: React.FC = () => {
              ) : (
                 <div className="py-20 text-center border-2 border-dashed border-white/5 rounded-xl">
                     <p className="text-xs text-gray-500 px-8">
-                        The planetary governance system is awaiting instructions. Select a policy to recalibrate its cosmic limits.
+                        The planetary governance system is awaiting instructions. Select a policy to recalibrate its limits.
                     </p>
                 </div>
              )}

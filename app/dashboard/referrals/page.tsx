@@ -8,7 +8,7 @@ export default function ReferralsPage() {
   const { wallet } = useStellarWallet();
   
   // Use public key as userId if available, otherwise fallback to a mock for demo
-  const userId = wallet?.publicKey || 'user-cosmic-explorer';
+  const userId = wallet?.publicKey || 'user-trellis-demo';
 
   return (
     <main className="pt-24 pb-20 px-4">

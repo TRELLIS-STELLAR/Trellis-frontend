@@ -91,7 +91,7 @@ export function NotificationSettings({ className = '' }: NotificationSettingsPro
             <button
               onClick={handleRequestPermission}
               disabled={isRequestingPermission}
-              className="px-4 py-2 bg-cosmic-purple hover:bg-cosmic-purple/80 rounded-lg font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 bg-trellis-vine hover:bg-trellis-vine/80 rounded-lg font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isRequestingPermission ? 'Requesting...' : 'Enable Notifications'}
             </button>
@@ -123,7 +123,7 @@ export function NotificationSettings({ className = '' }: NotificationSettingsPro
               <button
                 onClick={handleSubscribeToPush}
                 disabled={isSubscribing}
-                className="px-4 py-2 bg-cosmic-purple hover:bg-cosmic-purple/80 rounded-lg font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-trellis-vine hover:bg-trellis-vine/80 rounded-lg font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubscribing ? 'Subscribing...' : 'Subscribe'}
               </button>
@@ -159,7 +159,7 @@ export function NotificationSettings({ className = '' }: NotificationSettingsPro
                   onChange={(e) => updatePreferences({ enabled: e.target.checked })}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cosmic-purple"></div>
+                <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-trellis-vine"></div>
               </label>
             </div>
 
@@ -178,7 +178,7 @@ export function NotificationSettings({ className = '' }: NotificationSettingsPro
                       onChange={(e) => updatePreferences({ tradeNotifications: e.target.checked })}
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cosmic-purple"></div>
+                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-trellis-vine"></div>
                   </label>
                 </div>
 
@@ -195,7 +195,7 @@ export function NotificationSettings({ className = '' }: NotificationSettingsPro
                       onChange={(e) => updatePreferences({ transactionNotifications: e.target.checked })}
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cosmic-purple"></div>
+                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-trellis-vine"></div>
                   </label>
                 </div>
 
@@ -212,7 +212,7 @@ export function NotificationSettings({ className = '' }: NotificationSettingsPro
                       onChange={(e) => updatePreferences({ soundEnabled: e.target.checked })}
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cosmic-purple"></div>
+                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-trellis-vine"></div>
                   </label>
                 </div>
 
@@ -229,7 +229,7 @@ export function NotificationSettings({ className = '' }: NotificationSettingsPro
                       onChange={(e) => updatePreferences({ vibrationEnabled: e.target.checked })}
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cosmic-purple"></div>
+                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-trellis-vine"></div>
                   </label>
                 </div>
 
@@ -249,7 +249,7 @@ export function NotificationSettings({ className = '' }: NotificationSettingsPro
                         })}
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cosmic-purple"></div>
+                      <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-trellis-vine"></div>
                     </label>
                   </div>
                   
@@ -263,7 +263,7 @@ export function NotificationSettings({ className = '' }: NotificationSettingsPro
                           onChange={(e) => updatePreferences({ 
                             quietHours: { ...preferences.quietHours, start: e.target.value }
                           })}
-                          className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-cosmic-purple"
+                          className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-trellis-vine"
                         />
                       </div>
                       <div>
@@ -274,7 +274,7 @@ export function NotificationSettings({ className = '' }: NotificationSettingsPro
                           onChange={(e) => updatePreferences({ 
                             quietHours: { ...preferences.quietHours, end: e.target.value }
                           })}
-                          className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-cosmic-purple"
+                          className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-trellis-vine"
                         />
                       </div>
                     </div>

@@ -7,13 +7,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        cosmic: {
-          dark: 'rgb(var(--color-cosmic-dark) / <alpha-value>)',
-          darker: 'rgb(var(--color-cosmic-darker) / <alpha-value>)',
-          purple: 'rgb(var(--color-cosmic-purple) / <alpha-value>)',
-          blue: 'rgb(var(--color-cosmic-blue) / <alpha-value>)',
-          cyan: 'rgb(var(--color-cosmic-cyan) / <alpha-value>)',
-          nebula: 'rgb(var(--color-cosmic-nebula) / <alpha-value>)',
+        trellis: {
+          ground: 'rgb(var(--color-trellis-ground) / <alpha-value>)',
+          deep: 'rgb(var(--color-trellis-deep) / <alpha-value>)',
+          vine: 'rgb(var(--color-trellis-vine) / <alpha-value>)',
+          leaf: 'rgb(var(--color-trellis-leaf) / <alpha-value>)',
+          amber: 'rgb(var(--color-trellis-amber) / <alpha-value>)',
+          clay: 'rgb(var(--color-trellis-clay) / <alpha-value>)',
         },
       },
       animation: {
@@ -28,8 +28,8 @@ module.exports = {
           '50%': { opacity: '1' },
         },
         glow: {
-          '0%, 100%': { boxShadow: '0 0 5px rgba(139, 92, 246, 0.5)' },
-          '50%': { boxShadow: '0 0 20px rgba(139, 92, 246, 0.8)' },
+          '0%, 100%': { boxShadow: '0 0 5px rgba(79, 191, 155, 0.5)' },
+          '50%': { boxShadow: '0 0 20px rgba(79, 191, 155, 0.8)' },
         },
         float: {
           '0%, 100%': { transform: 'translateY(0px)' },

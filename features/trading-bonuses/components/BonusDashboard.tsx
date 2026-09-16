@@ -25,11 +25,11 @@ export const BonusDashboard: React.FC = () => {
       <div className="flex justify-between items-end mb-8">
         <div>
           <h2 className="text-3xl font-bold glow-text">Trading Bonuses</h2>
-          <p className="text-gray-400">Real-time rewards for your cosmic activity</p>
+          <p className="text-gray-400">Real-time rewards for your trading activity</p>
         </div>
         <button 
           onClick={() => simulateRealTimeBonus()}
-          className="px-4 py-2 bg-cosmic-purple/20 border border-cosmic-purple/50 rounded-lg text-sm hover:bg-cosmic-purple/40 transition-all"
+          className="px-4 py-2 bg-trellis-vine/20 border border-trellis-vine/50 rounded-lg text-sm hover:bg-trellis-vine/40 transition-all"
         >
           Force Update (Demo)
         </button>

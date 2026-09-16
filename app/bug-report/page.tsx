@@ -63,7 +63,7 @@ const BugReportPage = () => {
               Bug Report Submitted!
             </h1>
             <p className="text-xl text-gray-300">
-              Thank you for helping improve Alian-Structure
+              Thank you for helping improve Trellis
             </p>
           </div>
 
@@ -94,8 +94,8 @@ const BugReportPage = () => {
                   Our development team will review your bug report shortly. You&apos;ll receive updates via email if you provided your contact information.
                 </p>
                 
-                <div className="bg-cosmic-purple/20 rounded-lg p-4 mt-6">
-                  <h3 className="font-medium text-cosmic-blue mb-2">What happens next?</h3>
+                <div className="bg-trellis-vine/20 rounded-lg p-4 mt-6">
+                  <h3 className="font-medium text-trellis-leaf mb-2">What happens next?</h3>
                   <ul className="text-sm space-y-2 text-left">
                     <li>• Your report will be reviewed by our team</li>
                     <li>• We&apos;ll assess the bug and determine the reward amount</li>
@@ -108,13 +108,13 @@ const BugReportPage = () => {
               <div className="mt-8 space-x-4">
                 <button
                   onClick={() => window.location.href = '/bug-reports'}
-                  className="px-6 py-3 bg-cosmic-purple hover:bg-cosmic-purple/80 text-white rounded-lg transition-colors"
+                  className="px-6 py-3 bg-trellis-vine hover:bg-trellis-vine/80 text-white rounded-lg transition-colors"
                 >
                   View Your Reports
                 </button>
                 <button
                   onClick={() => window.location.reload()}
-                  className="px-6 py-3 bg-cosmic-purple/30 hover:bg-cosmic-purple/60 text-white rounded-lg transition-colors"
+                  className="px-6 py-3 bg-trellis-vine/30 hover:bg-trellis-vine/60 text-white rounded-lg transition-colors"
                 >
                   Report Another Bug
                 </button>
@@ -134,9 +134,9 @@ const BugReportPage = () => {
             Report a Bug
           </h1>
           <p className="text-xl text-gray-300 mb-2">
-            Help us improve Alian-Structure by reporting issues
+            Help us improve Trellis by reporting issues
           </p>
-          <p className="text-lg text-cosmic-blue">
+          <p className="text-lg text-trellis-leaf">
             Earn rewards for valuable bug reports
           </p>
         </div>
@@ -168,15 +168,15 @@ const BugReportPage = () => {
         />
 
         <div className="mt-12 text-center">
-          <div className="bg-cosmic-purple/10 border border-cosmic-purple/30 rounded-lg p-6 backdrop-blur-sm max-w-2xl mx-auto">
-            <h3 className="text-lg font-semibold text-cosmic-blue mb-4">
+          <div className="bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg p-6 backdrop-blur-sm max-w-2xl mx-auto">
+            <h3 className="text-lg font-semibold text-trellis-leaf mb-4">
               Why Report Bugs?
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-gray-300">
               <div>
-                <div className="w-12 h-12 bg-cosmic-purple/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                <div className="w-12 h-12 bg-trellis-vine/20 rounded-full flex items-center justify-center mx-auto mb-3">
                   <svg
-                    className="w-6 h-6 text-cosmic-blue"
+                    className="w-6 h-6 text-trellis-leaf"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -194,9 +194,9 @@ const BugReportPage = () => {
               </div>
               
               <div>
-                <div className="w-12 h-12 bg-cosmic-purple/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                <div className="w-12 h-12 bg-trellis-vine/20 rounded-full flex items-center justify-center mx-auto mb-3">
                   <svg
-                    className="w-6 h-6 text-cosmic-blue"
+                    className="w-6 h-6 text-trellis-leaf"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -210,13 +210,13 @@ const BugReportPage = () => {
                   </svg>
                 </div>
                 <h4 className="font-medium text-white mb-2">Improve Platform</h4>
-                <p>Help us make Alian-Structure better for everyone</p>
+                <p>Help us make Trellis better for everyone</p>
               </div>
               
               <div>
-                <div className="w-12 h-12 bg-cosmic-purple/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                <div className="w-12 h-12 bg-trellis-vine/20 rounded-full flex items-center justify-center mx-auto mb-3">
                   <svg
-                    className="w-6 h-6 text-cosmic-blue"
+                    className="w-6 h-6 text-trellis-leaf"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"

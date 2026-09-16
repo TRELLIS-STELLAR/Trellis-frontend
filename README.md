@@ -236,7 +236,7 @@ Trellis enables:
 #### 1. Clone Repository
 
 ```bash
-git clone https://github.com/SourceXXL/trellis-ui.git
+git clone https://github.com/TRELLIS-STELLAR/Trellis-frontend.git
 cd trellis-ui
 ```
 
@@ -404,7 +404,7 @@ NEXT_PUBLIC_ENABLE_PWA=true
 
 ### Database Configuration
 
-See backend repository: [trellis-api](https://github.com/SourceXXL/trellis-api)
+See backend repository: [Trellis-API](https://github.com/TRELLIS-STELLAR/Trellis-API)
 
 ---
 
@@ -624,15 +624,15 @@ git push origin feature/your-feature
 ### Getting Help
 
 - 📖 **Documentation**: Check [docs/](./docs/) first
-- 🐛 **Issue Tracker**: [GitHub Issues](https://github.com/SourceXXL/trellis-ui/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/SourceXXL/trellis-ui/discussions)
-- 🔗 **Backend Repo**: [trellis-api](https://github.com/SourceXXL/trellis-api)
+- 🐛 **Issue Tracker**: [GitHub Issues](https://github.com/TRELLIS-STELLAR/Trellis-frontend/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/TRELLIS-STELLAR/Trellis-frontend/discussions)
+- 🔗 **Backend Repo**: [Trellis-API](https://github.com/TRELLIS-STELLAR/Trellis-API)
 
 ### Community Resources
 
 - 📧 Email: support@trellisstructure.com
 - 🌐 Website: https://trellisstructure.com
-- 🐦 Twitter: [@TrellisStructure](https://twitter.com/TrellisStructure)
+- 🐦 X: [@TrellisStellar](https://x.com/TrellisStellar) <!-- TODO: confirm handle -->
 - 💬 Discord: [Join Server](https://discord.gg/trellisstructure)
 
 ---
@@ -673,7 +673,7 @@ With the requirement to:
 
 ## 📈 Project Stats
 
-- **Repository**: [SourceXXL/trellis-ui](https://github.com/SourceXXL/trellis-ui)
+- **Repository**: [TRELLIS-STELLAR/Trellis-frontend](https://github.com/TRELLIS-STELLAR/Trellis-frontend)
 - **Language**: TypeScript
 - **License**: MIT
 - **Created**: 2026
@@ -683,10 +683,10 @@ With the requirement to:
 
 <div align="center">
 
-**Made with ❤️ by [SourceXXL](https://github.com/SourceXXL)**
+**Made with ❤️ by [TRELLIS-STELLAR](https://github.com/TRELLIS-STELLAR)**
 
 Building transparent, direct humanitarian aid one transaction at a time.
 
-[⭐ Star us on GitHub](https://github.com/SourceXXL/trellis-ui) • [🤝 Contribute](./CONTRIBUTING.md) • [📧 Contact](mailto:support@trellisstructure.com)
+[⭐ Star us on GitHub](https://github.com/TRELLIS-STELLAR/Trellis-frontend) • [🤝 Contribute](./CONTRIBUTING.md) • [📧 Contact](mailto:support@trellisstructure.com)
 
 </div>

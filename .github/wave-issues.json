@@ -1,0 +1,223 @@
+{
+  "repo": "TRELLIS-STELLAR/Trellis-frontend",
+  "generated_for": "Wave Program",
+  "issues": [
+    {
+      "number": 1,
+      "stage": 1,
+      "title": "There is no CI at all — add lint, typecheck, test and build",
+      "labels": [
+        "bug",
+        "ci",
+        "help wanted"
+      ],
+      "body": "`.github/` contains `ISSUE_TEMPLATE/bug_report.md`,\n`ISSUE_TEMPLATE/feature_request.md` and `PULL_REQUEST_TEMPLATE.md` — and nothing\nelse. There is no `workflows/` directory.\n\nNothing runs on a pull request. Not `eslint`, not `tsc`, not `jest`, not\n`next build`. `package.json` defines `lint`, `test` and `build` scripts that only\never run when someone remembers to run them locally.\n\n## Why this matters\n\nThis is the largest of the three repositories by file count and the only one with\nno automated checks whatsoever. A PR that breaks the build, fails type checking\nor deletes a test merges green because there is nothing to go red. The\ncontracts repo at least builds and lints; this one does nothing.\n\nIt is also a prerequisite for most of the other quality work in this list —\ncoverage thresholds, i18n parity checks and Lighthouse budgets all need a\nworkflow to hang off.\n\n## Tasks\n\n- [ ] Add `.github/workflows/ci.yml` triggered on push and pull_request\n- [ ] Add a job matrix step running `npm ci`\n- [ ] Run `npm run lint` (the script exists and uses `--fix`; use a non-fixing invocation in CI)\n- [ ] Run `npx tsc --noEmit` for type checking — there is currently no typecheck script, so add one to package.json\n- [ ] Run `npm test`\n- [ ] Run `npm run build` to catch Next.js build-time failures\n- [ ] Cache `~/.npm` and `.next/cache` so the workflow stays fast\n- [ ] Note in the PR that branch protection should require these checks (a maintainer setting)\n\n## Files to look at\n\n- `.github/workflows/ci.yml (new)`\n- `package.json`\n- `jest.config.cjs`\n- `.eslintrc.cjs`\n\n## Acceptance criteria\n\n- Lint, typecheck, test and build all run on every pull request\n- A deliberately broken type causes a red check (demonstrate in the PR)\n- The workflow completes in under five minutes on a warm cache\n\n---\n\n**Skills:** GitHub Actions, Next.js  \n**Estimated effort:** half a day"
+    },
+    {
+      "number": 2,
+      "stage": 1,
+      "title": "Arabic translation is 4 keys out of 36 — complete it and add RTL support",
+      "labels": [
+        "good first issue",
+        "i18n",
+        "accessibility",
+        "help wanted"
+      ],
+      "body": "Key counts across `i18n/`:\n\n| locale | keys |\n| --- | --- |\n| `en`, `de`, `es`, `fr`, `ja`, `zh` | 36 |\n| `ar`, `ko`, `pt`, `ru` | 4 |\n\n`ar.json` has **4 of 36 keys — 11% complete**. Anything not translated falls\nback to English, so an Arabic user sees a near-entirely English interface that\nclaims to be localised.\n\nArabic additionally needs right-to-left layout, and `dir=\"rtl\"` does not appear\nanywhere in the codebase.\n\n## Why this matters\n\nHumanitarian aid distribution has obvious relevance in Arabic-speaking regions,\nwhich makes this the most consequential of the four incomplete locales. Shipping\na language in the switcher that is 11% translated is worse than not offering it:\nit promises support that is not there.\n\nRTL is the part most likely to be missed. Even a fully translated `ar.json`\nrenders as a broken layout without direction handling.\n\n## Tasks\n\n- [ ] Translate the remaining 32 keys in `i18n/ar.json` using `en.json` as the source\n- [ ] Set `dir=\"rtl\"` on the `<html>` element when the active locale is Arabic\n- [ ] Audit directional Tailwind utilities — replace `ml-`/`mr-`/`left-`/`right-` with logical equivalents (`ms-`, `me-`, `start-`, `end-`)\n- [ ] Check the MUI theme handles RTL (it needs `stylis-plugin-rtl` for emotion)\n- [ ] Screenshot the marketplace, dashboard and navigation in RTL and attach them to the PR\n\n## Files to look at\n\n- `i18n/ar.json`\n- `i18n/en.json`\n- `i18n/config.ts`\n- `app/layout.tsx`\n- `components/providers/ThemeModeProvider.tsx`\n- `components/Navigation.tsx`\n\n## Acceptance criteria\n\n- `ar.json` has the same key set as `en.json`\n- The page direction flips to RTL when Arabic is selected\n- Navigation, marketplace and dashboard render correctly in RTL (screenshots in the PR)\n\n## Notes\n\nNeeds a fluent Arabic speaker. Please do not submit machine translation without review.\n\n---\n\n**Skills:** Arabic, JSON, CSS  \n**Estimated effort:** 1 day"
+    },
+    {
+      "number": 3,
+      "stage": 1,
+      "title": "Korean translation is 4 keys out of 36 — complete it",
+      "labels": [
+        "good first issue",
+        "i18n",
+        "help wanted"
+      ],
+      "body": "`i18n/ko.json` contains 4 keys. `i18n/en.json` contains 36. Every untranslated\nstring falls back to English, so a user who selects Korean sees a mostly-English\ninterface.\n\n## Why this matters\n\nThe language switcher offers Korean, which sets an expectation the translation\nfiles do not meet. Either the locale should be complete or it should not be\noffered.\n\n## Tasks\n\n- [ ] Translate the remaining 32 keys in `i18n/ko.json`, using `en.json` as the source of truth\n- [ ] Keep interpolation placeholders (`{{name}}` and similar) exactly as they appear in English\n- [ ] Check that longer Korean strings do not overflow navigation and button components\n- [ ] Attach a screenshot of the app in Korean to the PR\n\n## Files to look at\n\n- `i18n/ko.json`\n- `i18n/en.json`\n\n## Acceptance criteria\n\n- `ko.json` has the same key set as `en.json`\n- No interpolation placeholder is lost or renamed\n- No visible text overflow in the navigation bar or primary buttons\n\n## Notes\n\nNeeds a fluent Korean speaker. Please do not submit machine translation without review.\n\n---\n\n**Skills:** Korean, JSON  \n**Estimated effort:** half a day"
+    },
+    {
+      "number": 4,
+      "stage": 1,
+      "title": "Portuguese translation is 4 keys out of 36 — complete it",
+      "labels": [
+        "good first issue",
+        "i18n",
+        "help wanted"
+      ],
+      "body": "`i18n/pt.json` contains 4 of the 36 keys present in `i18n/en.json`. The rest\nfalls back to English.\n\n## Why this matters\n\nPortuguese is offered in the language switcher but 89% untranslated. Completing\nit is a well-scoped task that needs no knowledge of the codebase beyond the\n`i18n/` directory.\n\n## Tasks\n\n- [ ] Translate the remaining 32 keys in `i18n/pt.json` from `en.json`\n- [ ] Decide and document whether this targets European or Brazilian Portuguese\n- [ ] Keep interpolation placeholders unchanged\n- [ ] Check for text overflow in navigation and buttons\n\n## Files to look at\n\n- `i18n/pt.json`\n- `i18n/en.json`\n\n## Acceptance criteria\n\n- `pt.json` has the same key set as `en.json`\n- The variant (pt-PT or pt-BR) is stated in the PR description\n- No interpolation placeholder is lost\n\n## Notes\n\nNeeds a fluent Portuguese speaker. Please do not submit machine translation without review.\n\n---\n\n**Skills:** Portuguese, JSON  \n**Estimated effort:** half a day"
+    },
+    {
+      "number": 5,
+      "stage": 1,
+      "title": "Russian translation is 4 keys out of 36 — complete it",
+      "labels": [
+        "good first issue",
+        "i18n",
+        "help wanted"
+      ],
+      "body": "`i18n/ru.json` contains 4 of the 36 keys present in `i18n/en.json`.\n\n## Why this matters\n\nSame as the other incomplete locales: the switcher advertises Russian and\ndelivers an English interface. Russian strings also tend to run longer than\nEnglish, so this is a useful stress test of the layout.\n\n## Tasks\n\n- [ ] Translate the remaining 32 keys in `i18n/ru.json` from `en.json`\n- [ ] Keep interpolation placeholders unchanged\n- [ ] Pay attention to plural forms — Russian has three, and `i18next` needs `_one`/`_few`/`_many` suffixes where counts appear\n- [ ] Check for text overflow, which is likelier here than in most locales\n\n## Files to look at\n\n- `i18n/ru.json`\n- `i18n/en.json`\n\n## Acceptance criteria\n\n- `ru.json` has the same key set as `en.json`\n- Plural forms use i18next's suffix convention where applicable\n- No visible text overflow in navigation and buttons\n\n## Notes\n\nNeeds a fluent Russian speaker. Please do not submit machine translation without review.\n\n---\n\n**Skills:** Russian, JSON  \n**Estimated effort:** half a day"
+    },
+    {
+      "number": 6,
+      "stage": 1,
+      "title": "Add an i18n key-parity test so locales cannot drift again",
+      "labels": [
+        "good first issue",
+        "i18n",
+        "test"
+      ],
+      "body": "Four of the ten locale files (`ar`, `ko`, `pt`, `ru`) have 4 keys while the other\nsix have 36. Nothing detected this drift — there is no test comparing locale\nfiles, and no CI to run one.\n\n## Why this matters\n\nCompleting the four locales fixes today's problem. This issue stops it\nrecurring: without a parity check, the next feature that adds an English string\nsilently un-completes every other language, and nobody notices until a user\nreports English text in a Japanese interface.\n\n## Tasks\n\n- [ ] Add a test that loads every file in `i18n/*.json` and compares its flattened key set against `en.json`\n- [ ] Report missing and extra keys per locale with a readable diff, not just a boolean failure\n- [ ] Decide how to handle intentionally-untranslated locales — an explicit allowlist with a TODO is better than a skipped test\n- [ ] Wire it into CI once the CI workflow exists\n\n## Files to look at\n\n- `i18n/*.json`\n- `tests/ (new test file)`\n- `jest.config.cjs`\n\n## Acceptance criteria\n\n- The test fails today, listing exactly the missing keys in `ar`, `ko`, `pt` and `ru`\n- It passes once those four are completed\n- Adding a key to `en.json` alone fails the test\n\n## Notes\n\nExpect this to be red until the four translation issues land. Consider merging it\nbehind an allowlist first, then removing entries as each locale is completed.\n\n---\n\n**Skills:** TypeScript, Jest  \n**Estimated effort:** 2 hours"
+    },
+    {
+      "number": 7,
+      "stage": 1,
+      "title": "Three overlapping i18n packages are installed — consolidate",
+      "labels": [
+        "good first issue",
+        "dependencies",
+        "refactor"
+      ],
+      "body": "`package.json` depends on all three of:\n\n- `i18next` ^26.0.8\n- `next-i18next` ^15.4.3\n- `react-i18next` ~17.0.4\n\n`next-i18next` is built for the Pages Router and is not the right choice for an\nApp Router project, which this is (`app/layout.tsx`, `app/page.tsx`). It also\nbundles its own copies of the other two, which is how version conflicts and\nduplicate-instance warnings appear at runtime.\n\n## Why this matters\n\nDuplicate i18next instances cause translations to silently fail to load — a\ncomponent resolves against a different instance than the provider initialised.\nIt also inflates the bundle for no benefit. The existing\n`GITHUB_ISSUES_BOOTSTRAP.md` flags the duplicate-import console warning; this\nissue is the underlying cause.\n\n## Tasks\n\n- [ ] Confirm which packages `i18n/config.ts` and the components actually import\n- [ ] Remove `next-i18next` unless something genuinely depends on it — App Router projects should use `i18next` + `react-i18next` directly\n- [ ] Run the app and confirm every locale still loads\n- [ ] Check the bundle size before and after and report the delta in the PR\n- [ ] Verify the duplicate-instance console warning is gone\n\n## Files to look at\n\n- `package.json`\n- `i18n/config.ts`\n- `components/LanguageSwitcher.tsx`\n- `app/layout.tsx`\n\n## Acceptance criteria\n\n- Exactly one i18n stack remains\n- All ten locales still load and switch correctly\n- The duplicate-instance console warning no longer appears\n- Bundle size delta is reported\n\n---\n\n**Skills:** TypeScript, Next.js, i18next  \n**Estimated effort:** half a day"
+    },
+    {
+      "number": 8,
+      "stage": 2,
+      "title": "Affiliate earnings API returns hardcoded mock data",
+      "labels": [
+        "enhancement",
+        "help wanted",
+        "backend-integration"
+      ],
+      "body": "`app/api/affiliates/earnings/route.ts` line 36 reads `// TODO: Fetch from\ndatabase` and returns a hardcoded object. The affiliate dashboard renders that\nstatic response as though it were live earnings.\n\nThis is one of six affiliate route handlers in the same state — see the related\nissues for payouts, referrals, stats and validation.\n\n## Why this matters\n\nThe affiliate dashboard is one of the most complete features in the repository —\n`features/affiliate-dashboard/` has 1,581 lines of documentation across five\nfiles — sitting on top of an API that returns fiction. Users see numbers that\nnever change and cannot be reconciled against anything on-chain.\n\n## Tasks\n\n- [ ] Establish where earnings actually live — `Trellis-API` has a referral subsystem; confirm the endpoint and shape before writing client code\n- [ ] Replace the mock response with a real call to the backend\n- [ ] Add error handling: backend unreachable, unauthorised, empty result\n- [ ] Add loading and error states in the consuming component rather than rendering a blank panel\n- [ ] Add tests using a mocked fetch layer, covering success, failure and empty\n\n## Files to look at\n\n- `app/api/affiliates/earnings/route.ts`\n- `features/affiliate-dashboard/store/useAffiliateStore.ts`\n- `features/affiliate-dashboard/INTEGRATION.md`\n\n## Acceptance criteria\n\n- The endpoint returns data from the backend, not a literal\n- Backend failure surfaces a real error state in the UI\n- Tests cover success, failure and empty-result paths\n\n## Notes\n\nAgree the contract with the `Trellis-API` maintainers in the thread first. If the\nbackend endpoint does not exist yet, this issue blocks on one being added there,\nand that should be linked rather than worked around with more mocks.\n\n---\n\n**Skills:** TypeScript, Next.js route handlers, REST  \n**Estimated effort:** 2–3 days"
+    },
+    {
+      "number": 9,
+      "stage": 2,
+      "title": "Affiliate payouts API is mocked and the Stellar payout is unimplemented",
+      "labels": [
+        "enhancement",
+        "help wanted",
+        "blockchain"
+      ],
+      "body": "`app/api/affiliates/payouts/route.ts` carries three TODOs:\n\n- line 26 — `// TODO: Fetch from database`\n- line 108 — `// TODO: Validate pending earnings and create payout request in database`\n- line 109 — `// TODO: Initiate Stellar transaction`\n\nSo the endpoint lists fake payouts, does not validate that a payout is owed, and\nnever moves any funds.\n\n## Why this matters\n\nThis is the endpoint that pays people. It currently accepts a payout request,\nperforms no validation, and returns success without transferring anything. If\nthe UI is ever pointed at production in this state, it will tell affiliates they\nhave been paid when they have not.\n\nIt also needs care in the other direction: once wired up, missing validation\nbecomes a double-spend path.\n\n## Tasks\n\n- [ ] Agree the payout flow in the thread: does the frontend initiate the transfer, or does it request one from the backend? The backend is almost certainly correct here\n- [ ] Implement listing real payout history\n- [ ] Implement validation: sufficient pending earnings, no duplicate request in flight, payout above the minimum threshold\n- [ ] Wire the transfer through the backend's payment path rather than signing in the browser\n- [ ] Make the request idempotent so a retry cannot pay twice\n- [ ] Add tests for insufficient balance, duplicate request and backend failure\n\n## Files to look at\n\n- `app/api/affiliates/payouts/route.ts`\n- `features/affiliate-dashboard/store/useAffiliateStore.ts`\n- `features/referral-sharing/services/referralService.ts`\n\n## Acceptance criteria\n\n- A payout cannot be requested without sufficient validated pending earnings\n- A duplicate or retried request cannot pay twice\n- Failure states are surfaced to the user rather than reported as success\n- Tests cover the insufficient-balance and duplicate-request paths\n\n## Notes\n\nSecurity-sensitive. This should not be a first contribution, and it wants a\ncareful review. Consider splitting listing (read) from initiation (write) into\ntwo PRs.\n\n---\n\n**Skills:** TypeScript, Stellar SDK, Next.js  \n**Estimated effort:** 1 week"
+    },
+    {
+      "number": 10,
+      "stage": 2,
+      "title": "Affiliate referrals API returns mock data and does not generate real referral codes",
+      "labels": [
+        "enhancement",
+        "help wanted"
+      ],
+      "body": "`app/api/affiliates/referrals/route.ts` has two TODOs: line 26\n`// TODO: Fetch from database` and line 86 `// TODO: Generate and store in\ndatabase`.\n\nThe referral list is fabricated, and generating a referral code returns one that\nis never persisted — so it cannot be attributed when someone uses it.\n\n## Why this matters\n\nReferral attribution is the whole mechanism: `referral-contract` in the contracts\nrepository exists specifically to pay multi-tier commissions on it. A code that\nis never stored cannot be matched to a signup, so no commission is ever\ncorrectly attributed.\n\n## Tasks\n\n- [ ] Fetch the real referral list from the backend\n- [ ] Persist generated referral codes so they can be resolved later\n- [ ] Ensure code generation is collision-resistant and check uniqueness before returning\n- [ ] Return an existing code when the user already has one rather than minting a new one each call\n- [ ] Add tests for generation, collision handling and listing\n\n## Files to look at\n\n- `app/api/affiliates/referrals/route.ts`\n- `features/referral-sharing/services/referralService.ts`\n- `features/referral-sharing/tests/referralService.test.ts`\n\n## Acceptance criteria\n\n- Generated codes are persisted and resolvable\n- Repeated calls return the same code for the same user\n- Collisions are impossible or detected and retried\n- Tests cover generation, repeat-call and collision paths\n\n---\n\n**Skills:** TypeScript, Next.js route handlers  \n**Estimated effort:** 2–3 days"
+    },
+    {
+      "number": 11,
+      "stage": 2,
+      "title": "Affiliate stats and program endpoints return mock data",
+      "labels": [
+        "enhancement",
+        "help wanted",
+        "good first issue"
+      ],
+      "body": "Two more mocked handlers:\n\n- `app/api/affiliates/stats/route.ts` line 26 — `// TODO: Fetch from database`\n- `app/api/affiliates/program/route.ts` line 9 — `// TODO: Fetch from database`\n\n`program` returns the tier structure and commission rates; `stats` returns\naggregate performance. Both are read-only, which makes them the safest of the\nsix mocked affiliate endpoints to wire up first.\n\n## Why this matters\n\nCommission rates displayed from a hardcoded literal will drift from whatever the\n`referral-contract` actually pays, and users will reasonably treat the displayed\nrate as a promise. Being read-only, these two are a good entry point into the\naffiliate integration work.\n\n## Tasks\n\n- [ ] Wire `program` to the real tier and commission configuration — ideally read from the contract or the backend's view of it, not a frontend constant\n- [ ] Wire `stats` to real aggregate data\n- [ ] Add caching where appropriate; program configuration changes rarely\n- [ ] Add loading and error states in the consuming components\n- [ ] Add tests for both endpoints\n\n## Files to look at\n\n- `app/api/affiliates/stats/route.ts`\n- `app/api/affiliates/program/route.ts`\n- `features/affiliate-dashboard/components/`\n\n## Acceptance criteria\n\n- Both endpoints return backend data\n- Displayed commission rates match what the referral contract actually pays\n- Error and loading states are handled in the UI\n\n## Notes\n\nGood starting point for a contributor new to this codebase — read-only and well-bounded.\n\n---\n\n**Skills:** TypeScript, Next.js route handlers  \n**Estimated effort:** 1–2 days"
+    },
+    {
+      "number": 12,
+      "stage": 2,
+      "title": "Affiliate eligibility validation is unimplemented",
+      "labels": [
+        "enhancement",
+        "help wanted"
+      ],
+      "body": "`app/api/affiliates/validate/route.ts` line 26 reads `// TODO: Check eligibility\ncriteria:` — the comment trails off mid-sentence, so the criteria themselves were\nnever written down either.\n\nThe endpoint currently approves everyone.\n\n## Why this matters\n\nThis is the gate on who can join the affiliate programme and earn commissions.\nApproving everyone unconditionally makes the programme trivially farmable — one\nperson can create many accounts, refer themselves, and drain commission from the\ntreasury contract.\n\n## Tasks\n\n- [ ] Define the eligibility criteria explicitly in the issue thread first — this is a product decision, not an implementation detail\n- [ ] Likely candidates: verified wallet, minimum account age, not already enrolled, not self-referring, KYC status where required\n- [ ] Implement the checks against real data\n- [ ] Return a structured reason for rejection so the UI can explain it rather than failing opaquely\n- [ ] Add tests for each rejection reason and for the approval path\n\n## Files to look at\n\n- `app/api/affiliates/validate/route.ts`\n- `features/affiliate-dashboard/store/useAffiliateStore.ts`\n\n## Acceptance criteria\n\n- The criteria are documented before the code is written\n- Each criterion is enforced and independently tested\n- Rejections return a machine-readable reason the UI can render\n- Self-referral is impossible\n\n---\n\n**Skills:** TypeScript, Next.js route handlers  \n**Estimated effort:** 2–3 days"
+    },
+    {
+      "number": 13,
+      "stage": 2,
+      "title": "AgentMintingWizard has no real wallet or network integration",
+      "labels": [
+        "enhancement",
+        "help wanted",
+        "blockchain"
+      ],
+      "body": "`components/AgentMintingWizard.tsx` carries two TODOs:\n\n- line 11 — `// TODO: Replace with actual network and wallet integration`\n- line 23 — `// TODO: Replace with actual wallet integration`\n\nThe minting flow is fully built as a UI and connects to nothing. The project\nalready depends on `@stellar/freighter-api` ^6.0.0 and `@stellar/stellar-sdk`\n^14.0.0, and `components/ConnectWallet.tsx` and `NetworkSwitcher.tsx` exist — so\nthe pieces are present but not wired into this component.\n\n## Why this matters\n\nMinting an agent is a primary user journey and the wizard is one of the most\nvisible features in the app. A multi-step wizard that ends without a transaction\nis a dead end, and users will reasonably believe their agent was created.\n\n## Tasks\n\n- [ ] Read the wallet connection state from the existing provider rather than adding a second source of truth\n- [ ] Read the active network from `NetworkSwitcher` instead of hardcoding it\n- [ ] Build, sign and submit the real minting transaction via Freighter\n- [ ] Handle the full set of failure modes: wallet locked, user rejects, wrong network, insufficient balance, transaction timeout\n- [ ] Show the transaction hash and a link to the explorer on success\n- [ ] Add tests with a mocked Freighter API covering rejection and wrong-network paths\n\n## Files to look at\n\n- `components/AgentMintingWizard.tsx`\n- `components/ConnectWallet.tsx`\n- `components/NetworkSwitcher.tsx`\n- `app/create/page.tsx`\n\n## Acceptance criteria\n\n- The wizard submits a real transaction on the selected network\n- Every listed failure mode produces a clear, specific message\n- Success shows the transaction hash with an explorer link\n- Tests cover user rejection and wrong-network\n\n---\n\n**Skills:** TypeScript, React, Stellar SDK, Freighter  \n**Estimated effort:** 1 week"
+    },
+    {
+      "number": 14,
+      "stage": 2,
+      "title": "Affiliate dashboard hardcodes `walletAddress = null`",
+      "labels": [
+        "bug",
+        "good first issue",
+        "help wanted"
+      ],
+      "body": "`features/affiliate-dashboard/page.tsx` line 19:\n\n```ts\nconst walletAddress = null; // TODO: Get from StellarWalletProvider context\n```\n\nThe dashboard's wallet address is a literal `null`, so every downstream\ncomponent behaves as though no wallet is connected — even when one is.\n\n## Why this matters\n\nThis is a one-line bug with a whole-feature blast radius. The affiliate dashboard\ncannot identify the user, so it cannot show their referrals, earnings or payout\nhistory correctly regardless of how well the API work lands. It is also a clean,\nsmall first contribution.\n\n## Tasks\n\n- [ ] Read the connected address from the wallet provider context instead of the literal\n- [ ] Handle the genuinely-disconnected case with a connect prompt, not a blank dashboard\n- [ ] Check every consumer of `walletAddress` in the feature for null-handling that assumed it was always null\n- [ ] Add a test rendering the dashboard with and without a connected wallet\n\n## Files to look at\n\n- `features/affiliate-dashboard/page.tsx`\n- `features/affiliate-dashboard/store/useAffiliateStore.ts`\n- `components/ConnectWallet.tsx`\n\n## Acceptance criteria\n\n- A connected wallet's address reaches the dashboard\n- The disconnected state shows a connect prompt\n- Tests cover both states\n\n---\n\n**Skills:** TypeScript, React context  \n**Estimated effort:** 2–4 hours"
+    },
+    {
+      "number": 15,
+      "stage": 2,
+      "title": "24 test files for 118 components — add coverage thresholds and raise coverage",
+      "labels": [
+        "test",
+        "help wanted"
+      ],
+      "body": "The repository has 24 test files against 118 `.tsx` files in `app/`, `components/`\nand `features/`. `jest.config.cjs` sets no `coverageThreshold` and no\n`collectCoverage`, so coverage is never measured and never enforced.\n\nThe ROADMAP lists \"Complete test coverage (>80%)\" as an open milestone.\n\n## Why this matters\n\nNobody currently knows what the coverage number is, which makes the 80% roadmap\ntarget unmeasurable. Establishing the baseline and ratcheting it is the only way\nthat milestone becomes real rather than aspirational.\n\n## Tasks\n\n- [ ] Enable `collectCoverage` and record the current baseline in the issue thread\n- [ ] Set `coverageThreshold` just below the baseline so CI cannot regress\n- [ ] Prioritise by risk: wallet interaction, payment and affiliate paths before presentational components\n- [ ] Raise the threshold as coverage improves rather than setting 80% immediately and disabling it\n- [ ] Report coverage on pull requests once CI exists\n\n## Files to look at\n\n- `jest.config.cjs`\n- `jest.setup.js`\n- `.github/workflows/ci.yml`\n\n## Acceptance criteria\n\n- Coverage is measured on every run and the baseline is documented\n- CI fails on regression below the threshold\n- The threshold has been raised at least once as new tests land\n\n## Notes\n\nUmbrella issue — split into per-area child issues (wallet, affiliate, marketplace,\ngovernance) so several contributors can work in parallel without colliding.\nDepends on the CI issue.\n\n---\n\n**Skills:** TypeScript, Jest, React Testing Library  \n**Estimated effort:** ongoing — split per area"
+    },
+    {
+      "number": 16,
+      "stage": 3,
+      "title": "Redux Toolkit and Zustand are both installed — pick one",
+      "labels": [
+        "refactor",
+        "needs discussion",
+        "architecture"
+      ],
+      "body": "`package.json` depends on both state management stacks:\n\n- `@reduxjs/toolkit` ^2.11.2 with `react-redux` ^9.2.0\n- `zustand` ^5.0.12\n\nThere is a `store/` directory at the root and Zustand stores inside features\n(`features/affiliate-dashboard/store/useAffiliateStore.ts`). Two state systems\nmeans two sources of truth, two sets of devtools, two mental models, and shared\nstate that can diverge between them.\n\n## Why this matters\n\nEvery new contributor has to work out which store a given piece of state belongs\nin, and the answer is currently \"it depends who wrote it\". That is a compounding\ncost — the longer both remain, the more code is written against each and the more\nexpensive the eventual consolidation becomes.\n\nBoth also ship in the bundle.\n\n## Tasks\n\n- [ ] Inventory what state lives in each system and write it up in the issue thread\n- [ ] Agree which one stays before any code moves — this is the actual decision, and it should not be made inside a PR\n- [ ] Consider the likely answer: Zustand suits the feature-scoped stores already in use; Redux suits a large shared store with heavy devtools use\n- [ ] Migrate incrementally, one slice at a time, keeping the app working at each step\n- [ ] Remove the losing dependency and confirm the bundle size drop\n\n## Files to look at\n\n- `package.json`\n- `store/`\n- `features/*/store/`\n- `components/providers/`\n\n## Acceptance criteria\n\n- One state management library remains\n- No behaviour regression (the E2E suite, once it exists, should confirm this)\n- The bundle size delta is reported\n- The choice and its rationale are documented for future contributors\n\n## Notes\n\nDo not start coding before the thread reaches a decision. Migrating to the wrong\none is worse than leaving both.\n\n---\n\n**Skills:** TypeScript, React state management  \n**Estimated effort:** 1–2 weeks"
+    },
+    {
+      "number": 17,
+      "stage": 3,
+      "title": "Add Playwright end-to-end smoke tests for the main routes",
+      "labels": [
+        "test",
+        "needs discussion"
+      ],
+      "body": "`app/` contains twenty route groups — `marketplace`, `dashboard`, `portfolio`,\n`governance`, `staking`, `trading`, `analytics`, `telemetry`, `provenance`,\n`simulations`, `security`, `settings`, `submissions`, `waitlist`, `learn`,\n`create`, `testing`, `bug-report`, `bug-reports` and the root page.\n\nThere are no end-to-end tests. Nothing verifies that any of those pages renders\nwithout crashing.\n\n## Why this matters\n\nJest tests components in isolation; they will not catch a page that throws on\nmount because a provider is missing, a Next.js App Router boundary is wrong, or\na server component imports something client-only. With twenty routes and no CI,\na broken page can sit unnoticed indefinitely.\n\nA smoke suite that simply loads every route and asserts no console error would\nhave caught the missing PWA icons and the null wallet address.\n\n## Tasks\n\n- [ ] Agree scope in the thread — smoke-only first, or full user journeys?\n- [ ] Add Playwright and a config targeting a locally built app\n- [ ] Write a smoke test per route asserting the page renders and logs no console errors\n- [ ] Add one real journey end to end: connect wallet → browse marketplace → open an agent\n- [ ] Run against a production build, not the dev server, so build-time issues surface\n- [ ] Wire into CI on a schedule or on pull requests, depending on runtime\n\n## Files to look at\n\n- `tests/e2e/ (new)`\n- `playwright.config.ts (new)`\n- `package.json`\n- `.github/workflows/ci.yml`\n\n## Acceptance criteria\n\n- Every route in `app/` has a smoke test\n- A page that throws on mount fails the suite\n- At least one multi-step user journey is covered\n- The suite runs in CI within an agreed time budget\n\n## Notes\n\nDepends on the CI issue. Chromium is available in most CI images; no browser download is needed if you pin it.\n\n---\n\n**Skills:** TypeScript, Playwright  \n**Estimated effort:** 1 week"
+    },
+    {
+      "number": 18,
+      "stage": 3,
+      "title": "Add a Lighthouse CI budget for performance, accessibility and PWA",
+      "labels": [
+        "ci",
+        "performance",
+        "accessibility",
+        "needs discussion"
+      ],
+      "body": "The app is a PWA — `public/manifest.json`, `public/sw.js`, `next-pwa` and a full\nicon set are all present — but nothing measures whether it actually meets PWA\ncriteria, or tracks performance and accessibility scores over time.\n\nThe dependency list is heavy: MUI, Emotion, Redux, Zustand, Recharts,\n`@stellar/stellar-sdk`, `algoliasearch`, `ipfs-http-client` and `nft.storage` all\nship to the client.\n\n## Why this matters\n\nWith that dependency surface, bundle size will drift upward with every feature\nand nobody will notice until the app feels slow on a mid-range phone — which\nmatters for a humanitarian aid product whose users are not all on flagship\nhardware.\n\nAccessibility scoring also gives the existing a11y work a number to move.\n\n## Tasks\n\n- [ ] Agree which routes to measure and what the initial budgets should be\n- [ ] Add Lighthouse CI against a production build of the key routes\n- [ ] Set budgets for performance, accessibility, best practices, SEO and PWA installability\n- [ ] Start budgets at the current scores and ratchet, rather than setting aspirational numbers that get muted\n- [ ] Report the delta on pull requests\n- [ ] Consider adding a bundle-size check alongside it\n\n## Files to look at\n\n- `.github/workflows/ci.yml`\n- `next.config.js`\n- `public/manifest.json`\n\n## Acceptance criteria\n\n- Lighthouse runs on the agreed routes on every pull request\n- Current scores are recorded as the baseline\n- A regression beyond the budget fails the check\n\n---\n\n**Skills:** GitHub Actions, Lighthouse, web performance  \n**Estimated effort:** 2–3 days"
+    },
+    {
+      "number": 19,
+      "stage": 3,
+      "title": "Add Storybook for the component library",
+      "labels": [
+        "documentation",
+        "needs discussion",
+        "developer-experience"
+      ],
+      "body": "`components/README.md` is 353 lines documenting the component library in prose.\nThere is no Storybook, no visual component catalogue, and no way to see a\ncomponent in its various states without running the whole app and navigating to\na page that happens to use it.\n\nThe theme now supports light and dark modes with distinct token sets, which\ndoubles the number of states worth reviewing.\n\n## Why this matters\n\nA component library documented only in prose drifts from the code immediately.\nStorybook would make the light/dark theme work verifiable at a glance, give\ndesigners something to review without a local dev environment, and give\ncontributors a place to build a component in isolation before wiring it into a\npage.\n\n## Tasks\n\n- [ ] Agree in the thread whether this is worth the maintenance cost — it is a real ongoing commitment\n- [ ] Add Storybook configured for Next.js App Router and the MUI theme provider\n- [ ] Add a theme toggle addon so every story can be checked in light and dark\n- [ ] Write stories for the shared components first: `Button`, `Card`, `Navigation`, `ThemeToggle`\n- [ ] Decide whether to deploy it publicly and where\n- [ ] Replace the hand-maintained parts of `components/README.md` with links to stories\n\n## Files to look at\n\n- `.storybook/ (new)`\n- `components/`\n- `components/README.md`\n- `components/providers/ThemeModeProvider.tsx`\n\n## Acceptance criteria\n\n- Storybook runs locally against the real theme\n- Shared components have stories covering their main states\n- Both light and dark themes are switchable within Storybook\n\n---\n\n**Skills:** TypeScript, React, Storybook  \n**Estimated effort:** 1 week"
+    },
+    {
+      "number": 20,
+      "stage": 3,
+      "title": "Audit the twenty app routes — `bug-report` and `bug-reports` both exist",
+      "labels": [
+        "refactor",
+        "needs discussion"
+      ],
+      "body": "`app/` has twenty route groups. Two of them are `bug-report` and `bug-reports` —\nsingular and plural, both present, both with pages. That is either a deliberate\nform-versus-list split or an accident, and a newcomer cannot tell which.\n\nMore broadly, no document states which routes are production-ready, which are\nprototypes, and which are dead. `app/testing/` and `app/simulations/` in\nparticular read as developer tooling rather than user-facing pages.\n\n## Why this matters\n\nTwenty routes with unclear status is a navigation problem for users and an\norientation problem for contributors. Prototype pages reachable in production\nmake the product look unfinished, and nobody can safely delete anything because\nnobody knows what is load-bearing.\n\n## Tasks\n\n- [ ] Produce an inventory: route, purpose, status (production / prototype / dead), linked from where\n- [ ] Resolve `bug-report` versus `bug-reports` — merge, rename, or document the distinction\n- [ ] Decide whether `testing` and `simulations` should ship to production or sit behind a flag\n- [ ] Remove or gate anything dead — with agreement in the thread first\n- [ ] Add the inventory to the README or the architecture docs so it stays answerable\n\n## Files to look at\n\n- `app/`\n- `app/bug-report/`\n- `app/bug-reports/`\n- `components/Navigation.tsx`\n- `README.md`\n\n## Acceptance criteria\n\n- Every route has a documented purpose and status\n- The singular/plural bug report duplication is resolved\n- Developer-only routes are gated or removed\n- The inventory lives in the repository, not just the issue thread\n\n---\n\n**Skills:** Next.js App Router, TypeScript  \n**Estimated effort:** 3–5 days"
+    }
+  ]
+}

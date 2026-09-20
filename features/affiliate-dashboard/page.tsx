@@ -9,6 +9,8 @@ import ReferralTable from './components/ReferralTable';
 import PayoutHistory from './components/PayoutHistory';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
+import { useStellarWallet } from '@/components/context/StellarWalletProvider';
+import ConnectWallet from '@/components/ConnectWallet';
 
 /**
  * Affiliate Dashboard Page
@@ -16,7 +18,8 @@ import Button from '@/components/Button';
  */
 export default function AffiliateDashboardPage() {
   // Get wallet context - in real implementation, use useContext
-  const walletAddress = null; // TODO: Get from StellarWalletProvider context
+  const { wallet } = useStellarWallet();
+const walletAddress = wallet?.publicKey || null;
 
   const {
     stats,
@@ -43,9 +46,7 @@ export default function AffiliateDashboardPage() {
           <p className="text-trellis-vine/60 mb-6">
             Connect your Stellar wallet to access the affiliate program and start earning commissions.
           </p>
-          <Button variant="primary" size="lg" className="w-full">
-            Connect Wallet
-          </Button>
+          <ConnectWallet className="w-full" />
         </Card>
       </div>
     );

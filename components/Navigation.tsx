@@ -40,7 +40,6 @@ export const Navigation: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const navLinks = [
-
     { href: "/marketplace", label: "Marketplace", icon: <StoreIcon /> },
     { href: "/create", label: "Create Agent", icon: <CreateIcon /> },
     { href: "/dashboard", label: "Dashboard", icon: <DashboardIcon /> },
@@ -50,26 +49,13 @@ export const Navigation: React.FC = () => {
     { href: "/security", label: "Security", icon: <SecurityIcon /> },
     { href: "/provenance", label: "Provenance", icon: <SecurityIcon /> },
     { href: "/portfolio", label: "Portfolio", icon: <DashboardIcon /> },
+    { href: "/trading", label: "Trading" },
     { href: "/waitlist", label: "Waitlist", icon: <HomeIcon /> },
     { href: "/staking", label: "Staking", icon: <StoreIcon /> },
     { href: "/learn", label: "Learn", icon: <LearnIcon /> },
     { href: "/bug-report", label: "Report Bug", icon: <BugIcon /> },
-    { href: "/marketplace", label: "Marketplace" },
-    { href: "/create", label: "Create Agent" },
-    { href: "/trading", label: "Trading" },
-    { href: "/dashboard", label: "Dashboard" },
-    { href: "/analytics", label: "Analytics" },
-    { href: "/telemetry", label: "Telemetry" },
-    { href: "/security", label: "Security" },
-    { href: "/provenance", label: "Provenance" },
-    { href: "/portfolio", label: "Portfolio" },
-    { href: "/waitlist", label: "Waitlist" },
-    { href: "/staking", label: "Staking" },
-    { href: "/learn", label: "Learn" },
-    { href: "/bug-report", label: "Report Bug" },
     { href: "/bug-reports", label: "Bug Reports" },
-    { href: "submissions", label: "Submission Dashboard" },
-
+    { href: "/submissions", label: "Submission Dashboard" },
   ];
 
   const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {

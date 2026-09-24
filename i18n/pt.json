@@ -2,5 +2,55 @@
   "Marketplace": "Mercado",
   "Create Agent": "Criar Agente",
   "Portfolio": "Portfólio",
-  "Learn": "Aprender"
+  "Learn": "Aprender",
+  "waitlist": {
+    "title": "Desbloqueie o Futuro dos",
+    "subtitle": "Agentes de IA",
+    "description": "Junte-se à lista de espera premium exclusiva e seja um dos primeiros a experimentar a próxima geração de criação e interação de agentes de IA.",
+    "limitedSpots": "VAGAS LIMITADAS DISPONÍVEIS",
+    "peopleWaiting": "2.847+ aguardando",
+    "earlyAccess": "Acesso antecipado em breve",
+    "reserveSpot": "Reserve sua Vaga",
+    "reserveDescription": "Digite seu e-mail para se juntar à lista de espera premium e obter acesso antecipado exclusivo.",
+    "emailPlaceholder": "Digite seu endereço de e-mail",
+    "joinButton": "Entrar na Lista de Espera Premium",
+    "joining": "Entrando...",
+    "noSpam": "Sem spam, nunca. Cancele a inscrição a qualquer momento.",
+    "premiumBenefits": "Benefícios Premium",
+    "benefits": {
+      "earlyAccess": {
+        "title": "Acesso Antecipado",
+        "description": "Seja o primeiro a experimentar recursos premium de agentes de IA antes de qualquer outra pessoa."
+      },
+      "exclusiveDiscounts": {
+        "title": "Descontos Exclusivos",
+        "description": "Obtenha descontos vitalícios em assinaturas premium e taxas do mercado de agentes."
+      },
+      "prioritySupport": {
+        "title": "Suporte Prioritário",
+        "description": "Receba suporte dedicado com tempos de resposta mais rápidos e assistência personalizada."
+      },
+      "betaFeatures": {
+        "title": "Recursos Beta",
+        "description": "Acesse recursos de ponta e participe da construção do futuro dos agentes de IA."
+      },
+      "communityAccess": {
+        "title": "Acesso à Comunidade",
+        "description": "Junte-se a uma comunidade exclusiva de usuários premium e criadores de agentes de IA."
+      },
+      "enhancedAnalytics": {
+        "title": "Análises Avançadas",
+        "description": "Obtenha insights avançados e análises do desempenho dos seus agentes de IA."
+      }
+    },
+    "readyTitle": "Pronto para Transformar sua Experiência com IA?",
+    "readyDescription": "Não perca a chance de estar na vanguarda da inovação em agentes de IA.",
+    "joinNowButton": "Entrar na Lista de Espera Agora",
+    "success": {
+      "title": "Você está na lista!",
+      "message": "Obrigado por se juntar à lista de espera premium. Entraremos em contato em breve com atualizações exclusivas.",
+      "checkEmail": "Verifique seu e-mail para receber a mensagem de confirmação.",
+      "addAnother": "Adicionar Outro E-mail"
+    }
+  }
 }

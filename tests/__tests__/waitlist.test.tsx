@@ -8,7 +8,7 @@ import '@testing-library/jest-dom';
 global.fetch = jest.fn();
 
 // Mock useTranslation
-jest.mock('next-i18next', () => ({
+jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),

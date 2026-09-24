@@ -7,9 +7,11 @@ import {
   AffiliateProgram,
   EarningsHistory,
 } from '../types';
+import { affiliateService } from '../services/affiliateService';
 
 interface AffiliateStore {
   // State
+  walletAddress: string | null;
   stats: AffiliateStats | null;
   referrals: ReferralRecord[];
   commissionBreakdown: CommissionBreakdown[];
@@ -26,129 +28,32 @@ interface AffiliateStore {
   clearError: () => void;
 }
 
-const MOCK_STATS: AffiliateStats = {
-  totalReferrals: 42,
-  activeReferrals: 38,
-  totalEarnings: '2450.75',
-  pendingEarnings: '325.50',
-  totalPayouts: '2125.25',
-  conversionRate: 90.5,
-};
+/**
+ * Derive the commission breakdown from real referral records.
+ * Tiers beyond direct are reported when present in the data.
+ */
+function buildCommissionBreakdown(referrals: ReferralRecord[]): CommissionBreakdown[] {
+  const converted = referrals.filter((r) => r.status === 'converted');
+  const total = converted.reduce((sum, r) => sum + (parseFloat(r.commissionAmount) || 0), 0);
+  if (converted.length === 0 || total <= 0) {
+    return [];
+  }
+  return [
+    {
+      type: 'direct',
+      amount: total.toFixed(2),
+      percentage: 100,
+      count: converted.length,
+    },
+  ];
+}
 
-const MOCK_REFERRALS: ReferralRecord[] = [
-  {
-    id: '1',
-    referralCode: 'ASTR001',
-    referredUserAddress: 'GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-    referredUserName: 'User Alpha',
-    status: 'converted',
-    commissionRate: 10,
-    commissionAmount: '150.00',
-    createdAt: new Date(Date.now() - 86400000 * 30).toISOString(),
-    convertedAt: new Date(Date.now() - 86400000 * 25).toISOString(),
-  },
-  {
-    id: '2',
-    referralCode: 'ASTR002',
-    referredUserAddress: 'GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-    referredUserName: 'User Beta',
-    status: 'active',
-    commissionRate: 10,
-    commissionAmount: '0.00',
-    createdAt: new Date(Date.now() - 86400000 * 7).toISOString(),
-  },
-  {
-    id: '3',
-    referralCode: 'ASTR003',
-    referredUserAddress: 'GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-    status: 'inactive',
-    commissionRate: 10,
-    commissionAmount: '0.00',
-    createdAt: new Date(Date.now() - 86400000 * 60).toISOString(),
-  },
-];
+function toErrorMessage(error: unknown, fallback: string): string {
+  return error instanceof Error ? error.message : fallback;
+}
 
-const MOCK_COMMISSION_BREAKDOWN: CommissionBreakdown[] = [
-  {
-    type: 'direct',
-    amount: '2100.50',
-    percentage: 85.7,
-    count: 35,
-  },
-  {
-    type: 'tier2',
-    amount: '300.25',
-    percentage: 12.2,
-    count: 5,
-  },
-  {
-    type: 'tier3',
-    amount: '50.00',
-    percentage: 2.1,
-    count: 2,
-  },
-];
-
-const MOCK_PAYOUT_REQUESTS: PayoutRequest[] = [
-  {
-    id: '1',
-    amount: '500.00',
-    status: 'completed',
-    requestedAt: new Date(Date.now() - 86400000 * 30).toISOString(),
-    processedAt: new Date(Date.now() - 86400000 * 29).toISOString(),
-    walletAddress: 'GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-    transactionHash: '0x1234567890abcdef',
-  },
-  {
-    id: '2',
-    amount: '750.00',
-    status: 'completed',
-    requestedAt: new Date(Date.now() - 86400000 * 15).toISOString(),
-    processedAt: new Date(Date.now() - 86400000 * 14).toISOString(),
-    walletAddress: 'GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-    transactionHash: '0xfedcba0987654321',
-  },
-  {
-    id: '3',
-    amount: '325.50',
-    status: 'pending',
-    requestedAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-    walletAddress: 'GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-  },
-];
-
-const MOCK_PROGRAM: AffiliateProgram = {
-  id: 'prog-001',
-  name: 'Trellis Affiliate Program',
-  status: 'active',
-  commissionStructure: {
-    direct: 10,
-    tier2: 5,
-    tier3: 2,
-  },
-  minimumPayout: '100.00',
-  payoutFrequency: 'weekly',
-  guidelines: [
-    'No misleading marketing claims',
-    'Respect user privacy and data',
-    'Follow all applicable regulations',
-    'Maintain professional communication',
-    'Report accurate referral data',
-  ],
-  joinedAt: new Date(Date.now() - 86400000 * 180).toISOString(),
-};
-
-const MOCK_EARNINGS_HISTORY: EarningsHistory[] = [
-  { date: '2024-04-18', amount: 45, source: 'direct' },
-  { date: '2024-04-19', amount: 52, source: 'direct' },
-  { date: '2024-04-20', amount: 48, source: 'tier2' },
-  { date: '2024-04-21', amount: 70, source: 'direct' },
-  { date: '2024-04-22', amount: 65, source: 'direct' },
-  { date: '2024-04-23', amount: 90, source: 'direct' },
-  { date: '2024-04-24', amount: 85, source: 'tier2' },
-];
-
-export const useAffiliateStore = create<AffiliateStore>((set) => ({
+export const useAffiliateStore = create<AffiliateStore>((set, get) => ({
+  walletAddress: null,
   stats: null,
   referrals: [],
   commissionBreakdown: [],
@@ -159,27 +64,32 @@ export const useAffiliateStore = create<AffiliateStore>((set) => ({
   error: null,
 
   fetchAffiliateData: async (walletAddress: string) => {
-    set({ isLoading: true, error: null });
+    set({ isLoading: true, error: null, walletAddress });
     try {
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
       if (!walletAddress) {
         throw new Error('Wallet address required');
       }
 
+      const [stats, referrals, payoutRequests, program, earningsHistory] = await Promise.all([
+        affiliateService.getStats(walletAddress),
+        affiliateService.getReferrals(walletAddress),
+        affiliateService.getPayoutRequests(walletAddress),
+        affiliateService.getProgram(),
+        affiliateService.getEarningsHistory(walletAddress),
+      ]);
+
       set({
-        stats: MOCK_STATS,
-        referrals: MOCK_REFERRALS,
-        commissionBreakdown: MOCK_COMMISSION_BREAKDOWN,
-        payoutRequests: MOCK_PAYOUT_REQUESTS,
-        program: MOCK_PROGRAM,
-        earningsHistory: MOCK_EARNINGS_HISTORY,
+        stats,
+        referrals,
+        commissionBreakdown: buildCommissionBreakdown(referrals),
+        payoutRequests,
+        program,
+        earningsHistory,
         isLoading: false,
       });
     } catch (error) {
       set({
-        error: error instanceof Error ? error.message : 'Failed to fetch affiliate data',
+        error: toErrorMessage(error, 'Failed to fetch affiliate data'),
         isLoading: false,
       });
     }
@@ -198,52 +108,57 @@ export const useAffiliateStore = create<AffiliateStore>((set) => ({
         throw new Error('Wallet address required');
       }
 
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const { stats, program } = get();
+      const minimum = parseFloat(program?.minimumPayout ?? '100');
+      if (amountNum < minimum) {
+        throw new Error(`Minimum payout is ${program?.minimumPayout ?? '100.00'} XLM`);
+      }
+      const pending = parseFloat(stats?.pendingEarnings ?? '0');
+      if (amountNum > pending) {
+        throw new Error(`Insufficient pending earnings. Available: ${stats?.pendingEarnings ?? '0.00'} XLM`);
+      }
 
-      const newRequest: PayoutRequest = {
-        id: Math.random().toString(36).substr(2, 9),
-        amount,
-        status: 'pending',
-        requestedAt: new Date().toISOString(),
-        walletAddress,
-      };
+      // The backend queues settlement; surface its failures instead of
+      // reporting success. Idempotency key makes retries safe.
+      const idempotencyKey =
+        typeof crypto !== 'undefined' && 'randomUUID' in crypto
+          ? crypto.randomUUID()
+          : `${walletAddress}:${amount}:${Date.now()}`;
+      await affiliateService.requestPayout(walletAddress, amount, walletAddress, idempotencyKey);
 
-      set((state) => ({
-        payoutRequests: [newRequest, ...state.payoutRequests],
-        stats: state.stats
-          ? {
-              ...state.stats,
-              pendingEarnings: (
-                parseFloat(state.stats.pendingEarnings) - amountNum
-              ).toFixed(2),
-            }
-          : null,
-        isLoading: false,
-      }));
-    } catch (error) {
+      // Refresh from the backend so the UI reflects real state.
+      const [payoutRequests, refreshedStats] = await Promise.all([
+        affiliateService.getPayoutRequests(walletAddress),
+        affiliateService.getStats(walletAddress),
+      ]);
+
       set({
-        error: error instanceof Error ? error.message : 'Failed to request payout',
+        payoutRequests,
+        stats: refreshedStats,
         isLoading: false,
       });
+    } catch (error) {
+      const message = toErrorMessage(error, 'Failed to request payout');
+      set({ error: message, isLoading: false });
+      throw new Error(message);
     }
   },
 
   generateReferralCode: async () => {
     set({ isLoading: true, error: null });
     try {
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      const walletAddress = get().walletAddress;
+      if (!walletAddress) {
+        throw new Error('Wallet address required');
+      }
 
-      const code = `ASTR${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+      const { code } = await affiliateService.generateReferralCode(walletAddress);
       set({ isLoading: false });
       return code;
     } catch (error) {
-      set({
-        error: error instanceof Error ? error.message : 'Failed to generate referral code',
-        isLoading: false,
-      });
-      throw error;
+      const message = toErrorMessage(error, 'Failed to generate referral code');
+      set({ error: message, isLoading: false });
+      throw new Error(message);
     }
   },
 

@@ -18,6 +18,10 @@ const languages: Language[] = [
   { code: 'ja', name: 'Japanese', nativeName: '日本語', flag: '🇯🇵' },
   { code: 'fr', name: 'French', nativeName: 'Français', flag: '🇫🇷' },
   { code: 'de', name: 'German', nativeName: 'Deutsch', flag: '🇩🇪' },
+  { code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: '🇸🇦' },
+  { code: 'ko', name: 'Korean', nativeName: '한국어', flag: '🇰🇷' },
+  { code: 'pt', name: 'Portuguese', nativeName: 'Português', flag: '🇵🇹' },
+  { code: 'ru', name: 'Russian', nativeName: 'Русский', flag: '🇷🇺' },
 ];
 
 export const LanguageSwitcher: React.FC = () => {

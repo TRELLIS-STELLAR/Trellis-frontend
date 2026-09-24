@@ -1,9 +1,21 @@
-import { UserConfig } from 'next-i18next';
+export interface I18nConfig {
+  i18n: {
+    defaultLocale: string;
+    locales: string[];
+  };
+  fallbackLng: string;
+  interpolation: {
+    escapeValue: boolean;
+  };
+  react: {
+    useSuspense: boolean;
+  };
+}
 
-const i18n: UserConfig = {
+const i18nConfig: I18nConfig = {
   i18n: {
     defaultLocale: 'en',
-    locales: ['en', 'es', 'zh', 'ja', 'fr', 'de'],
+    locales: ['en', 'es', 'zh', 'ja', 'fr', 'de', 'ar', 'ko', 'pt', 'ru'],
   },
   fallbackLng: 'en',
   interpolation: {
@@ -14,4 +26,4 @@ const i18n: UserConfig = {
   },
 };
 
-export default i18n;
+export default i18nConfig;

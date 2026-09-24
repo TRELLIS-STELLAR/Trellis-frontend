@@ -9,14 +9,16 @@ import ReferralTable from './components/ReferralTable';
 import PayoutHistory from './components/PayoutHistory';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
+import ConnectWallet from '@/components/ConnectWallet';
+import { useStellarWallet } from '@/components/context/StellarWalletProvider';
 
 /**
  * Affiliate Dashboard Page
  * Displays commission tracking, payout requests, and referral management
  */
 export default function AffiliateDashboardPage() {
-  // Get wallet context - in real implementation, use useContext
-  const walletAddress = null; // TODO: Get from StellarWalletProvider context
+  const { wallet } = useStellarWallet();
+  const walletAddress = wallet?.publicKey ?? null;
 
   const {
     stats,
@@ -43,9 +45,9 @@ export default function AffiliateDashboardPage() {
           <p className="text-trellis-vine/60 mb-6">
             Connect your Stellar wallet to access the affiliate program and start earning commissions.
           </p>
-          <Button variant="primary" size="lg" className="w-full">
-            Connect Wallet
-          </Button>
+          <div className="flex justify-center">
+            <ConnectWallet />
+          </div>
         </Card>
       </div>
     );
@@ -133,7 +135,9 @@ export default function AffiliateDashboardPage() {
           <PayoutHistory
             payouts={payoutRequests}
             isLoading={isLoading}
-            onRequestPayout={(amount: string) => { void requestPayout(amount, walletAddress || ''); }}
+            onRequestPayout={(amount: string) => {
+              if (walletAddress) void requestPayout(amount, walletAddress);
+            }}
             pendingEarnings={stats?.pendingEarnings || '0.00'}
             minimumPayout={program?.minimumPayout || '100.00'}
           />

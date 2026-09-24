@@ -24,8 +24,6 @@ import {
   LinkedIn as LinkedInIcon,
   WhatsApp as WhatsAppIcon
 } from '@mui/icons-material';
-import { useAppDispatch } from '@/hooks/redux';
-import { generateLink } from '@/store/slices/referralSlice';
 import { ReferralLink } from '../types';
 import { ReferralService } from '../services/referralService';
 import { SocialShareService } from '../services/socialShareService';

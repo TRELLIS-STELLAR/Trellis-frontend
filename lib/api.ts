@@ -1,6 +1,5 @@
 /* Utility functions for API calls */
-import { store } from "@/store/redux/store";
-import { recordRequest } from "@/store/redux/apiMetricsSlice";
+import { useApiMetricsStore } from "@/store/apiMetricsStore";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 const REQUEST_CACHE_TTL_MS = 60_000;
@@ -16,7 +15,7 @@ const makeCacheKey = (endpoint: string, options: RequestInit) =>
   });
 
 const reportRequest = (payload: { cacheHit: boolean; networkRequest: boolean; batched: boolean }) => {
-  store.dispatch(recordRequest(payload));
+  useApiMetricsStore.getState().recordRequest(payload);
 };
 
 export async function apiCall(endpoint: string, options: RequestInit = {}) {

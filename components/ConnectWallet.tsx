@@ -39,12 +39,12 @@ export default function ConnectWallet({ className = '' }: ConnectWalletProps) {
         </Button>
 
         {showMenu && (
-          <div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-cyan-500/30 rounded-lg shadow-lg z-50">
+          <div className="absolute end-0 mt-2 w-48 bg-gray-900 border border-cyan-500/30 rounded-lg shadow-lg z-50">
             <div className="p-2">
               <button
                 onClick={() => handleConnect('freighter')}
                 disabled={isConnecting}
-                className="w-full text-left px-4 py-2 hover:bg-gray-800 rounded transition-colors flex items-center gap-2"
+                className="w-full text-start px-4 py-2 hover:bg-gray-800 rounded transition-colors flex items-center gap-2"
               >
                 <span>🔐</span>
                 Freighter
@@ -52,7 +52,7 @@ export default function ConnectWallet({ className = '' }: ConnectWalletProps) {
               <button
                 onClick={() => handleConnect('albedo')}
                 disabled={isConnecting}
-                className="w-full text-left px-4 py-2 hover:bg-gray-800 rounded transition-colors flex items-center gap-2"
+                className="w-full text-start px-4 py-2 hover:bg-gray-800 rounded transition-colors flex items-center gap-2"
               >
                 <span>🌟</span>
                 Albedo
@@ -60,7 +60,7 @@ export default function ConnectWallet({ className = '' }: ConnectWalletProps) {
               <button
                 onClick={() => handleConnect('ledger')}
                 disabled={isConnecting}
-                className="w-full text-left px-4 py-2 hover:bg-gray-800 rounded transition-colors flex items-center gap-2 opacity-50 cursor-not-allowed"
+                className="w-full text-start px-4 py-2 hover:bg-gray-800 rounded transition-colors flex items-center gap-2 opacity-50 cursor-not-allowed"
               >
                 <span>💳</span>
                 Ledger (Coming Soon)

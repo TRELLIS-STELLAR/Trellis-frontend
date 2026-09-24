@@ -117,11 +117,11 @@ export const ReferralTable: React.FC<ReferralTableProps> = ({ referrals, isLoadi
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-trellis-vine/20">
-                <th className="text-left py-3 px-4 text-trellis-vine/60 font-semibold">Code</th>
-                <th className="text-left py-3 px-4 text-trellis-vine/60 font-semibold">User</th>
-                <th className="text-left py-3 px-4 text-trellis-vine/60 font-semibold">Status</th>
-                <th className="text-right py-3 px-4 text-trellis-vine/60 font-semibold">Commission</th>
-                <th className="text-left py-3 px-4 text-trellis-vine/60 font-semibold">Date</th>
+                <th className="text-start py-3 px-4 text-trellis-vine/60 font-semibold">Code</th>
+                <th className="text-start py-3 px-4 text-trellis-vine/60 font-semibold">User</th>
+                <th className="text-start py-3 px-4 text-trellis-vine/60 font-semibold">Status</th>
+                <th className="text-end py-3 px-4 text-trellis-vine/60 font-semibold">Commission</th>
+                <th className="text-start py-3 px-4 text-trellis-vine/60 font-semibold">Date</th>
               </tr>
             </thead>
             <tbody>
@@ -152,7 +152,7 @@ export const ReferralTable: React.FC<ReferralTableProps> = ({ referrals, isLoadi
                       {referral.status}
                     </span>
                   </td>
-                  <td className="py-3 px-4 text-right font-semibold text-trellis-leaf">
+                  <td className="py-3 px-4 text-end font-semibold text-trellis-leaf">
                     {referral.commissionAmount} XLM
                   </td>
                   <td className="py-3 px-4 text-trellis-vine/60 text-xs">

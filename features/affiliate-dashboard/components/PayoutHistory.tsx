@@ -200,7 +200,7 @@ export const PayoutHistory: React.FC<PayoutHistoryProps> = ({
                     </div>
                   </div>
 
-                  <div className="text-right">
+                  <div className="text-end">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusBg(
                         payout.status

@@ -53,14 +53,14 @@ export default function NetworkSwitcher({
       </button>
 
       {showMenu && (
-        <div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-cyan-500/30 rounded-lg shadow-lg z-50">
+        <div className="absolute end-0 mt-2 w-48 bg-gray-900 border border-cyan-500/30 rounded-lg shadow-lg z-50">
           <div className="p-2">
             {Object.entries(STELLAR_NETWORKS).map(([key, config]) => (
               <button
                 key={key}
                 onClick={() => handleSwitchNetwork(key as StellarNetwork)}
                 disabled={isConnecting}
-                className={`w-full text-left px-4 py-2 rounded transition-colors flex items-center gap-2 ${
+                className={`w-full text-start px-4 py-2 rounded transition-colors flex items-center gap-2 ${
                   network === key
                     ? "bg-cyan-500/20 border border-cyan-500/50"
                     : "hover:bg-gray-800"

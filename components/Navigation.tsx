@@ -89,7 +89,7 @@ export const Navigation: React.FC = () => {
                 className="text-sm font-medium hover:text-trellis-vine transition-smooth relative group"
               >
                 {link.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-trellis-vine transition-all group-hover:w-full" />
+                <span className="absolute -bottom-1 start-0 w-0 h-0.5 bg-trellis-vine transition-all group-hover:w-full" />
               </Link>
             ))}
           </div>
@@ -110,9 +110,8 @@ export const Navigation: React.FC = () => {
               color="inherit"
               aria-label="menu"
               onClick={toggleDrawer(true)}
-              className="md:hidden"
+              className="md:hidden ms-2"
               sx={{
-                ml: 2,
                 color: "white",
                 "&:hover": { backgroundColor: "rgba(255,255,255,0.1)" },
               }}
@@ -125,7 +124,7 @@ export const Navigation: React.FC = () => {
 
       {/* Mobile Drawer */}
       <Drawer
-        anchor="right"
+        anchor={theme.direction === "rtl" ? "left" : "right"}
         open={isDrawerOpen}
         onClose={toggleDrawer(false)}
         PaperProps={{
@@ -134,7 +133,7 @@ export const Navigation: React.FC = () => {
             backgroundColor: "#070F0D",
             backgroundImage: "linear-gradient(180deg, #0E1A16 0%, #070F0D 100%)",
             color: "white",
-            borderLeft: "1px solid rgba(79, 191, 155, 0.2)",
+            borderInlineStart: "1px solid rgba(79, 191, 155, 0.2)",
           },
         }}
       >
@@ -165,7 +164,7 @@ export const Navigation: React.FC = () => {
                       },
                     }}
                   >
-                    <Box sx={{ mr: 2, color: "inherit", opacity: 0.8 }}>{link.icon}</Box>
+                    <Box className="me-2" sx={{ color: "inherit", opacity: 0.8 }}>{link.icon}</Box>
                     <ListItemText primary={link.label} />
                   </ListItemButton>
                 </Link>

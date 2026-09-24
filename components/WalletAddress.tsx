@@ -60,7 +60,7 @@ export default function WalletAddress({ showBalance = true, className = '' }: Wa
       </button>
 
       {showMenu && (
-        <div className="absolute right-0 mt-2 w-56 bg-gray-900 border border-cyan-500/30 rounded-lg shadow-lg z-50">
+        <div className="absolute end-0 mt-2 w-56 bg-gray-900 border border-cyan-500/30 rounded-lg shadow-lg z-50">
           <div className="p-3 border-b border-cyan-500/20">
             <div className="text-xs text-cyan-400 mb-1">Connected Wallet</div>
             <div className="font-mono text-sm text-cyan-300 break-all mb-2">

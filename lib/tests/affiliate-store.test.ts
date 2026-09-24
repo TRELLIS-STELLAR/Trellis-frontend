@@ -6,6 +6,7 @@ import {
   creditEarnings,
   enrollAffiliate,
   flagViolation,
+  getEarningsHistory,
   getOrCreateReferralCode,
   getPendingEarnings,
   getProgram,
@@ -265,5 +266,42 @@ describe('issue #11 — stats and program come from the store', () => {
     expect(program.commissionStructure.direct).toBe(10);
     expect(program.minimumPayout).toBe('100.00');
     expect(program.status).toBe('active');
+  });
+});
+
+describe('issue #8 — earnings history comes from the referral ledger', () => {
+  it('returns an empty array for a wallet with no conversions', () => {
+    expect(getEarningsHistory(W1, 30)).toEqual([]);
+    // Active (unconverted) referrals have earned nothing yet.
+    recordReferral(W1, W2, { commissionAmount: '150.00' });
+    expect(getEarningsHistory(W1, 30)).toEqual([]);
+  });
+
+  it('aggregates converted commissions by day from real referrals', () => {
+    const first = recordReferral(W1, W2, { commissionAmount: '150.00' });
+    convertReferral(first.id);
+    const second = recordReferral(W1, W3, { commissionAmount: '50.00' });
+    convertReferral(second.id);
+
+    const history = getEarningsHistory(W1, 30);
+    const today = new Date().toISOString().split('T')[0];
+    expect(history).toEqual([{ date: today, amount: 200, source: 'direct' }]);
+  });
+
+  it('isolates history per wallet and respects the days window', () => {
+    const referral = recordReferral(W1, W2, { commissionAmount: '150.00' });
+    convertReferral(referral.id);
+
+    // Another wallet's conversions never leak in.
+    expect(getEarningsHistory(W3, 30)).toEqual([]);
+
+    // Conversions older than the window are excluded.
+    const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(Date.now() + 40 * 86_400_000);
+    try {
+      expect(getEarningsHistory(W1, 30)).toEqual([]);
+      expect(getEarningsHistory(W1, 60)).toHaveLength(1);
+    } finally {
+      nowSpy.mockRestore();
+    }
   });
 });

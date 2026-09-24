@@ -1,12 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '@/hooks/redux';
-import { 
-  fetchReferralData, 
-  generateLink, 
-  claimReferralReward 
-} from '@/store/slices/referralSlice';
+import { useReferralStore } from '@/store/referralStore';
 import ReferralShareModal from './components/ReferralShareModal';
 import { 
   Box, 
@@ -42,22 +37,25 @@ interface ReferralDashboardProps {
 
 const ReferralDashboard: React.FC<ReferralDashboardProps> = ({ userId }) => {
   const theme = useTheme();
-  const dispatch = useAppDispatch();
-  const referral = useAppSelector((state) => state.referral);
-  const stats = referral?.stats || null;
-  const links = referral?.links || [];
-  const rewards = referral?.rewards || [];
-  const loading = referral?.loading || false;
-  const error = referral?.error || null;
-  
+  const {
+    stats,
+    links,
+    rewards,
+    loading,
+    error,
+    fetchReferralData,
+    generateLink,
+    claimReferralReward,
+  } = useReferralStore();
+
   const [showShareModal, setShowShareModal] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
     if (userId) {
-      dispatch(fetchReferralData(userId));
+      void fetchReferralData(userId);
     }
-  }, [userId, dispatch]);
+  }, [userId, fetchReferralData]);
 
   const handleCopyLink = (url: string) => {
     navigator.clipboard.writeText(url);
@@ -65,20 +63,18 @@ const ReferralDashboard: React.FC<ReferralDashboardProps> = ({ userId }) => {
   };
 
   const handleClaim = (rewardId: string) => {
-    dispatch(claimReferralReward(rewardId))
-      .unwrap()
+    claimReferralReward(rewardId)
       .then(() => toast.success('Reward claimed successfully!'))
-      .catch((err) => toast.error(err));
+      .catch((err) => toast.error(err instanceof Error ? err.message : err));
   };
 
   const handleGenerate = () => {
-    dispatch(generateLink({ userId }))
-      .unwrap()
+    generateLink({ userId })
       .then(() => {
         toast.success('New referral link generated!');
         setShowShareModal(false);
       })
-      .catch((err) => toast.error(err));
+      .catch((err) => toast.error(err instanceof Error ? err.message : err));
   };
 
   if (loading || !stats) {

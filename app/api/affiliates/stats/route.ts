@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getStats, isValidStellarAddress } from '@/lib/affiliate-store';
 
 /**
  * GET /api/affiliates/stats?wallet=<address>
- * Fetch affiliate statistics for a wallet address
+ * Fetch affiliate statistics aggregated from the affiliate store.
  */
 export async function GET(request: NextRequest) {
   try {
@@ -16,25 +17,14 @@ export async function GET(request: NextRequest) {
     }
 
     // Validate Stellar address format (56 characters, starts with G)
-    if (!/^G[A-Z2-7]{55}$/.test(wallet)) {
+    if (!isValidStellarAddress(wallet)) {
       return NextResponse.json(
         { error: 'Invalid Stellar address format' },
         { status: 400 }
       );
     }
 
-    // TODO: Fetch from database
-    // For now, return mock data
-    const stats = {
-      totalReferrals: 42,
-      activeReferrals: 38,
-      totalEarnings: '2450.75',
-      pendingEarnings: '325.50',
-      totalPayouts: '2125.25',
-      conversionRate: 90.5,
-    };
-
-    return NextResponse.json(stats);
+    return NextResponse.json(getStats(wallet));
   } catch (error) {
     console.error('Error fetching affiliate stats:', error);
     return NextResponse.json(

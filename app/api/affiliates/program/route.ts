@@ -1,35 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getProgram } from '@/lib/affiliate-store';
 
 /**
  * GET /api/affiliates/program
- * Fetch affiliate program details and guidelines
+ * Fetch affiliate program details. The tier structure and commission rates
+ * come from the single source of truth in lib/affiliate-store (which
+ * mirrors referral-contract), not a per-route literal. Program
+ * configuration changes rarely, so the response is cacheable.
  */
 export async function GET(request: NextRequest) {
   try {
-    // TODO: Fetch from database
-    // For now, return mock data
-    const program = {
-      id: 'prog-001',
-      name: 'Trellis Affiliate Program',
-      status: 'active',
-      commissionStructure: {
-        direct: 10,
-        tier2: 5,
-        tier3: 2,
+    return NextResponse.json(getProgram(), {
+      headers: {
+        'Cache-Control': 'public, max-age=300, stale-while-revalidate=60',
       },
-      minimumPayout: '100.00',
-      payoutFrequency: 'weekly',
-      guidelines: [
-        'No misleading marketing claims',
-        'Respect user privacy and data',
-        'Follow all applicable regulations',
-        'Maintain professional communication',
-        'Report accurate referral data',
-      ],
-      joinedAt: new Date(Date.now() - 86400000 * 180).toISOString(),
-    };
-
-    return NextResponse.json(program);
+    });
   } catch (error) {
     console.error('Error fetching program details:', error);
     return NextResponse.json(

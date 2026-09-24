@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
+import {
+  getPendingEarnings,
+  isValidStellarAddress,
+  listPayouts,
+  PayoutError,
+  requestPayout,
+} from '@/lib/affiliate-store';
 
 /**
  * GET /api/affiliates/payouts?wallet=<address>
- * Fetch payout history and pending requests
+ * Fetch payout history for an affiliate from the affiliate store.
  */
 export async function GET(request: NextRequest) {
   try {
@@ -16,44 +23,14 @@ export async function GET(request: NextRequest) {
     }
 
     // Validate Stellar address format
-    if (!/^G[A-Z2-7]{55}$/.test(wallet)) {
+    if (!isValidStellarAddress(wallet)) {
       return NextResponse.json(
         { error: 'Invalid Stellar address format' },
         { status: 400 }
       );
     }
 
-    // TODO: Fetch from database
-    // For now, return mock data
-    const payouts = [
-      {
-        id: '1',
-        amount: '500.00',
-        status: 'completed',
-        requestedAt: new Date(Date.now() - 86400000 * 30).toISOString(),
-        processedAt: new Date(Date.now() - 86400000 * 29).toISOString(),
-        walletAddress: wallet,
-        transactionHash: '0x1234567890abcdef',
-      },
-      {
-        id: '2',
-        amount: '750.00',
-        status: 'completed',
-        requestedAt: new Date(Date.now() - 86400000 * 15).toISOString(),
-        processedAt: new Date(Date.now() - 86400000 * 14).toISOString(),
-        walletAddress: wallet,
-        transactionHash: '0xfedcba0987654321',
-      },
-      {
-        id: '3',
-        amount: '325.50',
-        status: 'pending',
-        requestedAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-        walletAddress: wallet,
-      },
-    ];
-
-    return NextResponse.json(payouts);
+    return NextResponse.json(listPayouts(wallet));
   } catch (error) {
     console.error('Error fetching payouts:', error);
     return NextResponse.json(
@@ -64,13 +41,19 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * POST /api/affiliates/payouts/request
- * Request a payout
+ * POST /api/affiliates/payouts
+ * Request a payout.
+ *
+ * Payout flow: the frontend REQUESTS, the backend initiates the Stellar
+ * transfer (see lib/affiliate-store `submitPayoutToNetwork` seam). A
+ * request only QUEUES settlement — it never reports success without the
+ * backend submission path accepting it, and a retry (same Idempotency-Key,
+ * or a duplicate in-flight request) can never pay twice.
  */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { walletAddress, amount, destinationAddress } = body;
+    const { walletAddress, amount, destinationAddress, idempotencyKey } = body;
 
     // Validation
     if (!walletAddress || !amount || !destinationAddress) {
@@ -81,43 +64,42 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate Stellar addresses
-    if (!/^G[A-Z2-7]{55}$/.test(walletAddress) || !/^G[A-Z2-7]{55}$/.test(destinationAddress)) {
+    if (!isValidStellarAddress(walletAddress) || !isValidStellarAddress(destinationAddress)) {
       return NextResponse.json(
         { error: 'Invalid Stellar address format' },
         { status: 400 }
       );
     }
 
-    // Validate amount
-    const amountNum = parseFloat(amount);
-    if (isNaN(amountNum) || amountNum <= 0) {
+    const headerKey = request.headers.get('Idempotency-Key');
+
+    try {
+      const { payout, replayed } = requestPayout({
+        walletAddress,
+        amount,
+        destinationAddress,
+        idempotencyKey: idempotencyKey ?? headerKey ?? undefined,
+      });
+
       return NextResponse.json(
-        { error: 'Invalid amount' },
-        { status: 400 }
+        {
+          ...payout,
+          pendingEarnings: getPendingEarnings(walletAddress).toFixed(2),
+          message: replayed
+            ? 'Duplicate request: returning the original payout. No additional funds moved.'
+            : 'Payout queued for backend settlement. Funds have not moved yet.',
+        },
+        { status: replayed ? 200 : 201 },
       );
+    } catch (error) {
+      if (error instanceof PayoutError) {
+        return NextResponse.json(
+          { error: error.message, code: error.code },
+          { status: error.httpStatus }
+        );
+      }
+      throw error;
     }
-
-    // Check minimum payout (100 XLM)
-    if (amountNum < 100) {
-      return NextResponse.json(
-        { error: 'Minimum payout is 100 XLM' },
-        { status: 400 }
-      );
-    }
-
-    // TODO: Validate pending earnings and create payout request in database
-    // TODO: Initiate Stellar transaction
-
-    const payoutRequest = {
-      id: Math.random().toString(36).substr(2, 9),
-      amount,
-      status: 'pending',
-      requestedAt: new Date().toISOString(),
-      walletAddress,
-      destinationAddress,
-    };
-
-    return NextResponse.json(payoutRequest, { status: 201 });
   } catch (error) {
     console.error('Error requesting payout:', error);
     return NextResponse.json(

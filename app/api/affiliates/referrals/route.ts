@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import {
+  getOrCreateReferralCode,
+  isValidStellarAddress,
+  listReferrals,
+} from '@/lib/affiliate-store';
 
 /**
  * GET /api/affiliates/referrals?wallet=<address>
- * Fetch all referral records for an affiliate
+ * Fetch all referral records for an affiliate from the affiliate store.
  */
 export async function GET(request: NextRequest) {
   try {
@@ -16,40 +21,14 @@ export async function GET(request: NextRequest) {
     }
 
     // Validate Stellar address format
-    if (!/^G[A-Z2-7]{55}$/.test(wallet)) {
+    if (!isValidStellarAddress(wallet)) {
       return NextResponse.json(
         { error: 'Invalid Stellar address format' },
         { status: 400 }
       );
     }
 
-    // TODO: Fetch from database
-    // For now, return mock data
-    const referrals = [
-      {
-        id: '1',
-        referralCode: 'ASTR001',
-        referredUserAddress: 'GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-        referredUserName: 'User Alpha',
-        status: 'converted',
-        commissionRate: 10,
-        commissionAmount: '150.00',
-        createdAt: new Date(Date.now() - 86400000 * 30).toISOString(),
-        convertedAt: new Date(Date.now() - 86400000 * 25).toISOString(),
-      },
-      {
-        id: '2',
-        referralCode: 'ASTR002',
-        referredUserAddress: 'GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-        referredUserName: 'User Beta',
-        status: 'active',
-        commissionRate: 10,
-        commissionAmount: '0.00',
-        createdAt: new Date(Date.now() - 86400000 * 7).toISOString(),
-      },
-    ];
-
-    return NextResponse.json(referrals);
+    return NextResponse.json(listReferrals(wallet));
   } catch (error) {
     console.error('Error fetching referrals:', error);
     return NextResponse.json(
@@ -60,8 +39,10 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * POST /api/affiliates/referrals/generate
- * Generate a new referral code
+ * POST /api/affiliates/referrals
+ * Get-or-create the wallet's referral code. Codes are persisted in the
+ * affiliate store so they can be resolved for attribution later; repeated
+ * calls return the same code instead of minting a new one each time.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -76,18 +57,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate Stellar address format
-    if (!/^G[A-Z2-7]{55}$/.test(walletAddress)) {
+    if (!isValidStellarAddress(walletAddress)) {
       return NextResponse.json(
         { error: 'Invalid Stellar address format' },
         { status: 400 }
       );
     }
 
-    // TODO: Generate and store in database
-    const code = `ASTR${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+    const { code, createdAt } = getOrCreateReferralCode(walletAddress);
 
     return NextResponse.json(
-      { code, createdAt: new Date().toISOString() },
+      { code, createdAt },
       { status: 201 }
     );
   } catch (error) {

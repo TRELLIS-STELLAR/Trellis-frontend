@@ -1,12 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
+import {
+  isValidStellarAddress,
+  validateAffiliateEligibility,
+} from '@/lib/affiliate-store';
 
 /**
  * GET /api/affiliates/validate?wallet=<address>
- * Validate affiliate eligibility
+ *   [&accountCreatedAt=<iso>&tradingVolumeXlm=<n>&verified=<bool>&referrerCode=<code>]
+ * Validate affiliate eligibility.
+ *
+ * Rejections carry a machine-readable `reasonCode` so the UI can explain
+ * the decision instead of failing opaquely. Criteria that cannot be
+ * verified from the supplied evidence fail closed (see lib/affiliate-store).
  */
 export async function GET(request: NextRequest) {
   try {
-    const wallet = request.nextUrl.searchParams.get('wallet');
+    const params = request.nextUrl.searchParams;
+    const wallet = params.get('wallet');
 
     if (!wallet) {
       return NextResponse.json(
@@ -16,31 +26,25 @@ export async function GET(request: NextRequest) {
     }
 
     // Validate Stellar address format
-    if (!/^G[A-Z2-7]{55}$/.test(wallet)) {
+    if (!isValidStellarAddress(wallet)) {
       return NextResponse.json(
-        { error: 'Invalid Stellar address format' },
+        { eligible: false, reasonCode: 'INVALID_ADDRESS', reason: 'Invalid Stellar address format' },
         { status: 400 }
       );
     }
 
-    // TODO: Check eligibility criteria:
-    // - Account age (e.g., 30 days minimum)
-    // - Minimum trading volume
-    // - Account verification status
-    // - No previous violations
+    const tradingVolumeRaw = params.get('tradingVolumeXlm');
+    const verifiedRaw = params.get('verified');
 
-    const eligible = true;
-    const reason = eligible ? undefined : 'Account does not meet eligibility requirements';
-
-    return NextResponse.json({
-      eligible,
-      reason,
-      requirements: {
-        minimumAccountAge: '30 days',
-        minimumTradingVolume: '1000 XLM',
-        verificationRequired: true,
-      },
+    const result = validateAffiliateEligibility({
+      wallet,
+      accountCreatedAt: params.get('accountCreatedAt') ?? undefined,
+      tradingVolumeXlm: tradingVolumeRaw === null ? undefined : parseFloat(tradingVolumeRaw),
+      verified: verifiedRaw === null ? undefined : verifiedRaw === 'true',
+      referrerCode: params.get('referrerCode') ?? undefined,
     });
+
+    return NextResponse.json(result);
   } catch (error) {
     console.error('Error validating eligibility:', error);
     return NextResponse.json(

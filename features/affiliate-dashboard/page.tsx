@@ -54,6 +54,18 @@ export default function AffiliateDashboardPage() {
   }
 
   if (!hasActiveProgram) {
+    // Still fetching program details — don't flash "not active" yet.
+    if (isLoading) {
+      return (
+        <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <Card className="animate-pulse">
+              <div className="h-64 bg-trellis-vine/20 rounded" />
+            </Card>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <Card className="max-w-md w-full text-center">

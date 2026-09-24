@@ -13,7 +13,9 @@
     "test:coverage": "jest --coverage",
     "test:e2e": "playwright test",
     "telemetry:ws": "node scripts/telemetry-ws-server.mjs",
-    "analyze": "source-map-explorer .next/static/**/*.js"
+    "analyze": "source-map-explorer .next/static/**/*.js",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

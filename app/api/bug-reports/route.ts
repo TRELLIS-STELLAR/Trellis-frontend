@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PRIORITY_REWARDS, CATEGORY_MULTIPLIERS, type BugReport } from '../../../types/bug-report';
+import { paginateBugReports } from '@/lib/bug-reports-pagination';
+import { isFeatureEnabled } from '@/lib/feature-flags';
 
 // In-memory storage for demo purposes
 // In production, this would be replaced with a database
 const bugReports: BugReport[] = [];
+
+export function getBugReports(): readonly BugReport[] {
+  return bugReports;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -89,11 +95,33 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    // In production, this would fetch from database with proper filtering
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get('status') as BugReport['status'] | 'all' | null;
+    const limit = Number(searchParams.get('limit') || 10);
+
+    if (isFeatureEnabled('stableBugReportPagination')) {
+      const page = paginateBugReports(bugReports, {
+        cursor: searchParams.get('cursor'),
+        limit,
+        status: status || 'all',
+      });
+
+      return NextResponse.json({
+        bugReports: page.records,
+        total: bugReports.length,
+        nextCursor: page.nextCursor,
+        hasMore: page.hasMore,
+      });
+    }
+
+    const filteredReports = status && status !== 'all'
+      ? bugReports.filter((report) => report.status === status)
+      : bugReports;
+
     return NextResponse.json({
-      bugReports: bugReports.slice(0, 10), // Return last 10 reports for demo
+      bugReports: filteredReports.slice(0, 10),
       total: bugReports.length
     });
   } catch (error) {

@@ -1,24 +1,26 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { type BugReport } from '../../types/bug-report';
 
 const BugReportsPage = () => {
   const [filter, setFilter] = useState<'all' | 'submitted' | 'under_review' | 'in_progress' | 'resolved' | 'rejected'>('all');
   const [sortBy, setSortBy] = useState<'date' | 'priority' | 'reward'>('date');
 
-  const fetchBugReports = async () => {
-    const response = await fetch('/api/bug-reports');
+  const fetchBugReports = async ({ pageParam }: { pageParam?: unknown }) => {
+    const cursor = typeof pageParam === 'string' ? `&cursor=${encodeURIComponent(pageParam)}` : '';
+    const response = await fetch(`/api/bug-reports?status=${filter}&limit=20${cursor}`);
     if (!response.ok) {
       throw new Error('Failed to fetch bug reports');
     }
     return response.json();
   };
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['bug-reports'],
+  const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+    queryKey: ['bug-reports', filter],
     queryFn: fetchBugReports,
+    getNextPageParam: (lastPage) => lastPage.nextCursor || undefined,
   });
 
   const getStatusColor = (status: string) => {
@@ -68,10 +70,8 @@ const BugReportsPage = () => {
     }
   };
 
-  const filteredReports = data?.bugReports?.filter((report: BugReport) => {
-    if (filter === 'all') return true;
-    return report.status === filter;
-  }) || [];
+  const reports = data?.pages.flatMap((page) => page.bugReports) || [];
+  const filteredReports = reports;
 
   const sortedReports = [...filteredReports].sort((a: BugReport, b: BugReport) => {
     switch (sortBy) {
@@ -131,28 +131,28 @@ const BugReportsPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg p-6 backdrop-blur-sm">
             <div className="text-3xl font-bold text-trellis-leaf mb-2">
-              {data?.total || 0}
+              {data?.pages[0]?.total || 0}
             </div>
             <div className="text-sm text-gray-300">Total Reports</div>
           </div>
           
           <div className="bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg p-6 backdrop-blur-sm">
             <div className="text-3xl font-bold text-green-400 mb-2">
-              {data?.bugReports?.filter((r: BugReport) => r.status === 'resolved').length || 0}
+              {reports.filter((r: BugReport) => r.status === 'resolved').length || 0}
             </div>
             <div className="text-sm text-gray-300">Resolved</div>
           </div>
           
           <div className="bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg p-6 backdrop-blur-sm">
             <div className="text-3xl font-bold text-yellow-400 mb-2">
-              {data?.bugReports?.filter((r: BugReport) => r.status === 'under_review' || r.status === 'in_progress').length || 0}
+              {reports.filter((r: BugReport) => r.status === 'under_review' || r.status === 'in_progress').length || 0}
             </div>
             <div className="text-sm text-gray-300">In Review</div>
           </div>
           
           <div className="bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg p-6 backdrop-blur-sm">
             <div className="text-3xl font-bold text-trellis-leaf mb-2">
-              {data?.bugReports?.reduce((sum: number, r: BugReport) => sum + r.rewardAmount, 0) || 0} XLM
+              {reports.reduce((sum: number, r: BugReport) => sum + r.rewardAmount, 0) || 0} XLM
             </div>
             <div className="text-sm text-gray-300">Total Rewards</div>
           </div>
@@ -164,6 +164,7 @@ const BugReportsPage = () => {
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setFilter('all')}
+                aria-pressed={filter === 'all'}
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   filter === 'all'
                     ? 'bg-trellis-vine text-white'
@@ -174,6 +175,7 @@ const BugReportsPage = () => {
               </button>
               <button
                 onClick={() => setFilter('submitted')}
+                aria-pressed={filter === 'submitted'}
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   filter === 'submitted'
                     ? 'bg-trellis-vine text-white'
@@ -184,6 +186,7 @@ const BugReportsPage = () => {
               </button>
               <button
                 onClick={() => setFilter('under_review')}
+                aria-pressed={filter === 'under_review'}
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   filter === 'under_review'
                     ? 'bg-trellis-vine text-white'
@@ -194,6 +197,7 @@ const BugReportsPage = () => {
               </button>
               <button
                 onClick={() => setFilter('in_progress')}
+                aria-pressed={filter === 'in_progress'}
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   filter === 'in_progress'
                     ? 'bg-trellis-vine text-white'
@@ -204,6 +208,7 @@ const BugReportsPage = () => {
               </button>
               <button
                 onClick={() => setFilter('resolved')}
+                aria-pressed={filter === 'resolved'}
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   filter === 'resolved'
                     ? 'bg-trellis-vine text-white'
@@ -215,8 +220,9 @@ const BugReportsPage = () => {
             </div>
             
             <div className="flex items-center gap-2">
-              <label className="text-sm text-gray-300">Sort by:</label>
+              <label htmlFor="bug-report-sort" className="text-sm text-gray-300">Sort by:</label>
               <select
+                id="bug-report-sort"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'date' | 'priority' | 'reward')}
                 className="px-3 py-2 bg-trellis-vine/20 border border-trellis-vine/50 rounded-lg text-white focus:outline-none focus:border-trellis-leaf"
@@ -312,6 +318,19 @@ const BugReportsPage = () => {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {hasNextPage && (
+          <div className="mt-8 flex justify-center">
+            <button
+              type="button"
+              onClick={() => fetchNextPage()}
+              disabled={isFetchingNextPage}
+              className="rounded-lg bg-trellis-vine px-6 py-3 text-white transition-colors hover:bg-trellis-vine/80 disabled:cursor-wait disabled:opacity-60"
+            >
+              {isFetchingNextPage ? 'Loading more reports...' : 'Load more reports'}
+            </button>
           </div>
         )}
 

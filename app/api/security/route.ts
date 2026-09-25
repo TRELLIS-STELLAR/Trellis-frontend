@@ -8,6 +8,7 @@ import {
   exportReportAsMarkdown,
 } from "@/lib/security/report";
 import { ScanRequest, AuditRecord } from "@/lib/security/types";
+import { isFeatureEnabled } from "@/lib/feature-flags";
 
 const auditStore: AuditRecord[] = [];
 
@@ -49,6 +50,13 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "export") {
+      if (!isFeatureEnabled("securityReportExport")) {
+        return NextResponse.json(
+          { error: "Security report export is not enabled" },
+          { status: 404 },
+        );
+      }
+
       const scanner = new SorobanSecurityScanner(body.network);
       const { context, vulnerabilities, optimizations } =
         await scanner.analyzeContract(body);

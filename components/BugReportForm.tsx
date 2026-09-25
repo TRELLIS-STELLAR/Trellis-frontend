@@ -67,6 +67,13 @@ export const BugReportForm: React.FC<BugReportFormProps> = ({
     }
 
     setErrors(newErrors);
+    const firstError = Object.keys(newErrors)[0];
+    if (firstError) {
+      window.setTimeout(() => {
+        const fieldId = firstError === 'agreeToTerms' ? firstError : `bug-${firstError}`;
+        document.getElementById(fieldId)?.focus();
+      }, 0);
+    }
     return Object.keys(newErrors).length === 0;
   };
 
@@ -92,7 +99,7 @@ export const BugReportForm: React.FC<BugReportFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6" noValidate>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           {/* Basic Information */}
@@ -101,34 +108,42 @@ export const BugReportForm: React.FC<BugReportFormProps> = ({
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="bug-title" className="block text-sm font-medium text-gray-300 mb-2">
                   Bug Title *
                 </label>
                 <input
+                  id="bug-title"
+                  name="title"
                   type="text"
                   value={formData.title}
                   onChange={(e) => handleInputChange('title', e.target.value)}
                   className="w-full px-3 py-2 bg-trellis-vine/20 border border-trellis-vine/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-trellis-leaf focus:ring-1 focus:ring-trellis-leaf"
                   placeholder="Brief summary of the issue"
+                  aria-invalid={Boolean(errors.title)}
+                  aria-describedby={errors.title ? 'bug-title-error' : undefined}
                 />
                 {errors.title && (
-                  <p className="mt-1 text-sm text-red-400">{errors.title}</p>
+                  <p id="bug-title-error" role="alert" className="mt-1 text-sm text-red-400">{errors.title}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="bug-description" className="block text-sm font-medium text-gray-300 mb-2">
                   Description *
                 </label>
                 <textarea
+                  id="bug-description"
+                  name="description"
                   value={formData.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}
                   rows={4}
                   className="w-full px-3 py-2 bg-trellis-vine/20 border border-trellis-vine/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-trellis-leaf focus:ring-1 focus:ring-trellis-leaf"
                   placeholder="Detailed description of the issue"
+                  aria-invalid={Boolean(errors.description)}
+                  aria-describedby={errors.description ? 'bug-description-error' : undefined}
                 />
                 {errors.description && (
-                  <p className="mt-1 text-sm text-red-400">{errors.description}</p>
+                  <p id="bug-description-error" role="alert" className="mt-1 text-sm text-red-400">{errors.description}</p>
                 )}
               </div>
             </div>
@@ -140,50 +155,62 @@ export const BugReportForm: React.FC<BugReportFormProps> = ({
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="bug-steps" className="block text-sm font-medium text-gray-300 mb-2">
                   Steps to Reproduce *
                 </label>
                 <textarea
+                  id="bug-steps"
+                  name="stepsToReproduce"
                   value={formData.stepsToReproduce}
                   onChange={(e) => handleInputChange('stepsToReproduce', e.target.value)}
                   rows={4}
                   className="w-full px-3 py-2 bg-trellis-vine/20 border border-trellis-vine/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-trellis-leaf focus:ring-1 focus:ring-trellis-leaf"
                   placeholder="1. Step one&#10;2. Step two&#10;3. Step three"
+                  aria-invalid={Boolean(errors.stepsToReproduce)}
+                  aria-describedby={errors.stepsToReproduce ? 'bug-steps-error' : undefined}
                 />
                 {errors.stepsToReproduce && (
-                  <p className="mt-1 text-sm text-red-400">{errors.stepsToReproduce}</p>
+                  <p id="bug-steps-error" role="alert" className="mt-1 text-sm text-red-400">{errors.stepsToReproduce}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="bug-expected" className="block text-sm font-medium text-gray-300 mb-2">
                   Expected Behavior *
                 </label>
                 <textarea
+                  id="bug-expected"
+                  name="expectedBehavior"
                   value={formData.expectedBehavior}
                   onChange={(e) => handleInputChange('expectedBehavior', e.target.value)}
                   rows={3}
                   className="w-full px-3 py-2 bg-trellis-vine/20 border border-trellis-vine/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-trellis-leaf focus:ring-1 focus:ring-trellis-leaf"
                   placeholder="What should have happened"
+                  aria-invalid={Boolean(errors.expectedBehavior)}
+                  aria-describedby={errors.expectedBehavior ? 'bug-expected-error' : undefined}
                 />
                 {errors.expectedBehavior && (
-                  <p className="mt-1 text-sm text-red-400">{errors.expectedBehavior}</p>
+                  <p id="bug-expected-error" role="alert" className="mt-1 text-sm text-red-400">{errors.expectedBehavior}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="bug-actual" className="block text-sm font-medium text-gray-300 mb-2">
                   Actual Behavior *
                 </label>
                 <textarea
+                  id="bug-actual"
+                  name="actualBehavior"
                   value={formData.actualBehavior}
                   onChange={(e) => handleInputChange('actualBehavior', e.target.value)}
                   rows={3}
                   className="w-full px-3 py-2 bg-trellis-vine/20 border border-trellis-vine/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-trellis-leaf focus:ring-1 focus:ring-trellis-leaf"
                   placeholder="What actually happened"
+                  aria-invalid={Boolean(errors.actualBehavior)}
+                  aria-describedby={errors.actualBehavior ? 'bug-actual-error' : undefined}
                 />
                 {errors.actualBehavior && (
-                  <p className="mt-1 text-sm text-red-400">{errors.actualBehavior}</p>
+                  <p id="bug-actual-error" role="alert" className="mt-1 text-sm text-red-400">{errors.actualBehavior}</p>
                 )}
               </div>
             </div>
@@ -192,10 +219,12 @@ export const BugReportForm: React.FC<BugReportFormProps> = ({
           {/* Priority and Category */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg p-6 backdrop-blur-sm">
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label htmlFor="bug-priority" className="block text-sm font-medium text-gray-300 mb-2">
                 Priority Level *
               </label>
               <select
+                id="bug-priority"
+                name="priority"
                 value={formData.priority}
                 onChange={(e) => handleInputChange('priority', e.target.value)}
                 className="w-full px-3 py-2 bg-trellis-vine/20 border border-trellis-vine/50 rounded-lg text-white focus:outline-none focus:border-trellis-leaf focus:ring-1 focus:ring-trellis-leaf"
@@ -209,10 +238,12 @@ export const BugReportForm: React.FC<BugReportFormProps> = ({
             </div>
 
             <div className="bg-trellis-vine/10 border border-trellis-vine/30 rounded-lg p-6 backdrop-blur-sm">
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label htmlFor="bug-category" className="block text-sm font-medium text-gray-300 mb-2">
                 Category *
               </label>
               <select
+                id="bug-category"
+                name="category"
                 value={formData.category}
                 onChange={(e) => handleInputChange('category', e.target.value)}
                 className="w-full px-3 py-2 bg-trellis-vine/20 border border-trellis-vine/50 rounded-lg text-white focus:outline-none focus:border-trellis-leaf focus:ring-1 focus:ring-trellis-leaf"
@@ -241,20 +272,24 @@ export const BugReportForm: React.FC<BugReportFormProps> = ({
             <h3 className="text-lg font-semibold mb-4 text-trellis-leaf">Contact Information</h3>
             
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label htmlFor="bug-email" className="block text-sm font-medium text-gray-300 mb-2">
                 Email Address (Optional)
               </label>
               <input
+                id="bug-email"
+                name="reporterEmail"
                 type="email"
                 value={formData.reporterEmail}
                 onChange={(e) => handleInputChange('reporterEmail', e.target.value)}
                 className="w-full px-3 py-2 bg-trellis-vine/20 border border-trellis-vine/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-trellis-leaf focus:ring-1 focus:ring-trellis-leaf"
                 placeholder="your.email@example.com"
+                aria-invalid={Boolean(errors.reporterEmail)}
+                aria-describedby={errors.reporterEmail ? 'bug-email-error bug-email-help' : 'bug-email-help'}
               />
               {errors.reporterEmail && (
-                <p className="mt-1 text-sm text-red-400">{errors.reporterEmail}</p>
+                <p id="bug-email-error" role="alert" className="mt-1 text-sm text-red-400">{errors.reporterEmail}</p>
               )}
-              <p className="mt-2 text-sm text-gray-400">
+              <p id="bug-email-help" className="mt-2 text-sm text-gray-400">
                 Provide your email if you&apos;d like updates about your bug report
               </p>
             </div>
@@ -267,6 +302,8 @@ export const BugReportForm: React.FC<BugReportFormProps> = ({
                 type="checkbox"
                 id="agreeToTerms"
                 checked={formData.agreeToTerms}
+                 aria-invalid={Boolean(errors.agreeToTerms)}
+                 aria-describedby={errors.agreeToTerms ? 'terms-error' : undefined}
                 onChange={(e) => handleInputChange('agreeToTerms', e.target.checked)}
                 className="mt-1 w-4 h-4 bg-trellis-vine/20 border-trellis-vine/50 rounded focus:ring-trellis-leaf focus:ring-1"
               />
@@ -281,7 +318,7 @@ export const BugReportForm: React.FC<BugReportFormProps> = ({
                   </ul>
                 </label>
                 {errors.agreeToTerms && (
-                  <p className="mt-2 text-sm text-red-400">{errors.agreeToTerms}</p>
+                   <p id="terms-error" role="alert" className="mt-2 text-sm text-red-400">{errors.agreeToTerms}</p>
                 )}
               </div>
             </div>

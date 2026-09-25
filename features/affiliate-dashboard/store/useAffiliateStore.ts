@@ -8,6 +8,10 @@ import {
   EarningsHistory,
 } from '../types';
 import { affiliateService } from '../services/affiliateService';
+import {
+  beginIdempotentAttempt,
+  finishIdempotentAttempt,
+} from '@/lib/idempotency';
 
 interface AffiliateStore {
   // State
@@ -119,12 +123,18 @@ export const useAffiliateStore = create<AffiliateStore>((set, get) => ({
       }
 
       // The backend queues settlement; surface its failures instead of
-      // reporting success. Idempotency key makes retries safe.
-      const idempotencyKey =
-        typeof crypto !== 'undefined' && 'randomUUID' in crypto
-          ? crypto.randomUUID()
-          : `${walletAddress}:${amount}:${Date.now()}`;
+      // reporting success. The key is bound to this *attempt* and persists
+      // across a reload, so a retry reuses it — a random key per click, which
+      // is what this used to mint, protects nothing: the second click simply
+      // looked like a new request. Once the request lands the attempt is
+      // closed, so deliberately paying out the same amount again later is a
+      // new intent and gets a new key.
+      const attemptScope = `payout:${walletAddress}:${amount}:${walletAddress}`;
+      const idempotencyKey = await beginIdempotentAttempt(attemptScope);
       await affiliateService.requestPayout(walletAddress, amount, walletAddress, idempotencyKey);
+      // Only after the request lands; a failure leaves the attempt open so the
+      // retry reuses this key.
+      finishIdempotentAttempt(attemptScope);
 
       // Refresh from the backend so the UI reflects real state.
       const [payoutRequests, refreshedStats] = await Promise.all([

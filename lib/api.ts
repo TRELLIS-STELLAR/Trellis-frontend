@@ -1,5 +1,12 @@
 /* Utility functions for API calls */
 import { useApiMetricsStore } from "@/store/apiMetricsStore";
+import {
+  IdempotencyStore,
+  IdempotentRunResult,
+  createIdempotencyKey,
+  executeIdempotent,
+  fingerprintRequest,
+} from "@/lib/idempotency";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 const REQUEST_CACHE_TTL_MS = 60_000;
@@ -72,6 +79,21 @@ export async function apiCall(endpoint: string, options: RequestInit = {}) {
   return request;
 }
 
+export interface IdempotentPostOptions {
+  /**
+   * Explicit key. Omit it and one is derived from the endpoint and payload, so
+   * a repeated attempt at the same request reuses the same key with no caller
+   * bookkeeping. Pass a key when "the same body" is a new intent — see
+   * `beginIdempotentAttempt` for that case.
+   */
+  key?: string;
+  /** How long a stored outcome may be replayed (default 24h). */
+  ttlMs?: number;
+  store?: IdempotencyStore;
+  /** Groups derived keys; defaults to the endpoint. */
+  scope?: string;
+}
+
 export const apiClient = {
   get: (endpoint: string) => apiCall(endpoint, { method: 'GET' }),
   post: (endpoint: string, data: any) =>
@@ -79,6 +101,34 @@ export const apiClient = {
   put: (endpoint: string, data: any) =>
     apiCall(endpoint, { method: 'PUT', body: JSON.stringify(data) }),
   delete: (endpoint: string) => apiCall(endpoint, { method: 'DELETE' }),
+
+  /**
+   * POST an operation that must not be applied twice (payments, claims,
+   * payouts). Sends the key as `Idempotency-Key` so the server can recognise
+   * the retry, and returns whether the result was replayed from a stored
+   * outcome instead of a second request reaching the network.
+   */
+  postIdempotent: async <T = unknown>(
+    endpoint: string,
+    data: unknown,
+    options: IdempotentPostOptions = {},
+  ): Promise<IdempotentRunResult<T>> => {
+    const body = JSON.stringify(data);
+    const fingerprint = fingerprintRequest({ endpoint, method: 'POST', body });
+    const key =
+      options.key ?? (await createIdempotencyKey(options.scope ?? endpoint, { endpoint, data }));
+
+    return executeIdempotent<T>(
+      { key, fingerprint, ttlMs: options.ttlMs, store: options.store },
+      () =>
+        apiCall(endpoint, {
+          method: 'POST',
+          body,
+          headers: { 'Idempotency-Key': key },
+        }) as Promise<T>,
+    );
+  },
+
   batchGet: async (endpoints: string[]) => {
     const uniqueEndpoints = Array.from(new Set(endpoints));
     const requests = uniqueEndpoints.map((endpoint) => apiClient.get(endpoint));

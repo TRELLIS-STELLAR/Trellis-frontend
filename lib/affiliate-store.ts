@@ -153,7 +153,7 @@ interface AffiliateState {
   referrals: ReferralRecord[];
   payouts: PayoutRequest[];
   /** idempotency key -> payout id */
-  idempotencyIndex: Map<string, string>;
+  idempotencyIndex: Map<string, IdempotencyEntry>;
   /** wallet -> lifetime credited commission earnings (XLM) */
   earned: Map<string, number>;
   /** test seam: force the payout submission path to fail */
@@ -367,7 +367,24 @@ export type PayoutFailureCode =
   | 'BELOW_MINIMUM'
   | 'INSUFFICIENT_EARNINGS'
   | 'DUPLICATE_PAYOUT_IN_FLIGHT'
+  | 'IDEMPOTENCY_CONFLICT'
+  | 'IDEMPOTENCY_KEY_EXPIRED'
   | 'PAYOUT_BACKEND_UNAVAILABLE';
+
+/**
+ * How long a payout's idempotency key may be replayed. After this window the
+ * key is refused rather than silently paying again: a key is what makes a retry
+ * safe, so an expired one has to be reported, not ignored.
+ */
+export const IDEMPOTENCY_KEY_TTL_MS = 24 * 60 * 60 * 1000;
+
+/** What a used key remembers: the payout it produced and the request it bound to. */
+interface IdempotencyEntry {
+  payoutId: string;
+  /** wallet|amount|destination of the original request. */
+  fingerprint: string;
+  createdAt: number;
+}
 
 export class PayoutError extends Error {
   readonly code: PayoutFailureCode;
@@ -422,10 +439,28 @@ export function requestPayout(input: PayoutRequestInput): { payout: PayoutReques
     );
   }
 
+  const fingerprint = `${input.walletAddress}|${input.amount}|${input.destinationAddress}`;
+
   if (input.idempotencyKey) {
-    const existingId = state.idempotencyIndex.get(input.idempotencyKey);
-    if (existingId) {
-      const existing = state.payouts.find((p) => p.id === existingId);
+    const entry = state.idempotencyIndex.get(input.idempotencyKey);
+    if (entry) {
+      // A key only makes a retry safe while both halves still match: the same
+      // request, inside its window. Anything else is reported, never paid.
+      if (Date.now() - entry.createdAt > IDEMPOTENCY_KEY_TTL_MS) {
+        throw new PayoutError(
+          'IDEMPOTENCY_KEY_EXPIRED',
+          'This idempotency key has expired; request the payout again with a new key',
+          409,
+        );
+      }
+      if (entry.fingerprint !== fingerprint) {
+        throw new PayoutError(
+          'IDEMPOTENCY_CONFLICT',
+          'This idempotency key was already used for a different payout request',
+          409,
+        );
+      }
+      const existing = state.payouts.find((p) => p.id === entry.payoutId);
       if (existing) {
         return { payout: existing, replayed: true };
       }
@@ -463,7 +498,11 @@ export function requestPayout(input: PayoutRequestInput): { payout: PayoutReques
   };
   state.payouts.push(payout);
   if (input.idempotencyKey) {
-    state.idempotencyIndex.set(input.idempotencyKey, payout.id);
+    state.idempotencyIndex.set(input.idempotencyKey, {
+      payoutId: payout.id,
+      fingerprint,
+      createdAt: Date.now(),
+    });
   }
 
   if (!submitPayoutToNetwork()) {

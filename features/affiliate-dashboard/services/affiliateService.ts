@@ -48,12 +48,15 @@ export const affiliateService = {
     destinationAddress: string,
     idempotencyKey?: string,
   ): Promise<PayoutRequest> => {
-    return apiClient.post(`${API_BASE}/payouts`, {
-      walletAddress,
-      amount,
-      destinationAddress,
-      idempotencyKey,
-    });
+    // Money path. The key identifies the *attempt*, so a double submit cannot
+    // queue two payouts, and the outcome is remembered: a retry after a
+    // success replays the queued payout instead of asking for a second one.
+    const { value } = await apiClient.postIdempotent<PayoutRequest>(
+      `${API_BASE}/payouts`,
+      { walletAddress, amount, destinationAddress },
+      { key: idempotencyKey, scope: `payout:${walletAddress}` },
+    );
+    return value;
   },
 
   /**

@@ -12,6 +12,7 @@ import {
   getProgram,
   getStats,
   isEnrolled,
+  IDEMPOTENCY_KEY_TTL_MS,
   listPayouts,
   listReferrals,
   PayoutError,
@@ -205,6 +206,59 @@ describe('issue #9 — payouts are validated and idempotent', () => {
     });
     expect(second.replayed).toBe(true);
     expect(second.payout.id).toBe(first.payout.id);
+    expect(listPayouts(W1)).toHaveLength(1);
+  });
+
+  it('refuses a key that is reused for a different payout request', () => {
+    requestPayout({
+      walletAddress: W1,
+      amount: '100.00',
+      destinationAddress: W1,
+      idempotencyKey: 'key-conflict',
+    });
+
+    try {
+      requestPayout({
+        walletAddress: W1,
+        amount: '150.00',
+        destinationAddress: W1,
+        idempotencyKey: 'key-conflict',
+      });
+      throw new Error('should have thrown');
+    } catch (error) {
+      expect(error).toBeInstanceOf(PayoutError);
+      expect((error as PayoutError).code).toBe('IDEMPOTENCY_CONFLICT');
+      expect((error as PayoutError).httpStatus).toBe(409);
+    }
+    // The conflicting request did not queue anything.
+    expect(listPayouts(W1)).toHaveLength(1);
+  });
+
+  it('refuses a key whose replay window has passed instead of paying again', () => {
+    const startedAt = Date.now();
+    const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(startedAt);
+    try {
+      requestPayout({
+        walletAddress: W1,
+        amount: '100.00',
+        destinationAddress: W1,
+        idempotencyKey: 'key-expired',
+      });
+
+      nowSpy.mockReturnValue(startedAt + IDEMPOTENCY_KEY_TTL_MS + 1);
+
+      expect(() =>
+        requestPayout({
+          walletAddress: W1,
+          amount: '100.00',
+          destinationAddress: W1,
+          idempotencyKey: 'key-expired',
+        }),
+      ).toThrow(expect.objectContaining({ code: 'IDEMPOTENCY_KEY_EXPIRED' }));
+    } finally {
+      nowSpy.mockRestore();
+    }
+
     expect(listPayouts(W1)).toHaveLength(1);
   });
 

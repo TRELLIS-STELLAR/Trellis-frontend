@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Idempotency for high-risk writes: `lib/idempotency.ts` plus `apiClient.postIdempotent`, wired into payout requests and reward claims, with conflict/expiry errors and a documented server contract (`docs/idempotency.md`)
 - Comprehensive open-source documentation and contributing guidelines
 - GitHub issue and PR templates
 - Code of Conduct and community guidelines

@@ -6,6 +6,7 @@ jest.mock('../../../lib/api', () => ({
   apiClient: {
     get: jest.fn(),
     post: jest.fn(),
+    postIdempotent: jest.fn(),
     put: jest.fn(),
     delete: jest.fn(),
   },
@@ -171,17 +172,23 @@ describe('ReferralService', () => {
   describe('claimReward', () => {
     it('should claim reward successfully', async () => {
       const { apiClient } = require('../../../lib/api');
-      apiClient.post.mockResolvedValue({});
+      apiClient.postIdempotent.mockResolvedValue({ value: {}, replayed: false });
 
       const result = await ReferralService.claimReward('reward123');
 
-      expect(apiClient.post).toHaveBeenCalledWith('/referrals/rewards/reward123/claim', {});
+      // The claim goes through the idempotent path so a retry cannot claim the
+      // same reward twice.
+      expect(apiClient.postIdempotent).toHaveBeenCalledWith(
+        '/referrals/rewards/reward123/claim',
+        {},
+        { scope: 'claim:reward123' },
+      );
       expect(result).toBe(true);
     });
 
     it('should return false if claim fails', async () => {
       const { apiClient } = require('../../../lib/api');
-      apiClient.post.mockRejectedValue(new Error('Claim failed'));
+      apiClient.postIdempotent.mockRejectedValue(new Error('Claim failed'));
 
       const result = await ReferralService.claimReward('reward123');
 

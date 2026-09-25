@@ -102,10 +102,16 @@ export class ReferralService {
     }
   }
 
-  // Claim referral reward
+  // Claim referral reward. A reward can only be claimed once, so the request
+  // is idempotent by reward id: a retry (or a second click) replays the stored
+  // outcome instead of claiming again.
   static async claimReward(rewardId: string): Promise<boolean> {
     try {
-      await apiClient.post(`${this.baseUrl}/rewards/${rewardId}/claim`, {});
+      await apiClient.postIdempotent(
+        `${this.baseUrl}/rewards/${rewardId}/claim`,
+        {},
+        { scope: `claim:${rewardId}` },
+      );
       return true;
     } catch (error) {
       console.warn('Failed to claim reward:', error);

@@ -9,6 +9,10 @@ import React, {
   useState,
 } from 'react';
 import { alpha, CssBaseline, ThemeProvider, createTheme } from '@mui/material';
+import { CacheProvider } from '@emotion/react';
+import createCache from '@emotion/cache';
+import rtlPlugin from 'stylis-plugin-rtl';
+import i18n, { isRtlLanguage } from '@/lib/i18n';
 
 export type ThemeMode = 'light' | 'dark';
 
@@ -49,10 +53,11 @@ function syncThemeAttribute(mode: ThemeMode) {
   document.documentElement.style.colorScheme = mode;
 }
 
-function buildTheme(mode: ThemeMode) {
+function buildTheme(mode: ThemeMode, direction: 'ltr' | 'rtl') {
   const isDark = mode === 'dark';
 
   return createTheme({
+    direction,
     palette: {
       mode,
       primary: {
@@ -126,6 +131,26 @@ function buildTheme(mode: ThemeMode) {
 
 export function ThemeModeProvider({ children }: { children: React.ReactNode }) {
   const [mode, setMode] = useState<ThemeMode>(readInitialMode);
+  const [direction, setDirection] = useState<'ltr' | 'rtl'>(() =>
+    isRtlLanguage(i18n.language) ? 'rtl' : 'ltr'
+  );
+
+  useEffect(() => {
+    const handleLanguageChange = (lng: string) => {
+      setDirection(isRtlLanguage(lng) ? 'rtl' : 'ltr');
+    };
+    i18n.on('languageChanged', handleLanguageChange);
+    return () => {
+      i18n.off('languageChanged', handleLanguageChange);
+    };
+  }, []);
+
+  // Emotion cache that flips MUI's physical CSS (margins, paddings, borders)
+  // when the layout is right-to-left. Created once; only used for RTL.
+  const rtlCache = useMemo(
+    () => createCache({ key: 'muirtl', stylisPlugins: [rtlPlugin] }),
+    []
+  );
 
   useEffect(() => {
     syncThemeAttribute(mode);
@@ -141,7 +166,7 @@ export function ThemeModeProvider({ children }: { children: React.ReactNode }) {
     setMode((currentMode) => (currentMode === 'dark' ? 'light' : 'dark'));
   }, []);
 
-  const theme = useMemo(() => buildTheme(mode), [mode]);
+  const theme = useMemo(() => buildTheme(mode, direction), [mode, direction]);
 
   const value = useMemo(
     () => ({
@@ -152,12 +177,20 @@ export function ThemeModeProvider({ children }: { children: React.ReactNode }) {
     [mode, toggleMode]
   );
 
+  const content = (
+    <ThemeProvider theme={theme}>
+      <CssBaseline enableColorScheme />
+      {children}
+    </ThemeProvider>
+  );
+
   return (
     <ThemeModeContext.Provider value={value}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline enableColorScheme />
-        {children}
-      </ThemeProvider>
+      {direction === 'rtl' ? (
+        <CacheProvider value={rtlCache}>{content}</CacheProvider>
+      ) : (
+        content
+      )}
     </ThemeModeContext.Provider>
   );
 }

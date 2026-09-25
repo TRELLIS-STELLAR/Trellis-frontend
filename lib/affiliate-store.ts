@@ -20,6 +20,7 @@ import { randomBytes, randomUUID } from 'node:crypto';
 import type {
   AffiliateProgram,
   AffiliateStats,
+  EarningsHistory,
   PayoutRequest,
   ReferralRecord,
 } from '@/features/affiliate-dashboard/types';
@@ -475,6 +476,41 @@ export function requestPayout(input: PayoutRequestInput): { payout: PayoutReques
   }
 
   return { payout, replayed: false };
+}
+
+// ---------------------------------------------------------------------------
+// Earnings history (#8)
+// ---------------------------------------------------------------------------
+// Aggregated from the same referral ledger the stats endpoint reads, so the
+// chart can never disagree with the totals. Only converted referrals count
+// (active referrals have not earned anything yet). Days with no conversions
+// produce no rows — an empty array means "no earnings", not an error.
+
+export function getEarningsHistory(wallet: string, days: number): EarningsHistory[] {
+  const code = state.walletCode.get(wallet);
+  if (!code) {
+    return [];
+  }
+  const cutoff = Date.now() - days * 86_400_000;
+  const byDay = new Map<string, number>();
+  for (const referral of state.referrals) {
+    if (referral.referralCode !== code || referral.status !== 'converted') {
+      continue;
+    }
+    const timestamp = new Date(referral.convertedAt ?? referral.createdAt).getTime();
+    if (Number.isNaN(timestamp) || timestamp < cutoff) {
+      continue;
+    }
+    const day = new Date(timestamp).toISOString().split('T')[0];
+    byDay.set(day, (byDay.get(day) ?? 0) + (parseFloat(referral.commissionAmount) || 0));
+  }
+  return [...byDay.entries()]
+    .map(([date, amount]) => ({
+      date,
+      amount: Math.round(amount * 100) / 100,
+      source: 'direct' as const,
+    }))
+    .sort((a, b) => (a.date < b.date ? -1 : 1));
 }
 
 // ---------------------------------------------------------------------------

@@ -263,7 +263,17 @@ NEXT_PUBLIC_ENVIRONMENT=development
 NEXT_PUBLIC_STELLAR_NETWORK=testnet
 ```
 
-#### 4. Run Development Server
+#### 4. Run Contributor Diagnostics
+
+```bash
+# Verify environment, tooling, and connectivity
+npm run diagnostics
+
+# Or skip network checks in offline mode
+npm run diagnostics -- --skip-network
+```
+
+#### 5. Run Development Server
 
 ```bash
 # Start development server with hot reload
@@ -272,7 +282,7 @@ npm run dev
 # Visit http://localhost:3000
 ```
 
-#### 5. Build for Production
+#### 6. Build for Production
 
 ```bash
 # Build optimized bundle

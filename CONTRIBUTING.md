@@ -43,18 +43,28 @@ cp .env.example .env.local
 ```
 Edit `.env.local` with your API keys and configuration values. The required variables are documented in `.env.example`.
 
-4. **Start the development server**
+4. **Verify environment with contributor diagnostics**
+```bash
+npm run diagnostics
+```
+The diagnostics command runs non-mutating checks against your Node.js runtime, environment variables, dependencies, network endpoints (Stellar Horizon testnet and IPFS), and test fixtures.
+Useful flags:
+- `npm run diagnostics -- --json` : Output machine-readable JSON format
+- `npm run diagnostics -- --skip-network` : Skip external network checks (useful for offline work)
+- `npm run diagnostics -- --strict` : Fail if any warnings are detected
+
+5. **Start the development server**
 ```bash
 npm run dev
 ```
 The application will be available at `http://localhost:3000`
 
-5. **Run tests**
+6. **Run tests**
 ```bash
 npm run test
 ```
 
-6. **Run linting**
+7. **Run linting**
 ```bash
 npm run lint
 ```

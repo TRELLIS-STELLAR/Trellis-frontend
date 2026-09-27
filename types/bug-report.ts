@@ -31,6 +31,7 @@ export interface BugReportSubmission {
   category: 'ui' | 'functionality' | 'performance' | 'security' | 'other';
   screenshots: File[];
   reporterEmail?: string;
+  buildVersion?: string;
 }
 
 export interface RewardCalculation {
@@ -52,6 +53,7 @@ export interface BugReportFormData {
   reporterEmail: string;
   screenshots: File[];
   agreeToTerms: boolean;
+  buildVersion?: string;
 }
 
 export const PRIORITY_REWARDS = {

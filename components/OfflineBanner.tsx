@@ -1,14 +1,23 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import PWAManager, {
-  OFFLINE_QUEUE_CHANGE_EVENT,
-  OFFLINE_QUEUE_SYNCED_EVENT,
-  type FlushOfflineQueueResult,
-} from '@/lib/pwa-utils';
+import PWAManager from '@/lib/pwa-utils';
+import { subscribeDomainEvent, type DomainEventFallbackContext } from '@/lib/domain-events';
 import { usePWA } from '@/hooks/usePWA';
 
 const SYNCED_MESSAGE_TIMEOUT_MS = 6000;
+
+/**
+ * An event we could not read is never allowed to corrupt the banner's state.
+ * Log it and let the next authoritative refresh (or the next valid event) put
+ * the UI right, rather than rendering a half-parsed payload.
+ */
+function reportUnreadableEvent(context: DomainEventFallbackContext): void {
+  console.warn(
+    `[OfflineBanner] Ignored unreadable domain event "${context.name}" ` +
+      `(${context.reason}, version ${context.receivedVersion ?? 'absent'}): ${context.issues.join('; ')}`,
+  );
+}
 
 /**
  * Informs the user when the app is running from cached data and when mutations
@@ -37,24 +46,32 @@ export default function OfflineBanner() {
     manager.setupBackgroundSync();
     void refreshPending();
 
-    const handleQueueChange = (event: Event) => {
-      const detail = (event as CustomEvent<{ pending?: number }>).detail;
-      setPending(typeof detail?.pending === 'number' ? detail.pending : 0);
+    const handleQueueChange = (pending: number) => {
+      setPending(pending);
     };
 
-    const handleSynced = (event: Event) => {
-      const detail = (event as CustomEvent<FlushOfflineQueueResult>).detail;
+    const handleSynced = (result: { synced: string[] }) => {
       setSyncing(false);
-      setSynced(detail?.synced?.length ?? 0);
+      setSynced(result.synced.length);
       void refreshPending();
     };
 
-    window.addEventListener(OFFLINE_QUEUE_CHANGE_EVENT, handleQueueChange);
-    window.addEventListener(OFFLINE_QUEUE_SYNCED_EVENT, handleSynced);
+    // The payload is validated against the registered schema before these run,
+    // so neither handler needs a defensive shape check.
+    const unsubscribeQueueChange = subscribeDomainEvent(
+      'offline-queue-change',
+      (payload) => handleQueueChange(payload.pending),
+      { fallback: reportUnreadableEvent },
+    );
+    const unsubscribeSynced = subscribeDomainEvent(
+      'offline-queue-synced',
+      (payload) => handleSynced(payload),
+      { fallback: reportUnreadableEvent },
+    );
 
     return () => {
-      window.removeEventListener(OFFLINE_QUEUE_CHANGE_EVENT, handleQueueChange);
-      window.removeEventListener(OFFLINE_QUEUE_SYNCED_EVENT, handleSynced);
+      unsubscribeQueueChange();
+      unsubscribeSynced();
     };
   }, [refreshPending]);
 

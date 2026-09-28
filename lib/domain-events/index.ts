@@ -46,6 +46,7 @@ export {
   ConnectionChangeSchema,
   ConnectionQualityChangeSchema,
   NetworkChangedSchema,
+  NetworkChangedSchemaV1,
   OfflineQueueChangeSchema,
   OfflineQueueSyncResultSchema,
   PwaInstallAvailableSchema,

@@ -40,7 +40,19 @@ export interface Tutorial {
 }
 
 // Stellar Wallet Types
-export type StellarNetwork = "mainnet" | "testnet" | "futurenet";
+/**
+ * The Stellar networks Trellis supports, as runtime values.
+ *
+ * This is the single source of truth. `StellarNetwork` below is derived from it
+ * so the type and any runtime schema built on the same list cannot drift apart -
+ * a drift that previously let `lib/domain-events` register a `network` payload
+ * using a vocabulary the rest of the app could never produce.
+ *
+ * The keys must stay in step with `STELLAR_NETWORKS` in `lib/stellar-constants.ts`.
+ */
+export const STELLAR_NETWORK_IDS = ["mainnet", "testnet", "futurenet"] as const;
+
+export type StellarNetwork = (typeof STELLAR_NETWORK_IDS)[number];
 
 export interface StellarNetworkConfig {
   name: StellarNetwork;

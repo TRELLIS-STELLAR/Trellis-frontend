@@ -99,7 +99,7 @@
       "reason": "invalid-payload",
       "event": {
         "name": "NETWORK_CHANGED",
-        "version": "1.0.0",
+        "version": "2.0.0",
         "id": "2a000001-0000-4000-8000-000000000008",
         "timestamp": "2026-02-11T10:05:00.000Z",
         "source": "tab-8f2a",
@@ -107,14 +107,40 @@
       }
     },
     {
-      "name": "NETWORK_CHANGED with a network Trellis does not support",
+      "name": "NETWORK_CHANGED with 'public', the 1.0.0 vocabulary the app never produces",
+      "expect": "rejected",
+      "reason": "invalid-payload",
+      "event": {
+        "name": "NETWORK_CHANGED",
+        "version": "2.0.0",
+        "id": "2a000001-0000-4000-8000-000000000009",
+        "timestamp": "2026-02-11T10:06:00.000Z",
+        "source": "tab-8f2a",
+        "payload": { "network": "public" }
+      }
+    },
+    {
+      "name": "NETWORK_CHANGED with 'sandbox', which is not a Stellar network in this app",
+      "expect": "rejected",
+      "reason": "invalid-payload",
+      "event": {
+        "name": "NETWORK_CHANGED",
+        "version": "2.0.0",
+        "id": "2a000001-0000-4000-8000-000000000014",
+        "timestamp": "2026-02-11T10:12:00.000Z",
+        "source": "tab-8f2a",
+        "payload": { "network": "sandbox" }
+      }
+    },
+    {
+      "name": "NETWORK_CHANGED 1.0.0 with 'mainnet', which only the 2.0.0 vocabulary accepts",
       "expect": "rejected",
       "reason": "invalid-payload",
       "event": {
         "name": "NETWORK_CHANGED",
         "version": "1.0.0",
-        "id": "2a000001-0000-4000-8000-000000000009",
-        "timestamp": "2026-02-11T10:06:00.000Z",
+        "id": "2a000001-0000-4000-8000-000000000015",
+        "timestamp": "2026-02-11T10:13:00.000Z",
         "source": "tab-8f2a",
         "payload": { "network": "mainnet" }
       }

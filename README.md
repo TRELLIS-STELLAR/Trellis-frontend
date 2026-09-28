@@ -667,6 +667,7 @@ git push origin feature/your-feature
 - **[PWA Guide](./docs/PWA_IMPLEMENTATION.md)** - Progressive Web App
 - **[Metrics Dashboard](./docs/metrics-dashboard.md)** - Telemetry & monitoring
 - **[Invariant Monitoring](./docs/INVARIANT_MONITORING.md)** - Funds, ownership, lifecycle & authorization checks
+- **[Domain Events](./docs/DOMAIN_EVENTS.md)** - Versioned event schemas, producer validation & consumer compatibility
 
 ---
 

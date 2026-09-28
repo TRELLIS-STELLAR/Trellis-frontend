@@ -1,3 +1,5 @@
+import { createWindowDelivery, publishDomainEvent } from './domain-events';
+
 interface PWAInstallPrompt {
   prompt(): Promise<void>;
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
@@ -21,9 +23,36 @@ export const OFFLINE_QUEUE_STORAGE_KEY = 'trellis.offline-submissions.v1';
 export const OFFLINE_QUEUE_SYNC_TAG = 'offline-submissions';
 export const OFFLINE_QUEUE_FLUSH_MESSAGE = 'SYNC_OFFLINE_QUEUE';
 export const OFFLINE_QUEUE_FLUSHED_MESSAGE = 'OFFLINE_QUEUE_FLUSHED';
+/**
+ * Event names are kept here as exported constants for existing consumers, but
+ * they are also registry keys. `tests/__tests__/domain-events.test.ts` asserts
+ * each constant still matches its catalog entry, so the two cannot drift.
+ */
 export const OFFLINE_QUEUE_CHANGE_EVENT = 'offline-queue-change';
 export const OFFLINE_QUEUE_SYNCED_EVENT = 'offline-queue-synced';
 export const OFFLINE_SUBMISSION_MAX_ATTEMPTS = 5;
+
+/** Stamped onto every envelope this module publishes. */
+const PWA_EVENT_SOURCE = 'pwa-utils';
+
+/**
+ * Validate a payload against its registered schema and only then dispatch it.
+ *
+ * This is the producer-side guarantee: an event that does not match its schema
+ * is never delivered, so `OfflineBanner` and `usePWA` can read the payload
+ * without defensive checks. The `typeof window` guard is kept from the
+ * previous implementation so the module stays importable during SSR.
+ */
+function publishPwaEvent<TName extends Parameters<typeof publishDomainEvent>[0]>(
+  name: TName,
+  payload: Parameters<typeof publishDomainEvent<TName>>[1],
+): void {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  publishDomainEvent(name, payload, { delivery: createWindowDelivery(), source: PWA_EVENT_SOURCE });
+}
 
 export interface OfflineSubmission {
   id: string;
@@ -481,27 +510,15 @@ class PWAManager {
   }
 
   private onServiceWorkerUpdate(): void {
-    // Create a custom event for the update
-    const event = new CustomEvent('sw-update', {
-      detail: { available: true }
-    });
-    window.dispatchEvent(event);
+    publishPwaEvent('sw-update', { available: true });
   }
 
   private onInstallPromptAvailable(): void {
-    // Create a custom event when install prompt is available
-    const event = new CustomEvent('pwa-install-available', {
-      detail: { available: true }
-    });
-    window.dispatchEvent(event);
+    publishPwaEvent('pwa-install-available', { available: true });
   }
 
   private onAppInstalled(): void {
-    // Create a custom event when app is installed
-    const event = new CustomEvent('pwa-installed', {
-      detail: { installed: true }
-    });
-    window.dispatchEvent(event);
+    publishPwaEvent('pwa-installed', { installed: true });
   }
 
   public async promptInstall(): Promise<boolean> {
@@ -648,28 +665,19 @@ class PWAManager {
 
     window.addEventListener('online', () => {
       console.log('[PWA] Connection restored');
-      const event = new CustomEvent('connection-change', {
-        detail: { online: true }
-      });
-      window.dispatchEvent(event);
+      publishPwaEvent('connection-change', { online: true });
     });
 
     window.addEventListener('offline', () => {
       console.log('[PWA] Connection lost');
-      const event = new CustomEvent('connection-change', {
-        detail: { online: false }
-      });
-      window.dispatchEvent(event);
+      publishPwaEvent('connection-change', { online: false });
     });
 
     // Listen for connection quality changes
     if ((navigator as any).connection) {
       const connection = (navigator as any).connection;
       connection.addEventListener('change', () => {
-        const event = new CustomEvent('connection-quality-change', {
-          detail: this.getConnectionStatus()
-        });
-        window.dispatchEvent(event);
+        publishPwaEvent('connection-quality-change', this.getConnectionStatus());
       });
     }
   }
@@ -734,11 +742,7 @@ class PWAManager {
   private async emitQueueChange(): Promise<number> {
     const pending = await this.getPendingSubmissionCount();
 
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(
-        new CustomEvent(OFFLINE_QUEUE_CHANGE_EVENT, { detail: { pending } }),
-      );
-    }
+    publishPwaEvent('offline-queue-change', { pending });
 
     return pending;
   }
@@ -767,11 +771,7 @@ class PWAManager {
 
     const result = await flushOfflineQueue(this.getOfflineQueue());
 
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(
-        new CustomEvent(OFFLINE_QUEUE_SYNCED_EVENT, { detail: result }),
-      );
-    }
+    publishPwaEvent('offline-queue-synced', result);
 
     await this.emitQueueChange();
     return result;

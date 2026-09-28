@@ -7,12 +7,15 @@ import {
   executeIdempotent,
   fingerprintRequest,
 } from "@/lib/idempotency";
+import {
+  CacheOptions,
+  clearCachedValues,
+  getOrFetchCachedValue,
+  subscribeToCachedValue,
+} from "@/lib/cache-manager";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 const REQUEST_CACHE_TTL_MS = 60_000;
-
-const responseCache = new Map<string, { data: unknown; expiresAt: number }>();
-const inFlightRequests = new Map<string, Promise<unknown>>();
 
 const makeCacheKey = (endpoint: string, options: RequestInit) =>
   JSON.stringify({
@@ -21,31 +24,24 @@ const makeCacheKey = (endpoint: string, options: RequestInit) =>
     body: typeof options.body === "string" ? options.body : null,
   });
 
+export function subscribeToApiResponse<T>(endpoint: string, listener: (value: T) => void): () => void {
+  const cacheKey = `api:${makeCacheKey(endpoint, { method: 'GET' })}`;
+  return subscribeToCachedValue(cacheKey, listener);
+}
+
 const reportRequest = (payload: { cacheHit: boolean; networkRequest: boolean; batched: boolean }) => {
   useApiMetricsStore.getState().recordRequest(payload);
 };
 
-export async function apiCall(endpoint: string, options: RequestInit = {}) {
+export async function apiCall(
+  endpoint: string,
+  options: RequestInit = {},
+  cacheOptions: CacheOptions = {}
+) {
   const method = (options.method || "GET").toUpperCase();
-  const cacheKey = makeCacheKey(endpoint, options);
-  const now = Date.now();
-
-  if (method === "GET") {
-    const cached = responseCache.get(cacheKey);
-    if (cached && cached.expiresAt > now) {
-      reportRequest({ cacheHit: true, networkRequest: false, batched: false });
-      return cached.data;
-    }
-
-    const inFlight = inFlightRequests.get(cacheKey);
-    if (inFlight) {
-      reportRequest({ cacheHit: true, networkRequest: false, batched: false });
-      return inFlight;
-    }
-  }
 
   const url = `${API_URL}${endpoint}`;
-  const request = (async () => {
+  const fetchData = async () => {
     const response = await fetch(url, {
       ...options,
       headers: {
@@ -59,24 +55,20 @@ export async function apiCall(endpoint: string, options: RequestInit = {}) {
     }
 
     const data = await response.json();
-    if (method === "GET") {
-      responseCache.set(cacheKey, {
-        data,
-        expiresAt: now + REQUEST_CACHE_TTL_MS,
-      });
-    }
     reportRequest({ cacheHit: false, networkRequest: true, batched: false });
     return data;
-  })();
+  };
 
-  if (method === "GET") {
-    inFlightRequests.set(cacheKey, request);
-    request.finally(() => {
-      inFlightRequests.delete(cacheKey);
-    });
+  if (method !== "GET") {
+    return fetchData();
   }
 
-  return request;
+  const cacheKey = `api:${makeCacheKey(endpoint, options)}`;
+  return getOrFetchCachedValue(cacheKey, fetchData, {
+    staleTime: cacheOptions.staleTime ?? REQUEST_CACHE_TTL_MS,
+    cacheTime: cacheOptions.cacheTime ?? REQUEST_CACHE_TTL_MS * 5,
+    onCacheHit: () => reportRequest({ cacheHit: true, networkRequest: false, batched: false }),
+  });
 }
 
 export interface IdempotentPostOptions {
@@ -95,7 +87,8 @@ export interface IdempotentPostOptions {
 }
 
 export const apiClient = {
-  get: (endpoint: string) => apiCall(endpoint, { method: 'GET' }),
+  get: (endpoint: string, cacheOptions?: CacheOptions) => apiCall(endpoint, { method: 'GET' }, cacheOptions),
+  subscribe: subscribeToApiResponse,
   post: (endpoint: string, data: any) =>
     apiCall(endpoint, { method: 'POST', body: JSON.stringify(data) }),
   put: (endpoint: string, data: any) =>
@@ -138,8 +131,5 @@ export const apiClient = {
     );
     return responses;
   },
-  clearCache: () => {
-    responseCache.clear();
-    inFlightRequests.clear();
-  },
+  clearCache: () => clearCachedValues('api:'),
 };

@@ -1,4 +1,4 @@
-import CacheManager from "@/lib/cache-manager";
+import CacheManager, { getOrFetchCachedValue, setVerifiedMetadata, subscribeToCachedValue } from "@/lib/cache-manager";
 
 describe("CacheManager LRU Eviction", () => {
   let cacheManager: CacheManager;
@@ -141,5 +141,66 @@ describe("CacheManager LRU Eviction", () => {
       const pruned = await cacheManager.pruneCache("Trellis-static");
       expect(pruned).toBe(0);
     });
+  });
+
+  describe("Stale-while-revalidate responses", () => {
+    it("returns a stale response before refreshing and notifies subscribers", async () => {
+      const request = new Request("https://example.com/api/stale-rpc");
+      const cache = await caches.open("Trellis-api");
+      await cache.put(request, new Response(JSON.stringify({ version: 1 }), {
+        headers: { "sw-cached-at": (Date.now() - 25 * 60 * 60 * 1000).toString() },
+      }));
+      const updatedResponse = new Response(JSON.stringify({ version: 2 }));
+      const fetchMock = jest.spyOn(global, "fetch").mockResolvedValue(updatedResponse);
+      let unsubscribe = () => {};
+      const updateReceived = new Promise<number>(resolve => {
+        unsubscribe = cacheManager.subscribeToCachedResponse("api", request, response => {
+          void response.json().then(value => resolve(value.version));
+        });
+      });
+
+      const staleResponse = await cacheManager.getCachedResponse("api", request);
+
+      expect(await staleResponse?.json()).toEqual({ version: 1 });
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      await expect(updateReceived).resolves.toBe(2);
+
+      unsubscribe();
+      fetchMock.mockRestore();
+    });
+  });
+});
+
+describe("Stale-while-revalidate metadata cache", () => {
+  it("returns stale metadata immediately and notifies subscribers after background refresh", async () => {
+    const key = `swr-test-${Date.now()}`;
+    const cachedValue = { version: 1 };
+    const updatedValue = { version: 2 };
+    let resolveRefresh!: (value: typeof updatedValue) => void;
+    const fetcher = jest.fn(() => new Promise<typeof updatedValue>(resolve => {
+      resolveRefresh = resolve;
+    }));
+    const onUpdate = jest.fn();
+    await setVerifiedMetadata(key, cachedValue);
+    const updateReceived = new Promise<void>(resolve => {
+      const unsubscribe = subscribeToCachedValue(key, value => {
+        onUpdate(value);
+        unsubscribe();
+        resolve();
+      });
+    });
+    jest.spyOn(Date, "now").mockReturnValue(Date.now() + 1_000);
+
+    const result = await getOrFetchCachedValue(key, fetcher, { staleTime: 0, cacheTime: 60_000 });
+
+    expect(result).toEqual(cachedValue);
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    expect(onUpdate).not.toHaveBeenCalled();
+
+    resolveRefresh(updatedValue);
+    await updateReceived;
+
+    expect(onUpdate).toHaveBeenCalledWith(updatedValue);
+    jest.restoreAllMocks();
   });
 });

@@ -30,6 +30,8 @@ class CacheManager {
   private accessCounter: number = 0;
   private quotaTimer: ReturnType<typeof setInterval> | null = null;
   private storageQuota: StorageQuota | null = null;
+  private responseSubscribers = new Map<string, Set<(response: Response) => void>>();
+  private responseRevalidations = new Map<string, Promise<void>>();
 
   public onQuotaExceeded: ((quota: StorageQuota) => void) | null = null;
 
@@ -205,12 +207,13 @@ class CacheManager {
       headers: headers,
     });
 
-    await cache.put(request, modifiedResponse);
+    await cache.put(request, modifiedResponse.clone());
     this.recordAccess(type, request.url);
     await this.cleanupCache(config.name, config.maxEntries);
+    this.notifyResponseSubscribers(type, request, modifiedResponse);
   }
 
-  public async getCachedResponse(type: string, request: Request): Promise<Response | null> {
+  public async getCachedResponse(type: string, request: Request, options: CacheOptions = {}): Promise<Response | null> {
     const config = this.cacheConfigs.get(type);
     if (!config) {
       throw new Error(`Unknown cache type: ${type}`);
@@ -227,13 +230,65 @@ class CacheManager {
     const cachedAt = cachedResponse.headers.get('sw-cached-at');
     if (cachedAt) {
       const cacheAge = (Date.now() - parseInt(cachedAt)) / 1000;
-      if (cacheAge > config.maxAge) {
+      const staleTime = options.staleTime ?? config.maxAge * 1000;
+      const cacheTime = options.cacheTime ?? config.maxAge * 2000;
+      if (cacheAge > cacheTime / 1000) {
         await cache.delete(request);
         return null;
+      }
+      if (cacheAge > staleTime / 1000) {
+        void this.revalidateCachedResponse(type, request);
       }
     }
 
     return cachedResponse;
+  }
+
+  public subscribeToCachedResponse(
+    type: string,
+    request: Request,
+    listener: (response: Response) => void
+  ): () => void {
+    const key = this.getResponseSubscriberKey(type, request);
+    const listeners = this.responseSubscribers.get(key) ?? new Set<(response: Response) => void>();
+    listeners.add(listener);
+    this.responseSubscribers.set(key, listeners);
+
+    return () => {
+      listeners.delete(listener);
+      if (listeners.size === 0) this.responseSubscribers.delete(key);
+    };
+  }
+
+  private getResponseSubscriberKey(type: string, request: Request): string {
+    return `${type}:${request.url}`;
+  }
+
+  private notifyResponseSubscribers(type: string, request: Request, response: Response): void {
+    for (const listener of this.responseSubscribers.get(this.getResponseSubscriberKey(type, request)) ?? []) {
+      try {
+        listener(response.clone());
+      } catch (error) {
+        console.error('[Cache Manager] Cache response subscriber failed:', error);
+      }
+    }
+  }
+
+  private async revalidateCachedResponse(type: string, request: Request): Promise<void> {
+    const key = this.getResponseSubscriberKey(type, request);
+    const pending = this.responseRevalidations.get(key);
+    if (pending) return pending;
+
+    const revalidation = (async () => {
+      try {
+        const response = await fetch(request);
+        if (response.ok) await this.cacheResponse(type, request, response);
+      } catch (error) {
+        console.warn('[Cache Manager] Background cache revalidation failed:', error);
+      }
+    })().finally(() => this.responseRevalidations.delete(key));
+    this.responseRevalidations.set(key, revalidation);
+    return revalidation;
   }
 
   public async clearCache(type?: string): Promise<void> {
@@ -572,7 +627,25 @@ export default CacheManager;
 
 const METADATA_DB = 'trellis-ipfs-metadata';
 const METADATA_STORE = 'verified';
-const memoryMetadata = new Map<string, unknown>();
+const CACHE_ENTRY_MARKER = '__trellisCachedValue';
+const DEFAULT_STALE_TIME = 60_000;
+const DEFAULT_CACHE_TIME = 5 * 60_000;
+
+export interface CacheOptions {
+  staleTime?: number;
+  cacheTime?: number;
+  onCacheHit?: () => void;
+}
+
+interface StoredCacheEntry<T> {
+  [CACHE_ENTRY_MARKER]: true;
+  value: T;
+  cachedAt: number;
+}
+
+const memoryMetadata = new Map<string, StoredCacheEntry<unknown>>();
+const cacheSubscribers = new Map<string, Set<(value: unknown) => void>>();
+const pendingRevalidations = new Map<string, Promise<unknown>>();
 
 function openMetadataDb(): Promise<IDBDatabase | null> {
   if (typeof indexedDB === 'undefined') return Promise.resolve(null);
@@ -585,13 +658,149 @@ function openMetadataDb(): Promise<IDBDatabase | null> {
 }
 
 export async function getVerifiedMetadata<T>(cid: string): Promise<T | null> {
-  if (memoryMetadata.has(cid)) return memoryMetadata.get(cid) as T;
-  const db = await openMetadataDb(); if (!db) return null;
-  return new Promise((resolve, reject) => { const request = db.transaction(METADATA_STORE, 'readonly').objectStore(METADATA_STORE).get(cid); request.onsuccess = () => resolve((request.result as T | undefined) ?? null); request.onerror = () => reject(request.error); });
+  const entry = await readCacheEntry<T>(cid, DEFAULT_CACHE_TIME);
+  return entry?.value ?? null;
 }
 
 export async function setVerifiedMetadata(cid: string, value: unknown): Promise<void> {
-  memoryMetadata.set(cid, value);
-  const db = await openMetadataDb(); if (!db) return;
-  await new Promise<void>((resolve, reject) => { const request = db.transaction(METADATA_STORE, 'readwrite').objectStore(METADATA_STORE).put(value, cid); request.onsuccess = () => resolve(); request.onerror = () => reject(request.error); });
+  await writeCacheEntry(cid, value);
+}
+
+export async function getOrFetchCachedValue<T>(
+  key: string,
+  fetcher: () => Promise<T>,
+  options: CacheOptions = {}
+): Promise<T> {
+  const staleTime = options.staleTime ?? DEFAULT_STALE_TIME;
+  const cacheTime = options.cacheTime ?? DEFAULT_CACHE_TIME;
+  const cached = await readCacheEntry<T>(key, cacheTime);
+
+  if (cached) {
+    options.onCacheHit?.();
+    if (Date.now() - cached.cachedAt > staleTime) {
+      void fetchAndStore(key, fetcher).catch(() => undefined);
+    }
+    return cached.value;
+  }
+
+  return fetchAndStore(key, fetcher);
+}
+
+export function subscribeToCachedValue<T>(key: string, listener: (value: T) => void): () => void {
+  const listeners = cacheSubscribers.get(key) ?? new Set<(value: unknown) => void>();
+  listeners.add(listener as (value: unknown) => void);
+  cacheSubscribers.set(key, listeners);
+
+  return () => {
+    listeners.delete(listener as (value: unknown) => void);
+    if (listeners.size === 0) cacheSubscribers.delete(key);
+  };
+}
+
+export async function clearCachedValues(prefix: string): Promise<void> {
+  for (const key of memoryMetadata.keys()) {
+    if (key.startsWith(prefix)) memoryMetadata.delete(key);
+  }
+
+  const db = await openMetadataDb();
+  if (!db) return;
+  await new Promise<void>((resolve, reject) => {
+    const transaction = db.transaction(METADATA_STORE, 'readwrite');
+    const store = transaction.objectStore(METADATA_STORE);
+    const request = store.openKeyCursor();
+    request.onsuccess = () => {
+      const cursor = request.result;
+      if (!cursor) return;
+      if (typeof cursor.key === 'string' && cursor.key.startsWith(prefix)) store.delete(cursor.key);
+      cursor.continue();
+    };
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () => reject(transaction.error);
+  });
+  db.close();
+}
+
+async function readCacheEntry<T>(key: string, cacheTime: number): Promise<StoredCacheEntry<T> | null> {
+  let entry = memoryMetadata.get(key) as StoredCacheEntry<T> | undefined;
+
+  if (!entry) {
+    const db = await openMetadataDb();
+    if (!db) return null;
+    const stored = await new Promise<unknown>((resolve, reject) => {
+      const request = db.transaction(METADATA_STORE, 'readonly').objectStore(METADATA_STORE).get(key);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    db.close();
+    if (stored === undefined) return null;
+
+    entry = isStoredCacheEntry<T>(stored)
+      ? stored
+      : { [CACHE_ENTRY_MARKER]: true, value: stored as T, cachedAt: Date.now() };
+    memoryMetadata.set(key, entry);
+  }
+
+  if (Date.now() - entry.cachedAt > cacheTime) {
+    memoryMetadata.delete(key);
+    await deleteCacheEntry(key);
+    return null;
+  }
+
+  return entry;
+}
+
+function isStoredCacheEntry<T>(value: unknown): value is StoredCacheEntry<T> {
+  return typeof value === 'object' && value !== null && CACHE_ENTRY_MARKER in value;
+}
+
+async function writeCacheEntry(key: string, value: unknown): Promise<void> {
+  const entry: StoredCacheEntry<unknown> = {
+    [CACHE_ENTRY_MARKER]: true,
+    value,
+    cachedAt: Date.now(),
+  };
+  memoryMetadata.set(key, entry);
+
+  const db = await openMetadataDb();
+  if (db) {
+    await new Promise<void>((resolve, reject) => {
+      const request = db.transaction(METADATA_STORE, 'readwrite').objectStore(METADATA_STORE).put(entry, key);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+    db.close();
+  }
+
+  for (const listener of cacheSubscribers.get(key) ?? []) {
+    try {
+      listener(value);
+    } catch (error) {
+      console.error('[Cache Manager] Cache subscriber failed:', error);
+    }
+  }
+}
+
+async function deleteCacheEntry(key: string): Promise<void> {
+  const db = await openMetadataDb();
+  if (!db) return;
+  await new Promise<void>((resolve, reject) => {
+    const request = db.transaction(METADATA_STORE, 'readwrite').objectStore(METADATA_STORE).delete(key);
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+  db.close();
+}
+
+function fetchAndStore<T>(key: string, fetcher: () => Promise<T>): Promise<T> {
+  const pending = pendingRevalidations.get(key) as Promise<T> | undefined;
+  if (pending) return pending;
+
+  const request = fetcher()
+    .then(async value => {
+      await writeCacheEntry(key, value);
+      return value;
+    })
+    .finally(() => pendingRevalidations.delete(key));
+  pendingRevalidations.set(key, request);
+  return request;
 }

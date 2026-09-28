@@ -644,6 +644,7 @@ git push origin feature/your-feature
 - **[Stellar Integration](./STELLAR_WALLET_INTEGRATION.md)** - Wallet setup
 - **[PWA Guide](./docs/PWA_IMPLEMENTATION.md)** - Progressive Web App
 - **[Metrics Dashboard](./docs/metrics-dashboard.md)** - Telemetry & monitoring
+- **[Domain Events](./docs/DOMAIN_EVENTS.md)** - Versioned event schemas, producer validation & consumer compatibility
 
 ---
 

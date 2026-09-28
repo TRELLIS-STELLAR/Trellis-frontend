@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { STELLAR_NETWORK_IDS } from '../types';
+
 import {
   DOMAIN_EVENT_NAME_PATTERN,
   DOMAIN_EVENT_VERSION_PATTERN,
@@ -83,8 +85,17 @@ export const ConnectionQualityChangeSchema = z.object({
   saveData: z.boolean().optional(),
 });
 
-/** Stellar networks Trellis supports. */
-export const StellarNetworkSchema = z.enum(['public', 'testnet', 'sandbox', 'futurenet']);
+/**
+ * The Stellar networks Trellis supports.
+ *
+ * Derived from `STELLAR_NETWORK_IDS` in `lib/types.ts` rather than restated, so
+ * a network the app can produce is always a network a consumer can read. The
+ * previous hand-written list named `public` and `sandbox`, neither of which
+ * appears anywhere else in the app: the app models mainnet as `mainnet`, and has
+ * no `sandbox` network. Publishing `NETWORK_CHANGED` with real app data
+ * therefore threw. See `NetworkChangedSchemaV1` for the superseded shape.
+ */
+export const StellarNetworkSchema = z.enum(STELLAR_NETWORK_IDS);
 
 export const ThemeModeSchema = z.enum(['light', 'dark', 'system']);
 
@@ -94,6 +105,19 @@ export const ThemeModeSchema = z.enum(['light', 'dark', 'system']);
  */
 export const WalletDisconnectedSchema = z.object({
   reason: z.string().min(1).optional(),
+});
+
+/**
+ * The superseded `NETWORK_CHANGED` payload.
+ *
+ * Registered so a tab still running the 1.0.0 catalog keeps working. The old
+ * vocabulary could not be produced by the app, so no real 1.0.0 event exists in
+ * the wild; this entry exists so the version bump is correct rather than
+ * silent. It is a **major** bump because the accepted values changed, which is
+ * exactly the case the policy in `docs/DOMAIN_EVENTS.md` says requires one.
+ */
+export const NetworkChangedSchemaV1 = z.object({
+  network: z.enum(['public', 'testnet', 'sandbox', 'futurenet']),
 });
 
 /** The new network is required: a "network changed" event without it is noise. */
@@ -249,12 +273,16 @@ export const DOMAIN_EVENTS = {
   NETWORK_CHANGED: defineEvent({
     name: 'NETWORK_CHANGED',
     title: 'Stellar network changed in another tab',
-    description: 'Another tab switched the active Stellar network. network is required, not optional.',
+    description:
+      'Another tab switched the active Stellar network. network is required, not optional, and uses the same vocabulary as the rest of the app: mainnet, testnet, or futurenet. Version 1.0.0 used a "public"/"sandbox" vocabulary the app never produced and is retained only so an older tab is not disconnected abruptly.',
     transport: 'broadcast',
     stability: 'stable',
-    currentVersion: '1.0.0',
+    currentVersion: '2.0.0',
     introducedIn: 'Session continuity',
-    versions: { '1.0.0': NetworkChangedSchema },
+    versions: {
+      '1.0.0': NetworkChangedSchemaV1,
+      '2.0.0': NetworkChangedSchema,
+    },
   }),
 
   THEME_MUTATED: defineEvent({

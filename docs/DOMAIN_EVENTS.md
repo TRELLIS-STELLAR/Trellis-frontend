@@ -67,7 +67,7 @@ Regenerate this table with `npm run validate:events -- --catalog`.
 | `connection-change` | 1.0.0 | window | stable | 1.0.0 |
 | `connection-quality-change` | 1.0.0 | window | **experimental** | 1.0.0 |
 | `WALLET_DISCONNECTED` | 1.0.0 | broadcast | stable | 1.0.0 |
-| `NETWORK_CHANGED` | 1.0.0 | broadcast | stable | 1.0.0 |
+| `NETWORK_CHANGED` | 2.0.0 | broadcast | stable | 1.0.0, 2.0.0 |
 | `THEME_MUTATED` | 1.0.0 | broadcast | stable | 1.0.0 |
 
 Event names are lowercase-kebab for `window` events and SCREAMING_SNAKE for
@@ -221,15 +221,23 @@ const unsubscribe = subscribeDomainEvent(
    `tests/fixtures/domain-events/valid-events.json`. `npm run validate:events`
    fails if a registered event has no fixture, so this step cannot be skipped.
 
-### Gotcha: the network vocabulary
+### Network vocabulary
 
-`StellarNetworkSchema` in the registry accepts `'public' | 'testnet' |
-'sandbox' | 'futurenet'`, but the rest of the app models networks as
-`StellarNetwork = "mainnet" | "testnet" | "futurenet"` (`lib/types.ts`,
-`lib/stellar-constants.ts`). Publishing `NETWORK_CHANGED` with the app's
-`"mainnet"` value **throws** — the fixture
-`NETWORK_CHANGED with a network Trellis does not support` pins that. Map to
-`'public'` at the producer boundary before wiring this event up.
+`StellarNetworkSchema` is derived from `STELLAR_NETWORK_IDS` in `lib/types.ts`
+rather than restated, so a network the app can produce is always a network a
+consumer can read. The two cannot drift again.
+
+It used to be a hand-written list of `public | testnet | sandbox | futurenet`,
+which matched nothing else in the app: `lib/types.ts` and
+`lib/stellar-constants.ts` model mainnet as `mainnet`, and the app has no
+`sandbox` Stellar network. Publishing `NETWORK_CHANGED` with real app data threw
+`DomainEventValidationError`.
+
+That is why `NETWORK_CHANGED` is at **2.0.0**. Changing the accepted values is a
+narrowing, so it takes a major bump. `1.0.0` stays registered as
+`NetworkChangedSchemaV1` so a tab still on the old catalog is not disconnected
+abruptly — it is accepted as a legacy version and routed to `onLegacy`. No real
+1.0.0 event exists in the wild, since the old vocabulary could not be produced.
 
 ---
 

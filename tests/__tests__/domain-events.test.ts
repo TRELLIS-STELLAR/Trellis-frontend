@@ -35,6 +35,7 @@ import {
   OFFLINE_QUEUE_CHANGE_EVENT,
   OFFLINE_QUEUE_SYNCED_EVENT,
 } from '../../lib/pwa-utils';
+import type { StellarNetwork } from '../../lib/types';
 
 const FIXTURE_DIR = resolve(__dirname, '../fixtures/domain-events');
 
@@ -413,12 +414,16 @@ describe('Trellis domain event contract', () => {
       'accepts %s',
       (_label, testCase) => {
         const result = parseDomainEvent(testCase.event);
+        const event = testCase.event as { name: string; version: string };
+        const currentVersion = getDomainEventDefinition(event.name)?.currentVersion;
 
         expect(result.status).toBe('accepted');
 
         if (result.status === 'accepted') {
-          expect(result.isLegacy).toBe(false);
-          expect(result.version).toBe('1.0.0');
+          expect(result.version).toBe(event.version);
+          // A fixture may deliberately record a legacy version; anything else
+          // must be the version the catalog publishes today.
+          expect(result.isLegacy).toBe(event.version !== currentVersion);
           // The accepted payload must equal what the fixture recorded.
           expect(result.payload).toEqual((testCase.event as { payload: unknown }).payload);
         }
@@ -998,7 +1003,7 @@ describe('Trellis domain event contract', () => {
 
       const { delivery } = recordingDelivery();
       const publish = () =>
-        publishDomainEvent('NETWORK_CHANGED', { network: 'public' }, {
+        publishDomainEvent('NETWORK_CHANGED', { network: 'mainnet' }, {
           ...DETERMINISTIC,
           delivery,
           source: 'tab-a',
@@ -1163,6 +1168,113 @@ describe('Trellis domain event contract', () => {
         expect(first.id).not.toBe(second.id);
       } finally {
         globals.crypto = original;
+      }
+    });
+  });
+
+  describe('Network vocabulary alignment', () => {
+    /**
+     * `NETWORK_CHANGED` originally registered `public | testnet | sandbox |
+     * futurenet` while the app models mainnet as `mainnet` and has no `sandbox`
+     * network, so publishing with real app data threw. These cases pin the two
+     * vocabularies together.
+     */
+    const STELLAR_NETWORK_IDS = ['mainnet', 'testnet', 'futurenet'] as const;
+
+    function envelope(version: string, network: string): unknown {
+      return {
+        name: 'NETWORK_CHANGED',
+        version,
+        id: 'evt-fixed',
+        timestamp: '2026-02-11T09:00:00.000Z',
+        source: 'tab-a',
+        payload: { network },
+      };
+    }
+
+    it('publishes NETWORK_CHANGED at 2.0.0, since the accepted values changed', () => {
+      const definition = getDomainEventDefinition('NETWORK_CHANGED');
+
+      expect(definition?.currentVersion).toBe('2.0.0');
+    });
+
+    it.each(STELLAR_NETWORK_IDS)('accepts "%s", every network the app can produce', (network) => {
+      const result = parseDomainEvent(envelope('2.0.0', network));
+
+      expect(result.status).toBe('accepted');
+      if (result.status === 'accepted') {
+        expect(result.isLegacy).toBe(false);
+      }
+    });
+
+    it.each(['public', 'sandbox', 'mainnet ', 'MAINNET'])(
+      'rejects "%s", which the app never produces',
+      (network) => {
+        const result = parseDomainEvent(envelope('2.0.0', network));
+
+        expect(result.status).toBe('rejected');
+        if (result.status === 'rejected') {
+          expect(result.reason).toBe('invalid-payload');
+        }
+      },
+    );
+
+    it('accepts a payload the producer actually types, with no cast', () => {
+      // The whole point of the fix: this compiles without `as unknown as`.
+      const { delivery } = recordingDelivery();
+
+      const result = publishDomainEvent('NETWORK_CHANGED', { network: 'mainnet' }, {
+        ...DETERMINISTIC,
+        delivery,
+        source: 'tab-a',
+      });
+
+      expect(result.payload).toEqual({ network: 'mainnet' });
+      expect(result.version).toBe('2.0.0');
+    });
+
+    it('keeps 1.0.0 readable so a tab on the old catalog still interoperates', () => {
+      const result = parseDomainEvent(envelope('1.0.0', 'public'));
+
+      expect(result.status).toBe('accepted');
+      if (result.status === 'accepted') {
+        expect(result.isLegacy).toBe(true);
+        expect(result.version).toBe('1.0.0');
+      }
+    });
+
+    it('refuses mainnet on 1.0.0, which is why the bump is major', () => {
+      const result = parseDomainEvent(envelope('1.0.0', 'mainnet'));
+
+      expect(result.status).toBe('rejected');
+      if (result.status === 'rejected') {
+        expect(result.reason).toBe('invalid-payload');
+      }
+    });
+
+    it('routes a 1.0.0 event to onLegacy rather than the typed handler', () => {
+      const handler = jest.fn();
+      const onLegacy = jest.fn();
+      const fallback = jest.fn();
+
+      subscribeDomainEvent('NETWORK_CHANGED', handler, { target: window, onLegacy, fallback });
+
+      window.dispatchEvent(new CustomEvent('NETWORK_CHANGED', { detail: envelope('1.0.0', 'public') }));
+
+      expect(handler).not.toHaveBeenCalled();
+      expect(fallback).not.toHaveBeenCalled();
+      expect(onLegacy).toHaveBeenCalledWith(
+        { network: 'public' },
+        expect.objectContaining({ receivedVersion: '1.0.0', currentVersion: '2.0.0', isFuture: false }),
+      );
+    });
+
+    it('agrees with the StellarNetwork type exported by lib/types', () => {
+      // Guards the wiring: the schema and the app's type must not drift again.
+      const appNetworks: StellarNetwork[] = ['mainnet', 'testnet', 'futurenet'];
+
+      for (const network of appNetworks) {
+        expect(parseDomainEvent(envelope('2.0.0', network)).status).toBe('accepted');
       }
     });
   });

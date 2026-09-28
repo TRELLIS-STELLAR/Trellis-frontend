@@ -33,7 +33,16 @@ describe('session tab synchronization', () => {
 
   it('requires the network name for a network change', () => {
     expect(() =>
-      createSessionSyncMessage('NETWORK_CHANGED', {} as { network: 'public' }, 'tab-a'),
+      createSessionSyncMessage('NETWORK_CHANGED', {} as { network: 'mainnet' }, 'tab-a'),
     ).toThrow(DomainEventValidationError);
+  });
+
+  it('accepts the network vocabulary the app actually produces', () => {
+    // This previously threw, because the catalog expected a `public` value the
+    // app never emits. See docs/DOMAIN_EVENTS.md.
+    const message = createSessionSyncMessage('NETWORK_CHANGED', { network: 'mainnet' }, 'tab-a');
+
+    expect(message.payload).toEqual({ network: 'mainnet' });
+    expect(message.version).toBe('2.0.0');
   });
 });

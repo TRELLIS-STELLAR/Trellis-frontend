@@ -137,11 +137,33 @@
       "name": "NETWORK_CHANGED names the new Stellar network",
       "event": {
         "name": "NETWORK_CHANGED",
-        "version": "1.0.0",
+        "version": "2.0.0",
         "id": "1f0c2a44-0000-4000-8000-00000000000c",
         "timestamp": "2026-02-11T09:25:00.000Z",
         "source": "tab-8f2a",
-        "payload": { "network": "testnet" }
+        "payload": { "network": "mainnet" }
+      }
+    },
+    {
+      "name": "NETWORK_CHANGED accepts every network the app can produce",
+      "event": {
+        "name": "NETWORK_CHANGED",
+        "version": "2.0.0",
+        "id": "1f0c2a44-0000-4000-8000-000000000012",
+        "timestamp": "2026-02-11T09:27:00.000Z",
+        "source": "tab-8f2a",
+        "payload": { "network": "futurenet" }
+      }
+    },
+    {
+      "name": "NETWORK_CHANGED 1.0.0 stays readable so an older tab is not disconnected",
+      "event": {
+        "name": "NETWORK_CHANGED",
+        "version": "1.0.0",
+        "id": "1f0c2a44-0000-4000-8000-000000000013",
+        "timestamp": "2026-02-11T09:28:00.000Z",
+        "source": "old-tab",
+        "payload": { "network": "public" }
       }
     },
     {

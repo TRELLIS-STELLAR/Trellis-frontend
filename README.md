@@ -261,7 +261,13 @@ cp .env.example .env.local
 NEXT_PUBLIC_API_URL=http://localhost:3001
 NEXT_PUBLIC_ENVIRONMENT=development
 NEXT_PUBLIC_STELLAR_NETWORK=testnet
+# Optional feature flag: true or false
+NEXT_PUBLIC_ENABLE_BETA_FEATURES=false
 ```
+
+`npm run dev`, `npm run build`, and `npm start` validate configuration before starting. Run `npm run validate:env` to check it directly. Errors name the invalid setting but never print configured values. Local development may use HTTP and Stellar testnet. Staging and production require an HTTPS API URL and Stellar mainnet. Configure a unique, random `WEBHOOK_SECRET` of at least 32 characters only when webhook signing is enabled; placeholder and production-like secrets are rejected in local development. Keep server secrets out of `NEXT_PUBLIC_*` variables.
+
+For staging, set `NEXT_PUBLIC_ENVIRONMENT=staging`; for production, set `NEXT_PUBLIC_ENVIRONMENT=production`. Both deployment environments must provide their own HTTPS `NEXT_PUBLIC_API_URL` and set `NEXT_PUBLIC_STELLAR_NETWORK=mainnet`. Feature flags accept only `true` or `false`.
 
 #### 4. Run Contributor Diagnostics
 

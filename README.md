@@ -323,6 +323,28 @@ npm run validate:invariants -- --file /path/to/snapshot.json
 # See docs/DISASTER_RECOVERY.md for failure interpretation and escalation workflows
 ```
 
+#### 8. Invariant Monitoring
+
+Continuously check the critical funds, ownership, lifecycle, and authorization
+invariants against a dataset snapshot. Read-only: it reports findings, it never
+repairs them.
+
+```bash
+# Monitor the bundled healthy baseline
+npm run monitor:invariants
+
+# Monitor a specific snapshot, machine-readable
+npm run monitor:invariants -- --file /path/to/snapshot.json --json
+
+# Treat warnings as failures, and narrow the run while investigating
+npm run monitor:invariants -- --strict --domain funds
+
+# List the registered invariants
+npm run monitor:invariants -- --list
+
+# See docs/INVARIANT_MONITORING.md for the full registry and remediation guidance
+```
+
 ### Docker Setup (Optional)
 
 ```bash
@@ -644,6 +666,7 @@ git push origin feature/your-feature
 - **[Stellar Integration](./STELLAR_WALLET_INTEGRATION.md)** - Wallet setup
 - **[PWA Guide](./docs/PWA_IMPLEMENTATION.md)** - Progressive Web App
 - **[Metrics Dashboard](./docs/metrics-dashboard.md)** - Telemetry & monitoring
+- **[Invariant Monitoring](./docs/INVARIANT_MONITORING.md)** - Funds, ownership, lifecycle & authorization checks
 
 ---
 

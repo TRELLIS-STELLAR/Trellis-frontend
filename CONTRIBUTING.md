@@ -149,7 +149,13 @@ git checkout -b feature/your-feature-name
 ```bash
 npm run test
 npm run lint
+npm run monitor:invariants
 ```
+
+The monitor is read-only and runs in CI. If you changed a domain entity, its
+status enum, or an affiliate payout rule, run it locally first — a change that
+silently corrupts a fixture will fail the build. See
+[docs/INVARIANT_MONITORING.md](./docs/INVARIANT_MONITORING.md).
 
 4. Commit your changes using conventional commits
 

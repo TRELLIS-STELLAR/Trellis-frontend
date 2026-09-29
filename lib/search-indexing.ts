@@ -395,3 +395,143 @@ export function createSearchIndexConfig(
     facets: ['visibility', 'organizationId'],
   };
 }
+
+/**
+ * Permission fields that affect how a record is indexed beyond its searchable
+ * content. A change in any of these requires the index entry to be refreshed
+ * even when the searchable content itself is unchanged.
+ */
+const VISIBILITY_FIELDS: Array<keyof PermissionConstraint> = [
+  'isPublic',
+  'visibleTo',
+  'requiredRoles',
+  'organizationId',
+];
+
+function permissionsEqual(
+  a: PermissionConstraint,
+  b: PermissionConstraint
+): boolean {
+  return VISIBILITY_FIELDS.every(
+    (field) => JSON.stringify(a[field]) === JSON.stringify(b[field])
+  );
+}
+
+/**
+ * Diff detector: does this mutation change anything the search index cares
+ * about? Returns true when a searchable field changed or the visibility /
+ * permission scope changed, meaning the single record must be re-indexed
+ * (or removed). When nothing relevant changed the caller can skip re-indexing.
+ */
+export function hasIndexableChanges(
+  newRecord: IndexableRecord,
+  permissions: PermissionConstraint,
+  oldRecord: IndexableRecord,
+  searchableFields: string[],
+  oldPermissions?: PermissionConstraint
+): boolean {
+  const fieldsChanged = searchableFields.some(
+    (field) => JSON.stringify(oldRecord[field]) !== JSON.stringify(newRecord[field])
+  );
+  if (fieldsChanged) {
+    return true;
+  }
+
+  const previousPermissions = oldPermissions ?? permissions;
+  const oldVisibility = getRecordVisibility(oldRecord, previousPermissions);
+  const newVisibility = getRecordVisibility(newRecord, permissions);
+  if (oldVisibility !== newVisibility) {
+    return true;
+  }
+
+  return !permissionsEqual(previousPermissions, permissions);
+}
+
+/**
+ * Update an existing record in the search index incrementally.
+ *
+ * Rather than re-indexing the whole dataset, a diff detector compares the
+ * previous record state against the new one and only touches this single
+ * record's index entry:
+ *  - searchable field changed  -> single-record saveObject
+ *  - visibility/permissions changed -> single-record saveObject or removal
+ *  - nothing relevant changed  -> no-op (full rebuild avoided)
+ *
+ * `oldPermissions` is the permission state the record was last indexed under;
+ * pass it when permissions changed alongside the record so visibility
+ * transitions (e.g. a record becoming hidden) are detected.
+ */
+export async function updateRecord(
+  newRecord: IndexableRecord,
+  permissions: PermissionConstraint,
+  oldRecord?: IndexableRecord,
+  searchClient?: SearchClient,
+  indexName?: string,
+  searchableFields?: string[],
+  oldPermissions?: PermissionConstraint
+): Promise<void> {
+  if (!searchClient || !indexName) {
+    console.info(`[Search Index] Mock incremental update for ${newRecord.id}`);
+    return;
+  }
+
+  // If the previous record state and the searchable field list are known,
+  // detect whether anything the index cares about actually changed.
+  if (oldRecord && searchableFields) {
+    const changed = hasIndexableChanges(
+      newRecord,
+      permissions,
+      oldRecord,
+      searchableFields,
+      oldPermissions
+    );
+
+    if (!changed) {
+      console.info(`[Search Index] No indexable changes detected for ${newRecord.id}, skipping update`);
+      return;
+    }
+  }
+
+  const shouldIndex = shouldIndexRecord(newRecord, permissions);
+
+  try {
+    if (shouldIndex) {
+      const entry = createIndexEntry(newRecord, permissions);
+      if (entry) {
+        await searchClient.saveObject({
+          indexName,
+          body: entry,
+        });
+      }
+    } else {
+      await deleteRecord(newRecord.id, searchClient, indexName);
+    }
+  } catch (error) {
+    console.error(`[Search Index] Failed to incrementally update record ${newRecord.id}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Delete a single record from the search index.
+ */
+export async function deleteRecord(
+  recordId: string,
+  searchClient?: SearchClient,
+  indexName?: string
+): Promise<void> {
+  if (!searchClient || !indexName) {
+    console.info(`[Search Index] Mock delete record for ${recordId}`);
+    return;
+  }
+
+  try {
+    await searchClient.deleteObject({
+      indexName,
+      objectID: recordId,
+    });
+  } catch (error) {
+    console.error(`[Search Index] Failed to delete record ${recordId}:`, error);
+    throw error;
+  }
+}

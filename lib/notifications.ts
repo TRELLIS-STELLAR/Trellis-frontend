@@ -684,3 +684,84 @@ export class NotificationManager {
 }
 
 export const notificationManager = NotificationManager.getInstance();
+
+import { LifecycleNotification as LifecycleNotificationType } from './notifications/lifecycle-types';
+
+export interface NotificationThread {
+  isThread: true;
+  id: string;
+  type: string;
+  dedupKey: string;
+  notifications: LifecycleNotificationType[];
+  isRead: boolean;
+  severity: 'critical' | 'warning' | 'info' | 'success';
+  title: string;
+  createdAt: string;
+}
+
+export function groupNotificationsIntoThreads(
+  notifications: LifecycleNotificationType[]
+): (LifecycleNotificationType | NotificationThread)[] {
+  // Deduplicate first: rapid event bursts often deliver the exact same alert
+  // (same id/content) more than once, which would otherwise flood threads.
+  const seen = new Set<string>();
+  const deduped: LifecycleNotificationType[] = [];
+  for (const n of notifications) {
+    const contentKey = `${n.id}|${n.title ?? ''}|${n.message ?? ''}|${n.createdAt ?? ''}`;
+    if (seen.has(contentKey)) {
+      continue;
+    }
+    seen.add(contentKey);
+    deduped.push(n);
+  }
+
+  const groups = new Map<string, LifecycleNotificationType[]>();
+  const singletons: LifecycleNotificationType[] = [];
+
+  for (const n of deduped) {
+    if (n.type && n.dedupKey) {
+      const key = `${n.type}::${n.dedupKey}`;
+      if (!groups.has(key)) {
+        groups.set(key, []);
+      }
+      groups.get(key)!.push(n);
+    } else {
+      singletons.push(n);
+    }
+  }
+
+  const allItems: (LifecycleNotificationType | NotificationThread)[] = [];
+
+  for (const [key, group] of groups.entries()) {
+    if (group.length > 1) {
+      group.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      const isRead = group.every(n => n.isRead);
+      const severities = group.map(n => n.severity);
+      let highestSeverity: 'critical' | 'warning' | 'info' | 'success' = 'info';
+      if (severities.includes('critical')) highestSeverity = 'critical';
+      else if (severities.includes('warning')) highestSeverity = 'warning';
+      else if (severities.includes('success')) highestSeverity = 'success';
+
+      const formattedType = group[0].type.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      
+      allItems.push({
+        isThread: true,
+        id: `thread_${key}`,
+        type: group[0].type,
+        dedupKey: group[0].dedupKey,
+        notifications: group,
+        isRead,
+        severity: highestSeverity,
+        title: `${group.length} ${formattedType}`,
+        createdAt: group[0].createdAt,
+      });
+    } else {
+      allItems.push(group[0]);
+    }
+  }
+
+  allItems.push(...singletons);
+  allItems.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+  return allItems;
+}

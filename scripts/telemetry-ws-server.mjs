@@ -283,11 +283,6 @@ wss.on('connection', (ws, req) => {
       return;
     }
 
-    if (message.type === 'telemetry.ping') {
-      sendJson(ws, { type: 'telemetry.pong', ts: Date.now() });
-      return;
-    }
-
     if (message.type === 'telemetry.publish') {
       broadcast(ws.telemetryRole, forRole(message.event, ws.telemetryRole), ws);
     }

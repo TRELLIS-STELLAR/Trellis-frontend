@@ -180,7 +180,6 @@ export type ParsedTelemetryFrame =
   | { kind: 'candidate'; candidate: unknown }
   | { kind: 'no-peer' }
   | { kind: 'welcome' }
-  | { kind: 'pong' }
   | { kind: 'telemetry'; raw: Record<string, unknown> }
   | { kind: 'telemetry-batch'; items: unknown[] }
   | { kind: 'invalid' }
@@ -222,7 +221,6 @@ export function parseTelemetryFrame(raw: unknown): ParsedTelemetryFrame {
   const frame = value as Record<string, unknown>;
   if (frame.type === 'telemetry_welcome') return { kind: 'welcome' };
   if (frame.type === 'telemetry.no-producer') return { kind: 'no-peer' };
-  if (frame.type === 'telemetry.pong') return { kind: 'pong' };
 
   if (frame.type === 'telemetry.signaling') {
     if (frame.action === 'answer' && frame.sdp && typeof frame.sdp === 'object') {
@@ -306,8 +304,6 @@ export class TelemetryTransport {
   private connectTimer: TimerHandle | null = null;
   private iceTimer: TimerHandle | null = null;
   private reconnectTimer: TimerHandle | null = null;
-  private pingTimer: TimerHandle | null = null;
-  private pongTimeout: TimerHandle | null = null;
   private reconnectAttempts = 0;
   private started = false;
   private disposed = false;
@@ -490,7 +486,6 @@ export class TelemetryTransport {
       this.clearIceTimeout();
       this.reconnectAttempts = 0;
       this.emit({ type: 'webrtc-open', now: Date.now() });
-      this.startHeartbeat();
     };
     channel.onmessage = (ev) => {
       if (this.channel !== channel) return;
@@ -530,7 +525,6 @@ export class TelemetryTransport {
     this.sendJson({ type: 'telemetry.subscribe', role: this.options.role });
     this.reconnectAttempts = 0;
     this.emit({ type: 'websocket-open', now: Date.now() });
-    this.startHeartbeat();
   }
 
   /* ---------------------------- socket handlers --------------------------- */
@@ -570,9 +564,6 @@ export class TelemetryTransport {
         break;
       case 'telemetry-batch':
         for (const item of frame.items) this.options.onMessage?.(item);
-        break;
-      case 'pong':
-        this.handlePong();
         break;
       case 'invalid':
         this.notifyError('Invalid telemetry frame');
@@ -625,8 +616,6 @@ export class TelemetryTransport {
       this.options.onMessage?.(frame.raw);
     } else if (frame.kind === 'telemetry-batch') {
       for (const item of frame.items) this.options.onMessage?.(item);
-    } else if (frame.kind === 'pong') {
-      this.handlePong();
     } else if (frame.kind === 'invalid') {
       this.notifyError('Invalid telemetry frame');
     }
@@ -640,8 +629,7 @@ export class TelemetryTransport {
       return;
     }
     this.reconnectAttempts += 1;
-    const baseDelay = this.options.reconnectBaseDelayMs ?? 1000;
-    const delay = Math.min(30000, baseDelay * Math.pow(2, this.reconnectAttempts - 1));
+    const delay = (this.options.reconnectBaseDelayMs ?? 1000) * this.reconnectAttempts;
     this.notifyError(`Telemetry transport interrupted: ${reason}`);
     this.emit({ type: 'reconnect', now: Date.now() });
     this.clearReconnectTimer();
@@ -775,33 +763,5 @@ export class TelemetryTransport {
     this.clearConnectTimeout();
     this.clearIceTimeout();
     this.clearReconnectTimer();
-    this.stopHeartbeat();
-  }
-
-  private startHeartbeat(): void {
-    this.stopHeartbeat();
-    this.pingTimer = this.setTimer(() => {
-      this.pingTimer = null;
-      if (this.disposed || this.machine.getState().status !== 'open') return;
-      this.sendJson({ type: 'telemetry.ping', ts: Date.now() });
-      this.pongTimeout = this.setTimer(() => {
-        this.pongTimeout = null;
-        this.notifyError('Heartbeat timeout (no pong received)');
-        this.scheduleReconnect('heartbeat timeout');
-      }, 3000);
-    }, 5000);
-  }
-
-  private stopHeartbeat(): void {
-    this.clearTimer(this.pingTimer);
-    this.clearTimer(this.pongTimeout);
-    this.pingTimer = null;
-    this.pongTimeout = null;
-  }
-
-  private handlePong(): void {
-    this.clearTimer(this.pongTimeout);
-    this.pongTimeout = null;
-    this.startHeartbeat(); // Schedule next ping
   }
 }

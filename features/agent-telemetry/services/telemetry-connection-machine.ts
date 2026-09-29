@@ -163,7 +163,7 @@ export function isTelemetryConnectionOpen(state: TelemetryConnectionState): bool
 }
 
 /** Status union kept by the pre-existing dashboard hook, for a non-breaking swap. */
-export type LegacyTelemetryStatus = 'idle' | 'connecting' | 'open' | 'closed' | 'error' | 'reconnecting' | 'disconnected';
+export type LegacyTelemetryStatus = 'idle' | 'connecting' | 'open' | 'closed' | 'error';
 
 /** Collapse the richer machine status onto the dashboard's original status union. */
 export function toLegacyTelemetryStatus(state: TelemetryConnectionState): LegacyTelemetryStatus {
@@ -171,12 +171,12 @@ export function toLegacyTelemetryStatus(state: TelemetryConnectionState): Legacy
     case 'open':
       return 'open';
     case 'error':
+      return 'error';
     case 'closed':
-      return 'disconnected';
-    case 'reconnecting':
-      return 'reconnecting';
+      return 'closed';
     case 'connecting':
     case 'negotiating':
+    case 'reconnecting':
       return 'connecting';
     default:
       return 'idle';

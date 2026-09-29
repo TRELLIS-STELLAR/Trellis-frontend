@@ -28,12 +28,51 @@ const PRODUCER_WAIT_MS = parseInt(process.env.TELEMETRY_PRODUCER_WAIT_MS || '250
 /** Legacy clients that never negotiate get the WebSocket stream after this delay. */
 const LEGACY_GRACE_MS = parseInt(process.env.TELEMETRY_LEGACY_GRACE_MS || '1500', 10);
 const STREAM_INTERVAL_MS = parseInt(process.env.TELEMETRY_STREAM_INTERVAL_MS || '2000', 10);
+const RPC_URL = process.env.OPERATIONAL_HEALTH_RPC_URL || '';
 
 const EVENT_TYPES = ['heartbeat', 'status', 'error', 'task_started', 'task_completed'];
 const SEVERITIES = ['debug', 'info', 'warn', 'error', 'critical'];
 const AGENTS = ['agent_a7f3', 'agent_b2c9', 'agent_m1k4'];
 
 let seq = 0;
+let latestRpcLatencyMs = null;
+let rpcProbeInFlight = false;
+
+async function refreshRpcLatency() {
+  if (!RPC_URL || rpcProbeInFlight) return;
+  rpcProbeInFlight = true;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), Math.min(STREAM_INTERVAL_MS, 2500));
+  const started = performance.now();
+
+  try {
+    const response = await fetch(RPC_URL, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ jsonrpc: '2.0', id: 'operations-health', method: 'getHealth' }),
+      signal: controller.signal,
+    });
+    latestRpcLatencyMs = response.ok ? Math.round(performance.now() - started) : null;
+  } catch {
+    latestRpcLatencyMs = null;
+  } finally {
+    clearTimeout(timeout);
+    rpcProbeInFlight = false;
+  }
+}
+
+function buildOperationalMetricSample() {
+  void refreshRpcLatency();
+  const memory = process.memoryUsage();
+  return {
+    type: 'operational.metrics',
+    ts: Date.now(),
+    heapUsedBytes: memory.heapUsed,
+    heapTotalBytes: memory.heapTotal,
+    activeConnections: wss.clients.size,
+    rpcLatencyMs: latestRpcLatencyMs,
+  };
+}
 
 function buildEvent() {
   seq += 1;
@@ -234,6 +273,7 @@ wss.on('connection', (ws, req) => {
     streamTimer = setInterval(() => {
       if (ws.readyState !== 1) return;
       sendJson(ws, forRole(buildEvent(), role));
+      sendJson(ws, buildOperationalMetricSample());
     }, STREAM_INTERVAL_MS);
     streamTimer.unref?.();
   }

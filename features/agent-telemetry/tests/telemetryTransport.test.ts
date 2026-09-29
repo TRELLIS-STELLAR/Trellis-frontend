@@ -324,6 +324,67 @@ describe('telemetry transport fallback', () => {
     }
   });
 
+  it('increases reconnect delay exponentially', () => {
+    jest.useFakeTimers();
+    try {
+      const h = createHarness({ peer: null });
+      h.transport.start();
+      h.socket.open();
+      expect(h.transport.getState().status).toBe('open');
+
+      h.socket.onclose?.();
+      expect(h.transport.getState().status).toBe('reconnecting');
+
+      // first reconnect delay is 1000 * 2^0 = 1000
+      jest.advanceTimersByTime(1000);
+      expect(h.transport.getState().status).toBe('connecting');
+      h.socket.onclose?.();
+
+      expect(h.transport.getState().status).toBe('reconnecting');
+
+      // second reconnect delay is 1000 * 2^1 = 2000
+      jest.advanceTimersByTime(1999);
+      expect(h.transport.getState().status).toBe('reconnecting');
+      jest.advanceTimersByTime(1);
+      expect(h.transport.getState().status).toBe('connecting');
+      h.socket.onclose?.();
+      
+      expect(h.transport.getState().status).toBe('reconnecting');
+      
+      // third reconnect delay is 1000 * 2^2 = 4000
+      jest.advanceTimersByTime(4000);
+      expect(h.transport.getState().status).toBe('connecting');
+
+      h.dispose();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it('closes connection on heartbeat timeout', () => {
+    jest.useFakeTimers();
+    try {
+      const h = createHarness({ peer: null });
+      h.transport.start();
+      h.socket.open();
+      expect(h.transport.getState().status).toBe('open');
+
+      // heartbeat fires after 5000ms
+      jest.advanceTimersByTime(5000);
+      expect(h.socket.frames()).toContainEqual({ type: 'telemetry.ping', ts: expect.any(Number) });
+      
+      // pong timeout is 3000ms
+      jest.advanceTimersByTime(3000);
+      
+      // connection should have been closed and reconnected
+      expect(h.transport.getState().status).toBe('reconnecting');
+      
+      h.dispose();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
   it('is final after dispose', () => {
     const h = createHarness({ peer: null });
     h.transport.start();

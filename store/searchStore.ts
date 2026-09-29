@@ -12,7 +12,6 @@ interface SearchState {
   loading: boolean;
   error: string | null;
   hasHydrated: boolean;
-  isFallback: boolean;
 }
 
 interface SearchActions {
@@ -34,7 +33,6 @@ const initialSearchState: SearchState = {
   loading: false,
   error: null,
   hasHydrated: false,
-  isFallback: false,
 };
 
 export const useSearchStore = create<SearchStore>()(
@@ -47,8 +45,8 @@ export const useSearchStore = create<SearchStore>()(
       fetchSearchResults: async ({ query, filters }) => {
         set({ loading: true, error: null });
         try {
-          const res = await searchAgents(query, filters);
-          set({ results: res.data, isFallback: res.isFallback, loading: false });
+          const results = await searchAgents(query, filters);
+          set({ results, loading: false });
         } catch (error) {
           set({
             loading: false,
@@ -85,7 +83,6 @@ export const useSearchStore = create<SearchStore>()(
           loading: false,
           error: null,
           hasHydrated: false,
-          isFallback: false,
         };
 
         if (version <= 0) {

@@ -2,75 +2,7 @@
 
 import { useState } from 'react';
 import { RecommendationCarousel } from '@/features/recommendations/components/RecommendationCarousel';
-import { useSemanticSearch } from '@/features/agent-discovery/hooks/useSemanticSearch';
-import type { AgentDocument } from '@/features/agent-discovery/semantic/types';
-
-type MarketplaceAgent = AgentDocument & {
-  rating: number;
-  users: number;
-  icon: string;
-};
-
-// Module-level so the reference is stable: `useSemanticSearch` re-indexes only
-// when the catalogue actually changes.
-const AGENTS: MarketplaceAgent[] = [
-  {
-    id: 1,
-    name: 'DataBot Pro',
-    description: 'Advanced data analysis and insights for complex datasets.',
-    author: 'DataTeam',
-    rating: 4.8,
-    users: 1250,
-    icon: '📊',
-  },
-  {
-    id: 2,
-    name: 'AutoWriter',
-    description: 'AI-powered content generation for blogs and social media.',
-    author: 'ContentStudio',
-    rating: 4.6,
-    users: 890,
-    icon: '✍️',
-  },
-  {
-    id: 3,
-    name: 'CodeAssistant',
-    description: 'Intelligent code generation and debugging in multiple languages.',
-    author: 'DevTools',
-    rating: 4.9,
-    users: 2100,
-    icon: '💻',
-  },
-  {
-    id: 4,
-    name: 'Sentinel AI',
-    description: 'Enhanced security and threat detection for your infrastructure.',
-    author: 'CyberShield',
-    rating: 4.7,
-    users: 540,
-    icon: '🛡️',
-  },
-  {
-    id: 5,
-    name: 'Flux Designer',
-    description: 'Generative art and UI design components from simple prompts.',
-    author: 'CreativeFlow',
-    rating: 4.5,
-    users: 1670,
-    icon: '🎨',
-  },
-  {
-    id: 6,
-    name: 'QuantX',
-    description: 'Financial analysis and market trend prediction engine.',
-    author: 'FinTechAI',
-    rating: 4.9,
-    users: 3200,
-    icon: '📈',
-  },
-];
-
-const MIN_QUERY_LENGTH = 2;
+import { useSearch } from '@/features/agent-discovery/hooks/useSearch';
 
 /**
  * The event type is declared locally so this component also type-checks in
@@ -80,34 +12,29 @@ const MIN_QUERY_LENGTH = 2;
 type InputChange = { target: { value: string } };
 
 export default function Marketplace() {
-  const [query, setQuery] = useState('');
+  const { query, setQuery, filters, setFilters, results, loading, error, isFallback } = useSearch();
+  const [showFilters, setShowFilters] = useState(false);
+
   const trimmedQuery = query.trim();
-  const isSearching = trimmedQuery.length >= MIN_QUERY_LENGTH;
-
-  // Natural-language search over the catalogue, ranked in the browser. When the
-  // ONNX model cannot load the hook still ranks lexically, so `visible` is never
-  // silently empty.
-  const { results, status, semantic, error } = useSemanticSearch<MarketplaceAgent>(
-    AGENTS,
-    query,
-    { limit: AGENTS.length },
-  );
-
-  const visible = isSearching ? results.map((hit) => hit.agent) : AGENTS;
+  const isSearching = trimmedQuery.length >= 2 || Object.values(filters).some(v => v !== '' && v !== 'All' && v !== undefined);
 
   let statusMessage: string;
-  if (!isSearching) {
-    statusMessage = `Search by meaning — try “audit financial records” or “threat detection”.`;
-  } else if (status === 'indexing') {
-    statusMessage = 'Preparing semantic search…';
-  } else if (status === 'searching') {
-    statusMessage = 'Searching…';
-  } else if (status === 'error') {
-    statusMessage = `Search error: ${error ?? 'unknown'}`;
+  if (loading) {
+    statusMessage = 'Searching...';
+  } else if (error) {
+    statusMessage = `Search error: ${error}`;
   } else {
-    const count = `${visible.length} ${visible.length === 1 ? 'match' : 'matches'}`;
-    statusMessage = `${count} for “${trimmedQuery}”${semantic ? '' : ' (keyword fallback)'}`;
+    const count = `${results.length} ${results.length === 1 ? 'match' : 'matches'}`;
+    statusMessage = `${count} for “${trimmedQuery || 'all'}”${isFallback ? ' (local fallback index)' : ''}`;
   }
+
+  const handleFilterChange = (key: string, value: string | boolean) => {
+    setFilters({ ...filters, [key]: value });
+  };
+
+  const clearFilters = () => {
+    setFilters({ category: 'All', network: 'All', verified: '', minRating: '', minPrice: '', maxPrice: '' });
+  };
 
   return (
     <main className="pt-24 pb-20 px-4 sm:px-6">
@@ -136,60 +63,123 @@ export default function Marketplace() {
                   aria-label="Search agents by description"
                   className="w-full sm:w-80 px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm outline-none focus:border-trellis-leaf/60 transition-smooth"
                 />
-                <button className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm hover:bg-white/10 transition-smooth">
-                  Filters
+                <button 
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={`px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm transition-smooth ${showFilters ? 'bg-white/10' : 'hover:bg-white/10'}`}
+                >
+                  Filters {Object.values(filters).filter(v => v !== '' && v !== 'All' && v !== undefined).length > 0 && '(Active)'}
                 </button>
-                {/*
-                  Native select chrome (arrow, padding, background) is drawn
-                  differently by every engine, so the control opts out of it
-                  (appearance-none) and draws its own indicator instead. See
-                  e2e/viewport.spec.ts, which asserts the consistency.
-                */}
-                <div className="relative flex items-center">
-                  <select
-                    aria-label="Sort agents"
-                    defaultValue="Popularity"
-                    className="appearance-none min-h-[44px] px-4 py-2 pr-9 bg-trellis-ground border border-white/10 rounded-lg text-sm text-gray-200 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trellis-leaf outline-none transition-smooth touch-manipulation"
-                  >
-                    <option className="bg-trellis-ground text-white">Popularity</option>
-                    <option className="bg-trellis-ground text-white">Newest</option>
-                    <option className="bg-trellis-ground text-white">Rating</option>
-                  </select>
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute right-3 text-xs text-gray-400"
-                  >
-                    ▾
-                  </span>
-                </div>
               </div>
             </div>
+
+            {showFilters && (
+              <div className="mb-8 p-6 bg-white/5 border border-white/10 rounded-xl">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold">Filter Agents</h3>
+                  <button onClick={clearFilters} className="text-sm text-trellis-leaf hover:underline">Clear all</button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-2">Category</label>
+                    <select 
+                      value={String(filters.category || 'All')}
+                      onChange={(e) => handleFilterChange('category', e.target.value)}
+                      className="w-full px-3 py-2 bg-trellis-ground border border-white/10 rounded-lg text-sm"
+                    >
+                      <option value="All">All Categories</option>
+                      <option value="DeFi">DeFi</option>
+                      <option value="NFT">NFT</option>
+                      <option value="Gaming">Gaming</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-2">Stellar Network</label>
+                    <select 
+                      value={String(filters.network || 'All')}
+                      onChange={(e) => handleFilterChange('network', e.target.value)}
+                      className="w-full px-3 py-2 bg-trellis-ground border border-white/10 rounded-lg text-sm"
+                    >
+                      <option value="All">Any Network</option>
+                      <option value="Mainnet">Mainnet</option>
+                      <option value="Testnet">Testnet</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-2">Verification Status</label>
+                    <select 
+                      value={String(filters.verified || '')}
+                      onChange={(e) => handleFilterChange('verified', e.target.value)}
+                      className="w-full px-3 py-2 bg-trellis-ground border border-white/10 rounded-lg text-sm"
+                    >
+                      <option value="">Any Status</option>
+                      <option value="true">Verified Only</option>
+                      <option value="false">Unverified Only</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-2">Minimum Rating</label>
+                    <input 
+                      type="number" min="0" max="5" step="0.1"
+                      value={String(filters.minRating || '')}
+                      onChange={(e) => handleFilterChange('minRating', e.target.value)}
+                      placeholder="e.g. 4.5"
+                      className="w-full px-3 py-2 bg-trellis-ground border border-white/10 rounded-lg text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-2">Price Range (Min)</label>
+                    <input 
+                      type="number" min="0"
+                      value={String(filters.minPrice || '')}
+                      onChange={(e) => handleFilterChange('minPrice', e.target.value)}
+                      placeholder="Min price"
+                      className="w-full px-3 py-2 bg-trellis-ground border border-white/10 rounded-lg text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-2">Price Range (Max)</label>
+                    <input 
+                      type="number" min="0"
+                      value={String(filters.maxPrice || '')}
+                      onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
+                      placeholder="Max price"
+                      className="w-full px-3 py-2 bg-trellis-ground border border-white/10 rounded-lg text-sm"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
 
             <p className="text-xs text-gray-500 mb-8" aria-live="polite">
               {statusMessage}
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-              {visible.map((agent) => (
+              {results.map((agent) => (
                   <div
                     key={agent.id}
-                    onClick={() => trackAgentInteraction(agent.name, agent.description)}
                     className="p-6 md:p-8 rounded-2xl border border-trellis-vine/20 hover:border-trellis-leaf/50 hover:shadow-xl hover:shadow-trellis-leaf/10 transition-all duration-300 nebula-bg cursor-pointer group flex flex-col h-full active:scale-[0.98] touch-manipulation"
                   >
-                    <div className="text-4xl mb-6 bg-white/5 w-16 h-16 flex items-center justify-center rounded-2xl group-hover:scale-110 transition-smooth">
-                      {agent.icon}
+                    <div className="flex justify-between items-start mb-6">
+                      <div className="text-4xl bg-white/5 w-16 h-16 flex items-center justify-center rounded-2xl group-hover:scale-110 transition-smooth">
+                        {agent.icon || '🤖'}
+                      </div>
+                      {agent.verified && (
+                        <span className="px-2 py-1 bg-blue-500/20 text-blue-300 text-xs rounded border border-blue-500/30">Verified</span>
+                      )}
                     </div>
-                    <h3 className="text-xl font-bold mb-3 glow-text group-hover:text-trellis-amber transition-smooth">
+                    <h3 className="text-xl font-bold mb-1 glow-text group-hover:text-trellis-amber transition-smooth flex items-center gap-2">
                         {agent.name}
                     </h3>
+                    <p className="text-xs text-trellis-leaf mb-3">{agent.category} • {agent.network}</p>
                     <p className="text-gray-400 text-sm mb-6 leading-relaxed flex-grow">{agent.description}</p>
                     
                     <div className="space-y-4 pt-4 border-t border-white/5">
                         <div className="flex justify-between items-center text-xs">
                           <span className="text-gray-500">by <span className="text-trellis-vine font-medium">{agent.author}</span></span>
                           <div className="flex items-center gap-3">
-                            <span className="flex items-center gap-1 text-yellow-500">⭐ <span className="text-gray-300 font-semibold">{agent.rating}</span></span>
-                            <span className="flex items-center gap-1 text-trellis-amber">👥 <span className="text-gray-300 font-semibold">{agent.users}</span></span>
+                            <span className="flex items-center gap-1 text-yellow-500">⭐ <span className="text-gray-300 font-semibold">{agent.rating || 'N/A'}</span></span>
+                            <span className="flex items-center gap-1 text-trellis-amber">💰 <span className="text-gray-300 font-semibold">{agent.price ? `${agent.price} XLM` : 'Free'}</span></span>
                           </div>
                         </div>
                         <button className="w-full min-h-[44px] py-3 bg-trellis-vine/20 hover:bg-trellis-vine/40 border border-trellis-vine/30 rounded-xl transition-smooth font-bold text-sm tracking-wide focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trellis-leaf active:scale-[0.99] touch-manipulation">
@@ -200,9 +190,9 @@ export default function Marketplace() {
               ))}
             </div>
 
-            {isSearching && visible.length === 0 && status === 'ready' && (
+            {!loading && results.length === 0 && (
               <p className="text-gray-400 text-sm mt-8">
-                No agents match that description yet. Try different wording.
+                No agents match that description yet. Try different wording or clear filters.
               </p>
             )}
         </section>

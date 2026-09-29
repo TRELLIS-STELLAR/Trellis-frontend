@@ -109,13 +109,13 @@ export default function AgentTelemetryDashboardPage() {
                 className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md border ${
                   status === 'open'
                     ? 'border-emerald-500/40 text-emerald-200'
-                    : status === 'connecting'
+                    : status === 'connecting' || status === 'reconnecting'
                       ? 'border-amber-500/40 text-amber-200'
                       : 'border-gray-600 text-gray-400'
                 }`}
               >
                 <span className="w-2 h-2 rounded-full bg-current animate-pulse" aria-hidden />
-                {status === 'open' ? 'Live' : status}
+                {status === 'open' ? 'Live' : status === 'reconnecting' ? 'Reconnecting' : status === 'disconnected' ? 'Disconnected' : status}
               </span>
               {usingMock && (
                 <span className="text-xs text-gray-500 border border-trellis-vine/20 rounded px-2 py-1">

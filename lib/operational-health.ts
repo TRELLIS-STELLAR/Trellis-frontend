@@ -11,6 +11,43 @@ export interface OperationalHealth {
   }>;
 }
 
+export interface OperationalMetricSample {
+  ts: number;
+  heapUsedBytes: number;
+  heapTotalBytes: number;
+  activeConnections: number;
+  rpcLatencyMs: number | null;
+}
+
+export const MAX_OPERATIONAL_METRIC_SAMPLES = 60;
+export const OPERATIONAL_MEMORY_WARNING_RATIO = 0.8;
+export const OPERATIONAL_MEMORY_CRITICAL_RATIO = 0.9;
+
+export function isOperationalMetricSample(value: unknown): value is OperationalMetricSample {
+  if (!value || typeof value !== "object") return false;
+  const sample = value as Record<string, unknown>;
+  return (
+    typeof sample.ts === "number" && Number.isFinite(sample.ts) &&
+    typeof sample.heapUsedBytes === "number" && Number.isFinite(sample.heapUsedBytes) && sample.heapUsedBytes >= 0 &&
+    typeof sample.heapTotalBytes === "number" && Number.isFinite(sample.heapTotalBytes) && sample.heapTotalBytes > 0 &&
+    typeof sample.activeConnections === "number" && Number.isFinite(sample.activeConnections) && sample.activeConnections >= 0 &&
+    (sample.rpcLatencyMs === null ||
+      (typeof sample.rpcLatencyMs === "number" && Number.isFinite(sample.rpcLatencyMs) && sample.rpcLatencyMs >= 0))
+  );
+}
+
+/** Appends one sample without mutating the prior buffer and keeps it bounded. */
+export function appendOperationalMetricSample(
+  samples: readonly OperationalMetricSample[],
+  sample: OperationalMetricSample,
+  maxSamples = MAX_OPERATIONAL_METRIC_SAMPLES,
+): OperationalMetricSample[] {
+  if (!Number.isInteger(maxSamples) || maxSamples < 1) {
+    throw new Error("maxSamples must be a positive integer");
+  }
+  return [...samples, sample].slice(-maxSamples);
+}
+
 export function buildOperationalHealth(
   reports: readonly BugReport[],
   now = Date.now(),

@@ -9,17 +9,57 @@ import {
 } from "@/lib/security/report";
 import { ScanRequest, AuditRecord } from "@/lib/security/types";
 import { isFeatureEnabled } from "@/lib/feature-flags";
+import { deniedResponse, requireActor } from "@/lib/auth";
+import { checkPermission, type Action, type Scope } from "@/lib/permissions";
 
 const auditStore: AuditRecord[] = [];
 
+/**
+ * Which matrix action guards each action on this endpoint, and at what scope.
+ *
+ * `scan` reads a contract the caller supplied, so it stays open to any signed-in
+ * user. `export` and `audit-history` reveal one project's security output, so
+ * they are checked at `project` scope — which is what lets a maintainer pass and
+ * a contributor fail. `record-audit` writes into the platform-wide trail that
+ * `audit-history` serves, so it is checked at `global` and is admin-only.
+ *
+ * Before this change the endpoint had no authorization at all, so any caller
+ * could append to the audit trail or export security output.
+ */
+const ACTION_PERMISSION: Record<string, { action: Action; scope: Scope } | null> = {
+  scan: null,
+  "audit-history": { action: "view_audit_logs", scope: "project" },
+  export: { action: "export_data", scope: "project" },
+  "record-audit": { action: "manage_security", scope: "global" },
+};
+
 export async function POST(request: NextRequest) {
+  // Identity before parsing, so an anonymous caller cannot use the validation
+  // path to probe the endpoint.
+  const identity = await requireActor(request);
+  if (!identity.ok) return identity.response;
+
   try {
     const body: ScanRequest & {
       action?: string;
       format?: string;
+      confirm?: boolean;
       auditRecord?: AuditRecord;
     } = await request.json();
     const { action } = body;
+
+    const guarded = typeof action === "string" ? ACTION_PERMISSION[action] : undefined;
+    if (guarded) {
+      // `manage_security` carries a `requires_confirmation` condition, satisfied
+      // by an explicit `confirm: true` sent alongside the record.
+      const decision = checkPermission(guarded.action, {
+        role: identity.actor.role,
+        actorId: identity.actor.id,
+        resourceScope: guarded.scope,
+        context: { confirmed: body.confirm === true },
+      });
+      if (!decision.allowed) return deniedResponse(decision);
+    }
 
     if (action === "scan") {
       const scanner = new SorobanSecurityScanner(body.network);

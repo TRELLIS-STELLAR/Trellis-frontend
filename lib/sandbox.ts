@@ -10,6 +10,7 @@
  *   - the generated mock wallet (`lib/sandbox-wallet`)
  *   - the active failure preset (`lib/sandbox-scenarios`)
  *   - the recorder + replay adapter (`lib/sandbox-replay`)
+ *   - stubbed Soroban contract storage (`lib/sandbox-storage`)
  *
  * Keeping them here means `reset()` genuinely resets the sandbox, which is what
  * test suites and the UI both expect.
@@ -18,6 +19,7 @@
 import type { MockBalance, MockWalletState } from "./sandbox-wallet";
 import type { SandboxScenarioId } from "./sandbox-scenarios";
 import type { ScenarioRecorder, TransactionReplayAdapter } from "./sandbox-replay";
+import type { SorobanStorageType, StorageStubEntry } from "./sandbox-storage";
 
 export type SandboxMode = "disabled" | "enabled" | "mock_only";
 
@@ -56,6 +58,10 @@ export interface SandboxStatusSnapshot {
     position: number;
     strategy: string;
   } | null;
+  storage: {
+    size: number;
+    byType: Record<SorobanStorageType, number>;
+  } | null;
 }
 
 const DEFAULT_CONFIG: SandboxConfig = {
@@ -73,6 +79,7 @@ class SandboxManager {
   private activeScenarioId: SandboxScenarioId | null = null;
   private replayAdapter: TransactionReplayAdapter | null = null;
   private recorder: ScenarioRecorder | null = null;
+  private storageStubs: StorageStubEntry[] = [];
   private listeners = new Set<() => void>();
 
   initialize(overrides?: Partial<SandboxConfig>): void {
@@ -195,6 +202,28 @@ class SandboxManager {
   }
 
   /* ---------------------------------------------------------------- *
+   * Soroban storage stubs
+   * ---------------------------------------------------------------- */
+
+  setStorageStubs(entries: readonly StorageStubEntry[]): StorageStubEntry[] {
+    this.storageStubs = entries.map((entry) => ({ ...entry }));
+    this.emit();
+    return this.getStorageStubs();
+  }
+
+  getStorageStubs(): StorageStubEntry[] {
+    return this.storageStubs.map((entry) => ({ ...entry }));
+  }
+
+  hasStorageStubs(): boolean {
+    return this.storageStubs.length > 0;
+  }
+
+  clearStorageStubs(): void {
+    this.setStorageStubs([]);
+  }
+
+  /* ---------------------------------------------------------------- *
    * Recorder + replay
    * ---------------------------------------------------------------- */
 
@@ -266,6 +295,18 @@ class SandboxManager {
             strategy: adapter.getPolicy().strategy,
           }
         : null,
+      storage: this.storageStubs.length
+        ? {
+            size: this.storageStubs.length,
+            byType: this.storageStubs.reduce<Record<SorobanStorageType, number>>(
+              (counts, entry) => {
+                counts[entry.storage] += 1;
+                return counts;
+              },
+              { instance: 0, persistent: 0, temporary: 0 },
+            ),
+          }
+        : null,
     };
   }
 
@@ -276,6 +317,7 @@ class SandboxManager {
     this.activeScenarioId = null;
     this.replayAdapter = null;
     this.recorder = null;
+    this.storageStubs = [];
     this.emit();
   }
 

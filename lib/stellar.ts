@@ -360,6 +360,7 @@ export async function submitTransaction(
     return {
       success: true,
       hash: result.hash,
+      ledger: result.ledger,
     };
   } catch (error: any) {
     return {

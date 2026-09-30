@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { deniedResponse, requireActor } from '@/lib/auth';
+import { checkPermission } from '@/lib/permissions';
 
 /**
  * #45 — Data retention policy enforcement endpoint.
@@ -19,6 +21,21 @@ import { z } from 'zod';
  *
  * POST /api/retention/run   — execute a dry-run or live cleanup
  * GET  /api/retention/run   — return the current policy table
+ *
+ * ## Authorization
+ *
+ * `POST` deletes records irreversibly and previously had no authorization at
+ * all — anyone who could reach the endpoint could trigger a cleanup. It now
+ * requires the `run_retention_cleanup` grant, which the matrix restricts to
+ * `admin` at `global` scope.
+ *
+ * That grant carries a `requires_confirmation` condition, satisfied only by
+ * `dryRun: false`. A `dryRun: true` request is therefore a real check — a
+ * maintainer can be told what a cleanup *would* remove — but a deliberately
+ * unusable one: the delete path is unreachable without explicitly opting out of
+ * the dry run.
+ *
+ * `GET` only returns the static policy table, so it stays open.
  */
 
 // ── Policy definitions ────────────────────────────────────────────────────────
@@ -121,6 +138,12 @@ export async function GET(_request: NextRequest) {
  * Body: { dryRun?: boolean, dataClasses?: DataClass[] }
  */
 export async function POST(request: NextRequest) {
+  // Identity first. An anonymous caller should not reach schema validation, and
+  // the `dryRun` flag that satisfies the confirmation condition comes from the
+  // body, so the action cannot be authorized until after the body is read.
+  const identity = await requireActor(request);
+  if (!identity.ok) return identity.response;
+
   let body: unknown;
   try {
     body = await request.json();
@@ -137,6 +160,17 @@ export async function POST(request: NextRequest) {
   }
 
   const { dryRun, dataClasses } = parsed.data;
+
+  // Irreversible and spans every data class, so the grant is admin-only and the
+  // `requires_confirmation` condition is satisfied only by `dryRun: false`.
+  const decision = checkPermission('run_retention_cleanup', {
+    role: identity.actor.role,
+    actorId: identity.actor.id,
+    resourceScope: 'global',
+    context: { confirmed: dryRun === false },
+  });
+  if (!decision.allowed) return deniedResponse(decision);
+
   const targets: DataClass[] = dataClasses ?? (Object.keys(POLICY_TABLE) as DataClass[]);
 
   const results: CleanupResult[] = [];

@@ -23,6 +23,7 @@ import PWAManager, {
   type OfflineQueueStorage,
   type OfflineSubmission,
 } from '@/lib/pwa-utils';
+import { subscribeDomainEvent } from '@/lib/domain-events';
 
 const makeSubmission = (overrides: Partial<OfflineSubmission> = {}): OfflineSubmission => ({
   id: 'sub-1',
@@ -361,10 +362,11 @@ describe('PWAManager offline submissions', () => {
 
   it('queues a submission, persists it and announces the new backlog', async () => {
     const changes: number[] = [];
-    const listener = (event: Event) =>
-      changes.push((event as CustomEvent<{ pending: number }>).detail.pending);
-
-    window.addEventListener(OFFLINE_QUEUE_CHANGE_EVENT, listener);
+    // Consumed through the versioned contract rather than a raw CustomEvent
+    // cast: the payload is only delivered because it validated.
+    const unsubscribe = subscribeDomainEvent('offline-queue-change', (payload) => {
+      changes.push(payload.pending);
+    });
 
     try {
       const manager = createFreshManager();
@@ -379,7 +381,7 @@ describe('PWAManager offline submissions', () => {
       expect(readStoredQueue()).toHaveLength(1);
       expect(changes).toEqual([1]);
     } finally {
-      window.removeEventListener(OFFLINE_QUEUE_CHANGE_EVENT, listener);
+      unsubscribe();
     }
   });
 
@@ -403,9 +405,9 @@ describe('PWAManager offline submissions', () => {
     stubServiceWorker(makeRegistration({ sync: { register: jest.fn() } }));
 
     const synced: string[][] = [];
-    const listener = (event: Event) =>
-      synced.push((event as CustomEvent<{ synced: string[] }>).detail.synced);
-    window.addEventListener(OFFLINE_QUEUE_SYNCED_EVENT, listener);
+    const unsubscribe = subscribeDomainEvent('offline-queue-synced', (payload) => {
+      synced.push(payload.synced);
+    });
 
     try {
       const manager = createFreshManager();
@@ -428,7 +430,7 @@ describe('PWAManager offline submissions', () => {
       expect(await manager.getPendingSubmissionCount()).toBe(0);
       expect(readStoredQueue()).toEqual([]);
     } finally {
-      window.removeEventListener(OFFLINE_QUEUE_SYNCED_EVENT, listener);
+      unsubscribe();
     }
   });
 

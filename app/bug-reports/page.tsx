@@ -20,7 +20,7 @@ const BugReportsPage = () => {
     return response.json();
   };
 
-  const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+  const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage, refetch, isRefetching } = useInfiniteQuery({
     queryKey: ['bug-reports', filter, buildVersion],
     queryFn: fetchBugReports,
     getNextPageParam: (lastPage) => lastPage.nextCursor || undefined,
@@ -113,9 +113,17 @@ const BugReportsPage = () => {
       <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
-            <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-8">
+            <div role="alert" className="bg-red-500/20 border border-red-500/50 rounded-lg p-8">
               <h2 className="text-xl font-semibold text-red-400 mb-2">Error Loading Reports</h2>
-              <p className="text-gray-300">Failed to load bug reports. Please try again later.</p>
+              <p className="text-gray-300">Failed to load bug reports. Please try again.</p>
+              <button
+                type="button"
+                onClick={() => refetch()}
+                disabled={isRefetching}
+                className="mt-4 rounded-lg border border-red-400/60 px-4 py-2 text-sm font-semibold text-red-100 hover:bg-red-500/20 focus:outline-none focus:ring-2 focus:ring-red-300 disabled:opacity-50"
+              >
+                {isRefetching ? 'Retrying...' : 'Retry'}
+              </button>
             </div>
           </div>
         </div>

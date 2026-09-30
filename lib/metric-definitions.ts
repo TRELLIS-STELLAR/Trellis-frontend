@@ -34,6 +34,13 @@ export const SAFE_METRICS = {
   "wallet.connection_success": "Successful wallet connection",
   "wallet.disconnection": "Wallet disconnection",
 
+  // Idempotency (request deduplication, see lib/idempotency.ts)
+  "idempotency.requests": "Idempotent write attempted",
+  "idempotency.hits": "Duplicate submission absorbed by a stored or in-flight result",
+  "idempotency.collisions": "Idempotency key reused for another payload or while in progress",
+  "idempotency.retries": "Idempotent write re-run after a failed or abandoned attempt",
+  "idempotency.expired": "Idempotency key used after its replay window",
+
   // Feature adoption
   "feature.tutorial_started": "User starts tutorial",
   "feature.tutorial_completed": "User completes tutorial",

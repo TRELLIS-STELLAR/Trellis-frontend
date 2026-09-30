@@ -13,6 +13,13 @@ import { sandboxManager } from "./sandbox";
 import { getFixture } from "./sandbox-fixtures";
 import { findScenario } from "./sandbox-scenarios";
 import {
+  readStubbedValue,
+  serializeStorageStubs,
+  type MockGetLedgerEntriesResponse,
+  type SorobanStorageType,
+  type StorageScValType,
+} from "./sandbox-storage";
+import {
   findBalance,
   fromStroops,
   toStroops,
@@ -237,8 +244,68 @@ export class MockStellarAdapter {
     };
   }
 
-  /** Clears injected wallet + preset + tape in one call. */
+  /**
+   * Mock Soroban RPC `getLedgerEntries` backed by the injected storage stubs.
+   * Pass no keys to receive every stubbed entry; unknown keys are omitted,
+   * exactly as the real RPC does for entries that do not exist.
+   */
+  static async getLedgerEntries(
+    keys?: readonly string[],
+  ): Promise<ServiceResponse<MockGetLedgerEntriesResponse>> {
+    sandboxManager.log("MockStellarAdapter.getLedgerEntries", keys);
+
+    try {
+      const response = serializeStorageStubs(sandboxManager.getStorageStubs());
+      const wanted = keys ? new Set(keys) : null;
+      return {
+        success: true,
+        data: {
+          ...response,
+          entries: wanted ? response.entries.filter((entry) => wanted.has(entry.key)) : response.entries,
+        },
+        timestamp: Date.now(),
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+        timestamp: Date.now(),
+        code: "INVALID_STORAGE_STUB",
+        httpStatus: 400,
+      };
+    }
+  }
+
+  /** Decoded value of one stubbed storage key, or `null` data when absent. */
+  static async getContractData(
+    contractId: string,
+    key: string,
+    storage: SorobanStorageType = "persistent",
+    keyType?: StorageScValType,
+  ): Promise<ServiceResponse<{ value: unknown } | null>> {
+    sandboxManager.log("MockStellarAdapter.getContractData", contractId, key, storage);
+
+    try {
+      const value = readStubbedValue(sandboxManager.getStorageStubs(), { contractId, key, storage, keyType });
+      return {
+        success: true,
+        data: value === undefined ? null : { value },
+        timestamp: Date.now(),
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+        timestamp: Date.now(),
+        code: "INVALID_STORAGE_STUB",
+        httpStatus: 400,
+      };
+    }
+  }
+
+  /** Clears injected wallet + preset + tape + storage stubs in one call. */
   static reset(): void {
+    sandboxManager.clearStorageStubs();
     sandboxManager.clearWalletState();
     sandboxManager.clearActiveScenario();
     sandboxManager.setReplayAdapter(null);

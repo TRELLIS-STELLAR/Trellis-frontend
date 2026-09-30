@@ -117,6 +117,8 @@ export interface WalletContextType {
 export interface TransactionResult {
   success: boolean;
   hash?: string;
+  /** Ledger sequence the transaction was included in, when known. */
+  ledger?: number;
   error?: string;
 }
 

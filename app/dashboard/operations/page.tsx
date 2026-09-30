@@ -21,6 +21,11 @@ import {
   type ExceptionEvent,
   type OperationalHealth,
 } from '@/lib/operational-health';
+import {
+  DUPLICATE_RATE_WARNING_THRESHOLD,
+  buildIdempotencyRateSeries,
+  duplicateRequestRate,
+} from '@/lib/idempotency';
 import { useApiMetricsStore } from '@/store/apiMetricsStore';
 
 const MINUTE_MS = 60 * 1000;
@@ -52,6 +57,10 @@ function uniqueValues(events: readonly ExceptionEvent[], key: keyof FilterState)
   return Array.from(new Set(events.map((event) => event[key]))).sort((a, b) => a.localeCompare(b));
 }
 
+function formatPercent(rate: number): string {
+  return `${(rate * 100).toFixed(1)}%`;
+}
+
 function groupLabel(dimension: string): string {
   if (dimension === 'browserOS') return 'Browser / OS';
   return dimension.charAt(0).toUpperCase() + dimension.slice(1);
@@ -76,12 +85,15 @@ export default function OperationsDashboardPage() {
     severity: 'critical' as AlertRule['severity'],
   });
   const [ruleError, setRuleError] = useState<string | null>(null);
+  const [reloadToken, setReloadToken] = useState(0);
 
   const exceptionEvents = useApiMetricsStore((state) => state.exceptionEvents);
   const alertRules = useApiMetricsStore((state) => state.alertRules);
   const setExceptionEvents = useApiMetricsStore((state) => state.setExceptionEvents);
   const addAlertRule = useApiMetricsStore((state) => state.addAlertRule);
   const removeAlertRule = useApiMetricsStore((state) => state.removeAlertRule);
+  const idempotency = useApiMetricsStore((state) => state.idempotency);
+  const idempotencyEvents = useApiMetricsStore((state) => state.idempotencyEvents);
 
   useEffect(() => {
     setMounted(true);
@@ -110,7 +122,7 @@ export default function OperationsDashboardPage() {
     return () => {
       cancelled = true;
     };
-  }, [windowMinutes, setExceptionEvents]);
+  }, [windowMinutes, setExceptionEvents, reloadToken]);
 
   const activeFilters = useMemo(
     () => ({
@@ -147,6 +159,25 @@ export default function OperationsDashboardPage() {
     [report],
   );
 
+  const idempotencySeries = useMemo(() => {
+    if (now === null) return [];
+    const bucketMinutes = Math.max(1, Math.round(windowMinutes / 12));
+    return buildIdempotencyRateSeries(idempotencyEvents, {
+      windowMs: windowMinutes * MINUTE_MS,
+      bucketMs: bucketMinutes * MINUTE_MS,
+      now,
+    }).map((bucket) => ({
+      label: bucket.label,
+      hits: bucket.hits,
+      collisions: bucket.collisions,
+      duplicateRatePct: Number((bucket.duplicateRate * 100).toFixed(1)),
+    }));
+  }, [now, idempotencyEvents, windowMinutes]);
+
+  const overallDuplicateRate = duplicateRequestRate(idempotency);
+  const duplicateRateBreached =
+    idempotency.idempotency_requests > 0 && overallDuplicateRate > DUPLICATE_RATE_WARNING_THRESHOLD;
+
   function updateFilter(key: keyof FilterState, value: string) {
     setFilters((current) => ({ ...current, [key]: value }));
   }
@@ -182,7 +213,21 @@ export default function OperationsDashboardPage() {
           </p>
         </header>
 
-        {error && <p role="alert" className="rounded-lg border border-red-500/50 bg-red-500/10 p-4 text-red-200">{error}</p>}
+        {error && (
+          <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-red-500/50 bg-red-500/10 p-4 text-red-200">
+            <p>{error}</p>
+            <button
+              type="button"
+              onClick={() => {
+                setError(null);
+                setReloadToken((token) => token + 1);
+              }}
+              className="rounded border border-red-400/60 px-3 py-1 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-red-300"
+            >
+              Retry
+            </button>
+          </div>
+        )}
         {!health && !error && <p aria-live="polite" className="text-gray-300">Loading operational health...</p>}
 
         {health && (
@@ -327,6 +372,70 @@ export default function OperationsDashboardPage() {
               ))}
             </div>
           )}
+        </section>
+
+        <section aria-labelledby="idempotency-heading" className="mt-10" data-testid="idempotency-telemetry">
+          <h2 id="idempotency-heading" className="text-2xl font-bold">Duplicate requests</h2>
+          <p className="mt-1 text-sm text-gray-400">
+            Idempotency key hits (duplicate submissions absorbed) and collisions (key reuse refused). A rising rate
+            points to double-submit bugs or network retry storms.
+          </p>
+
+          {duplicateRateBreached && (
+            <p role="alert" className="mt-4 rounded-lg border border-yellow-500/60 bg-yellow-500/10 p-4 text-yellow-100">
+              Duplicate request rate is {formatPercent(overallDuplicateRate)}, above the{' '}
+              {formatPercent(DUPLICATE_RATE_WARNING_THRESHOLD)} warning threshold.
+            </p>
+          )}
+
+          <dl className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {[
+              { label: 'Idempotent requests', value: idempotency.idempotency_requests },
+              { label: 'Key hits', value: idempotency.idempotency_hits },
+              { label: 'Key collisions', value: idempotency.idempotency_collisions },
+              { label: 'Retries', value: idempotency.idempotency_retries },
+              { label: 'Duplicate rate', value: formatPercent(overallDuplicateRate) },
+            ].map((item) => (
+              <div key={item.label} className="rounded-lg border border-trellis-vine/30 bg-trellis-vine/10 p-4">
+                <dt className="text-sm text-gray-300">{item.label}</dt>
+                <dd className="mt-1 text-2xl font-bold">{item.value}</dd>
+              </div>
+            ))}
+          </dl>
+
+          <div className="mt-6 rounded-lg border border-trellis-vine/30 bg-trellis-vine/10 p-5">
+            {mounted && now !== null ? (
+              <div style={{ width: '100%', height: 280 }}>
+                <ResponsiveContainer>
+                  <LineChart data={idempotencySeries} margin={{ top: 10, right: 24, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(79, 191, 155, 0.2)" />
+                    <XAxis dataKey="label" stroke="rgba(79, 191, 155, 0.6)" tick={{ fill: '#cbd5e1', fontSize: 12 }} />
+                    <YAxis yAxisId="count" allowDecimals={false} stroke="rgba(79, 191, 155, 0.6)" tick={{ fill: '#cbd5e1', fontSize: 12 }} />
+                    <YAxis yAxisId="rate" orientation="right" unit="%" domain={[0, 100]} stroke="rgba(234, 179, 8, 0.6)" tick={{ fill: '#cbd5e1', fontSize: 12 }} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'rgba(10, 14, 39, 0.9)',
+                        border: '1px solid rgba(79, 191, 155, 0.5)',
+                        borderRadius: '8px',
+                      }}
+                      labelStyle={{ color: 'rgb(139, 92, 246)' }}
+                    />
+                    <Legend />
+                    <Line yAxisId="count" type="monotone" dataKey="hits" name="Key hits" stroke="rgb(6, 182, 212)" strokeWidth={2} dot={false} isAnimationActive={false} />
+                    <Line yAxisId="count" type="monotone" dataKey="collisions" name="Collisions" stroke="rgb(239, 68, 68)" strokeWidth={2} dot={false} isAnimationActive={false} />
+                    <Line yAxisId="rate" type="monotone" dataKey="duplicateRatePct" name="Duplicate rate %" stroke="rgb(234, 179, 8)" strokeWidth={2} dot={false} isAnimationActive={false} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <p className="text-gray-400">Loading duplicate request telemetry...</p>
+            )}
+            <p className="mt-3 text-xs text-gray-400">
+              {idempotencyEvents.length === 0
+                ? 'No idempotent requests recorded yet.'
+                : `${idempotencyEvents.length} recent idempotency event${idempotencyEvents.length === 1 ? '' : 's'} tracked.`}
+            </p>
+          </div>
         </section>
 
         <section aria-labelledby="rules-heading" className="mt-10">

@@ -5,6 +5,7 @@ import type { Proposal, GovernanceConfig, VoteChoice } from '@/lib/governance/ty
 import { compareLinearVsQuadraticVotes } from '../utils/quadraticVoting';
 import { LinearVsQuadraticComparison } from './LinearVsQuadraticComparison';
 import { QuadraticVoteDistributionChart } from './QuadraticVoteDistributionChart';
+import { ProposalExecutionTimeline } from './ProposalExecutionTimeline';
 import type { SybilVerificationResult } from '../utils/sybilResistance';
 
 interface ProposalDetailModalProps {
@@ -245,6 +246,9 @@ export function ProposalDetailModal({
               </div>
             </div>
           )}
+
+          {/* On-chain execution audit timeline */}
+          <ProposalExecutionTimeline proposal={proposal} network={config.network} />
         </div>
 
         {/* Modal Footer / Voting Actions */}

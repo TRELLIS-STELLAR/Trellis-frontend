@@ -644,6 +644,8 @@ git push origin feature/your-feature
 - **[Stellar Integration](./STELLAR_WALLET_INTEGRATION.md)** - Wallet setup
 - **[PWA Guide](./docs/PWA_IMPLEMENTATION.md)** - Progressive Web App
 - **[Metrics Dashboard](./docs/metrics-dashboard.md)** - Telemetry & monitoring
+- **[Retry & Dead Letters](./docs/retry-and-dead-letter.md)** - Retry policies, backoff, and operator runbook
+- **[Idempotency](./docs/idempotency.md)** - Making retried writes safe
 
 ---
 

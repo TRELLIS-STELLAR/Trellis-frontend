@@ -73,6 +73,42 @@ export interface Proposal {
   quadraticAbstentions?: number;
   totalQuadraticVotingPowerAtCreation?: number;
   votes?: ProposalVoteBreakdown[];
+  /** On-chain audit trail: one entry per lifecycle transaction. */
+  executionHistory?: ProposalExecutionRecord[];
+}
+
+/** Lifecycle steps a governance proposal passes through on-chain. */
+export type ProposalLifecycleStep =
+  | 'created'
+  | 'vote_cast'
+  | 'voting_closed'
+  | 'queued'
+  | 'executed'
+  | 'failed'
+  | 'expired';
+
+/** A Soroban contract event emitted by a lifecycle transaction. */
+export interface ContractEventLog {
+  type: 'contract' | 'system' | 'diagnostic';
+  contractId?: string;
+  /** Decoded topics, e.g. `["proposal", "queued"]`. */
+  topics: string[];
+  /** Decoded event value, rendered as text. */
+  value: string;
+}
+
+/** A single on-chain transaction in a proposal's lifecycle. */
+export interface ProposalExecutionRecord {
+  step: ProposalLifecycleStep;
+  txHash?: string;
+  ledger?: number;
+  /** Fee charged in stroops, as reported by Horizon/RPC. */
+  feeChargedStroops?: string;
+  /** Raw status as returned by Soroban RPC or Horizon. */
+  status?: string;
+  timestamp: string;
+  actor?: string;
+  events?: ContractEventLog[];
 }
 
 export type VoteChoice = 'approve' | 'reject' | 'abstain';

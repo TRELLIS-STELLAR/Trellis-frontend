@@ -9,6 +9,7 @@ import {
   GovernanceConfig,
   Proposal,
   ProposalAction,
+  ProposalExecutionRecord,
   VoteChoice,
 } from '@/lib/governance/types';
 import {
@@ -40,6 +41,25 @@ const MOCK_CONFIG: GovernanceConfig = {
   minAccountAgeDays: 30,
   minTransactionCount: 5,
 };
+
+/** Audit record for a lifecycle transaction Horizon accepted. */
+function submittedRecord(
+  step: ProposalExecutionRecord['step'],
+  submitResult: { hash?: string; ledger?: number },
+  actor: string,
+): ProposalExecutionRecord {
+  return {
+    step,
+    txHash: submitResult.hash,
+    ledger: submitResult.ledger,
+    // Horizon's synchronous submit only resolves once the ledger closed.
+    status: 'SUCCESS',
+    timestamp: new Date().toISOString(),
+    actor,
+  };
+}
+
+const hoursAgo = (hours: number) => new Date(Date.now() - 3600 * hours * 1000).toISOString();
 
 const SEED_PROPOSALS: Proposal[] = [
   {
@@ -112,6 +132,38 @@ const SEED_PROPOSALS: Proposal[] = [
         isSybilVerified: true,
       },
     ],
+    executionHistory: [
+      {
+        step: 'created',
+        txHash: '4f1c9a7e2b6d8035c1e94a7f0b2d6c8e3a5f7b9d1c3e5a7f9b1d3c5e7a9f1b3d',
+        ledger: 1284311,
+        feeChargedStroops: '124550',
+        status: 'SUCCESS',
+        timestamp: hoursAgo(48),
+        actor: 'GA7Q...TRELLIS_CORE',
+        events: [{ type: 'contract', topics: ['proposal', 'created'], value: 'TIP-042' }],
+      },
+      {
+        step: 'vote_cast',
+        txHash: '9b2e4d6f8a0c1e3b5d7f9a1c3e5b7d9f0a2c4e6b8d0f1a3c5e7b9d1f3a5c7e9b',
+        ledger: 1284902,
+        feeChargedStroops: '98210',
+        status: 'SUCCESS',
+        timestamp: hoursAgo(30),
+        actor: 'GWHALE...99AA',
+        events: [{ type: 'contract', topics: ['vote', 'reject'], value: '100' }],
+      },
+      {
+        step: 'vote_cast',
+        txHash: 'c7a1e3f5b9d2c4e6a8f0b1d3e5c7a9f2b4d6e8c0a1f3b5d7e9c2a4f6b8d0e1c3',
+        ledger: 1286177,
+        feeChargedStroops: '98210',
+        status: 'SUCCESS',
+        timestamp: hoursAgo(10),
+        actor: 'GCOMM...98USERS',
+        events: [{ type: 'contract', topics: ['vote', 'approve'], value: '900' }],
+      },
+    ],
   },
   {
     id: 'TIP-043',
@@ -165,6 +217,82 @@ const SEED_PROPOSALS: Proposal[] = [
         choice: 'reject',
         timestamp: new Date(Date.now() - 3600 * 4 * 1000).toISOString(),
         isSybilVerified: true,
+      },
+    ],
+  },
+  {
+    id: 'TIP-041',
+    title: 'TIP-041: Upgrade Routing Agent to v2.3 Soroban Bytecode',
+    description:
+      'Upgrade the marketplace routing agent contract to the audited v2.3 WASM, adding batched settlement and lower instruction usage per route.',
+    type: 'upgrade_agent',
+    creator: 'GA7Q...TRELLIS_CORE',
+    createdAt: hoursAgo(24 * 9),
+    startTime: hoursAgo(24 * 9),
+    endTime: hoursAgo(24 * 4),
+    status: 'executed',
+    action: {
+      type: 'upgrade_agent',
+      newCodeHash: 'b5e1d7c3a9f2e4b6d8c0a1f3e5b7d9c2a4f6e8b0d1c3a5f7e9b2d4c6a8f0e1b3',
+    },
+    approvals: 14200,
+    rejections: 1800,
+    abstentions: 400,
+    totalVotingPowerAtCreation: 24000,
+    quadraticApprovals: 310,
+    quadraticRejections: 42,
+    quadraticAbstentions: 20,
+    totalQuadraticVotingPowerAtCreation: 480,
+    executionHistory: [
+      {
+        step: 'created',
+        txHash: '1a3c5e7f9b2d4f6a8c0e1b3d5f7a9c2e4b6d8f0a1c3e5b7d9f2a4c6e8b0d1f3a',
+        ledger: 1161044,
+        feeChargedStroops: '131870',
+        status: 'SUCCESS',
+        timestamp: hoursAgo(24 * 9),
+        actor: 'GA7Q...TRELLIS_CORE',
+        events: [{ type: 'contract', topics: ['proposal', 'created'], value: 'TIP-041' }],
+      },
+      {
+        step: 'vote_cast',
+        txHash: '2b4d6f8a0c1e3b5d7f9a2c4e6b8d0f1a3c5e7b9d2f4a6c8e0b1d3f5a7c9e2b4d',
+        ledger: 1163520,
+        feeChargedStroops: '98210',
+        status: 'SUCCESS',
+        timestamp: hoursAgo(24 * 7),
+        actor: 'GCOMM...POOL1',
+        events: [{ type: 'contract', topics: ['vote', 'approve'], value: '310' }],
+      },
+      {
+        step: 'voting_closed',
+        timestamp: hoursAgo(24 * 4),
+      },
+      {
+        step: 'queued',
+        txHash: '3c5e7a9b1d3f5a7c9e2b4d6f8a0c2e4b6d8f1a3c5e7b9d2f4a6c8e0b3d5f7a9c',
+        ledger: 1219988,
+        feeChargedStroops: '104300',
+        status: 'SUCCESS',
+        timestamp: hoursAgo(24 * 4 - 1),
+        actor: 'GA7Q...TRELLIS_CORE',
+        events: [
+          { type: 'contract', topics: ['proposal', 'queued'], value: 'eta=3600' },
+          { type: 'system', topics: ['timelock', 'start'], value: '3600s' },
+        ],
+      },
+      {
+        step: 'executed',
+        txHash: '4d6f8b0c2e4a6c8e1b3d5f7a9c2e4b6d8f0a3c5e7b9d1f4a6c8e0b2d5f7a9c1e',
+        ledger: 1220611,
+        feeChargedStroops: '2458110',
+        status: 'SUCCESS',
+        timestamp: hoursAgo(24 * 4 - 2),
+        actor: 'GA7Q...TRELLIS_CORE',
+        events: [
+          { type: 'contract', topics: ['proposal', 'executed'], value: 'TIP-041' },
+          { type: 'contract', topics: ['agent', 'upgraded'], value: 'wasm=b5e1d7c3…' },
+        ],
       },
     ],
   },
@@ -222,6 +350,7 @@ export default function GovernancePage() {
         quadraticRejections: 0,
         quadraticAbstentions: 0,
         votes: [],
+        executionHistory: [submittedRecord('created', submitResult, wallet.publicKey)],
       };
       setProposals((prev) => [proposal, ...prev]);
       toast.success('Proposal created successfully on-chain');
@@ -320,6 +449,10 @@ export default function GovernancePage() {
                 ? currentQuadAbstentions + quadraticWeight
                 : currentQuadAbstentions,
             votes: [newVote, ...(p.votes || [])],
+            executionHistory: [
+              ...(p.executionHistory ?? []),
+              submittedRecord('vote_cast', submitResult, wallet.publicKey),
+            ],
           };
         })
       );
@@ -357,7 +490,16 @@ export default function GovernancePage() {
       }
       setProposals((prev) =>
         prev.map((p) =>
-          p.id === proposal.id ? { ...p, status: 'executed' } : p
+          p.id === proposal.id
+            ? {
+                ...p,
+                status: 'executed',
+                executionHistory: [
+                  ...(p.executionHistory ?? []),
+                  submittedRecord('executed', submitResult, wallet.publicKey),
+                ],
+              }
+            : p
         )
       );
     },

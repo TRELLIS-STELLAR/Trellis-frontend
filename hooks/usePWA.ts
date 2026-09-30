@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import PWAManager from '@/lib/pwa-utils';
+import { subscribeDomainEvent, type DomainEventFallbackContext } from '@/lib/domain-events';
 
 interface PWAState {
   isInstallable: boolean;
@@ -16,6 +17,18 @@ interface PWAState {
     rtt?: number;
     saveData?: boolean;
   };
+}
+
+/**
+ * An event this build cannot read is logged and dropped, never merged into
+ * state. The next `updateState()` poll or valid event restores the truth, so a
+ * drifted payload degrades to slightly stale UI instead of a wrong value.
+ */
+function reportUnreadableEvent(context: DomainEventFallbackContext): void {
+  console.warn(
+    `[usePWA] Ignored unreadable domain event "${context.name}" ` +
+      `(${context.reason}, version ${context.receivedVersion ?? 'absent'}): ${context.issues.join('; ')}`,
+  );
 }
 
 interface UsePWAReturn extends PWAState {
@@ -57,48 +70,48 @@ export function usePWA(): UsePWAReturn {
     updateState();
     pwaManager.setupConnectionListeners();
 
-    // Listen for PWA events
-    const handleInstallAvailable = () => {
-      setState(prev => ({ ...prev, isInstallable: true }));
-    };
+    // Every handler below receives a payload that already validated against
+    // the registered schema for its version, so the `as EventListener` casts
+    // and the `event.detail` reaches are both gone.
 
-    const handleAppInstalled = () => {
-      setState(prev => ({ ...prev, isInstalled: true, isInstallable: false }));
-    };
+    const unsubscribes = [
+      subscribeDomainEvent(
+        'pwa-install-available',
+        () => setState(prev => ({ ...prev, isInstallable: true })),
+        { fallback: reportUnreadableEvent },
+      ),
+      subscribeDomainEvent(
+        'pwa-installed',
+        () => setState(prev => ({ ...prev, isInstalled: true, isInstallable: false })),
+        { fallback: reportUnreadableEvent },
+      ),
+      subscribeDomainEvent(
+        'sw-update',
+        () => setState(prev => ({ ...prev, updateAvailable: true })),
+        { fallback: reportUnreadableEvent },
+      ),
+      subscribeDomainEvent(
+        'connection-change',
+        (payload) =>
+          setState(prev => ({
+            ...prev,
+            isOnline: payload.online,
+            connectionStatus: pwaManager.getConnectionStatus(),
+          })),
+        { fallback: reportUnreadableEvent },
+      ),
+      subscribeDomainEvent(
+        'connection-quality-change',
+        (payload) => setState(prev => ({ ...prev, connectionStatus: payload })),
+        { fallback: reportUnreadableEvent },
+      ),
+    ];
 
-    const handleSWUpdate = () => {
-      setState(prev => ({ ...prev, updateAvailable: true }));
-    };
-
-    const handleConnectionChange = (event: CustomEvent) => {
-      setState(prev => ({
-        ...prev,
-        isOnline: event.detail.online,
-        connectionStatus: pwaManager.getConnectionStatus(),
-      }));
-    };
-
-    const handleConnectionQualityChange = (event: CustomEvent) => {
-      setState(prev => ({
-        ...prev,
-        connectionStatus: event.detail,
-      }));
-    };
-
-    window.addEventListener('pwa-install-available', handleInstallAvailable as EventListener);
-    window.addEventListener('pwa-installed', handleAppInstalled as EventListener);
-    window.addEventListener('sw-update', handleSWUpdate as EventListener);
-    window.addEventListener('connection-change', handleConnectionChange as EventListener);
-    window.addEventListener('connection-quality-change', handleConnectionQualityChange as EventListener);
     window.addEventListener('online', updateState);
     window.addEventListener('offline', updateState);
 
     return () => {
-      window.removeEventListener('pwa-install-available', handleInstallAvailable as EventListener);
-      window.removeEventListener('pwa-installed', handleAppInstalled as EventListener);
-      window.removeEventListener('sw-update', handleSWUpdate as EventListener);
-      window.removeEventListener('connection-change', handleConnectionChange as EventListener);
-      window.removeEventListener('connection-quality-change', handleConnectionQualityChange as EventListener);
+      unsubscribes.forEach((unsubscribe) => unsubscribe());
       window.removeEventListener('online', updateState);
       window.removeEventListener('offline', updateState);
     };

@@ -34,6 +34,12 @@ jobs:
       - name: Run Playwright smoke and journey tests
         run: npx playwright test e2e/smoke.spec.ts e2e/journey.spec.ts
 
+      # Latency (500-3000ms), random HTTP 5xx and dropped requests against the
+      # app's API routes. Faults are seeded, so a failure reproduces locally
+      # with the seed shown in the test title.
+      - name: Run network chaos resilience tests
+        run: npm run test:e2e:chaos
+
       - name: Run accessibility audits (axe-core, WCAG A/AA)
         run: npm run test:e2e:a11y
 

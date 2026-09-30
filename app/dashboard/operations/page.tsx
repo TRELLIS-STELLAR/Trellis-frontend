@@ -7,6 +7,7 @@ import {
   Legend,
   Line,
   LineChart,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -14,13 +15,23 @@ import {
 } from 'recharts';
 import {
   buildExceptionTrendReport,
+  appendOperationalMetricSample,
   createAlertRule,
   describeAlertRule,
+  isOperationalMetricSample,
+  OPERATIONAL_MEMORY_CRITICAL_RATIO,
+  OPERATIONAL_MEMORY_WARNING_RATIO,
   type AlertMetric,
   type AlertRule,
   type ExceptionEvent,
   type OperationalHealth,
+  type OperationalMetricSample,
 } from '@/lib/operational-health';
+import {
+  DUPLICATE_RATE_WARNING_THRESHOLD,
+  buildIdempotencyRateSeries,
+  duplicateRequestRate,
+} from '@/lib/idempotency';
 import { useApiMetricsStore } from '@/store/apiMetricsStore';
 
 const MINUTE_MS = 60 * 1000;
@@ -39,6 +50,9 @@ const METRIC_OPTIONS: ReadonlyArray<{ value: AlertMetric; label: string }> = [
 ];
 
 const ALL_VALUE = 'all';
+const MAX_METRIC_SAMPLES = 60;
+
+type MetricConnectionStatus = 'connecting' | 'connected' | 'disconnected' | 'unconfigured';
 
 type FilterState = {
   component: string;
@@ -50,6 +64,10 @@ type HealthResponse = OperationalHealth & { exceptions?: ExceptionEvent[] };
 
 function uniqueValues(events: readonly ExceptionEvent[], key: keyof FilterState): string[] {
   return Array.from(new Set(events.map((event) => event[key]))).sort((a, b) => a.localeCompare(b));
+}
+
+function formatPercent(rate: number): string {
+  return `${(rate * 100).toFixed(1)}%`;
 }
 
 function groupLabel(dimension: string): string {
@@ -76,12 +94,16 @@ export default function OperationsDashboardPage() {
     severity: 'critical' as AlertRule['severity'],
   });
   const [ruleError, setRuleError] = useState<string | null>(null);
+  const [metricSamples, setMetricSamples] = useState<OperationalMetricSample[]>([]);
+  const [metricConnection, setMetricConnection] = useState<MetricConnectionStatus>('connecting');
 
   const exceptionEvents = useApiMetricsStore((state) => state.exceptionEvents);
   const alertRules = useApiMetricsStore((state) => state.alertRules);
   const setExceptionEvents = useApiMetricsStore((state) => state.setExceptionEvents);
   const addAlertRule = useApiMetricsStore((state) => state.addAlertRule);
   const removeAlertRule = useApiMetricsStore((state) => state.removeAlertRule);
+  const idempotency = useApiMetricsStore((state) => state.idempotency);
+  const idempotencyEvents = useApiMetricsStore((state) => state.idempotencyEvents);
 
   useEffect(() => {
     setMounted(true);
@@ -110,7 +132,84 @@ export default function OperationsDashboardPage() {
     return () => {
       cancelled = true;
     };
-  }, [windowMinutes, setExceptionEvents]);
+  }, [windowMinutes, setExceptionEvents, reloadToken]);
+
+  useEffect(() => {
+    const baseUrl = process.env.NEXT_PUBLIC_TELEMETRY_WS_URL?.trim();
+    if (!baseUrl) {
+      setMetricConnection('unconfigured');
+      return;
+    }
+
+    let socket: WebSocket | null = null;
+    let reconnectTimer: number | null = null;
+    let disposed = false;
+    let retryDelay = 1000;
+
+    const connect = () => {
+      if (disposed) return;
+      let url: URL;
+      try {
+        url = new URL(baseUrl);
+        url.searchParams.set('role', 'operator');
+      } catch {
+        setMetricConnection('disconnected');
+        return;
+      }
+
+      setMetricConnection('connecting');
+      socket = new WebSocket(url.toString());
+      socket.onopen = () => {
+        retryDelay = 1000;
+        setMetricConnection('connected');
+        socket?.send(JSON.stringify({ type: 'telemetry.subscribe', role: 'operator' }));
+      };
+      socket.onmessage = (event) => {
+        try {
+          const frame = JSON.parse(String(event.data)) as Record<string, unknown>;
+          if (frame.type !== 'operational.metrics' || !isOperationalMetricSample(frame)) return;
+          setMetricSamples((samples) =>
+            appendOperationalMetricSample(samples, frame, MAX_METRIC_SAMPLES),
+          );
+        } catch {
+          // Ignore malformed frames; the telemetry stream is best-effort.
+        }
+      };
+      socket.onclose = () => {
+        if (disposed) return;
+        setMetricConnection('disconnected');
+        reconnectTimer = window.setTimeout(connect, retryDelay);
+        retryDelay = Math.min(retryDelay * 2, 30_000);
+      };
+      socket.onerror = () => socket?.close();
+    };
+
+    connect();
+    return () => {
+      disposed = true;
+      if (reconnectTimer !== null) window.clearTimeout(reconnectTimer);
+      socket?.close();
+    };
+  }, []);
+
+  const performanceChartData = useMemo(
+    () => metricSamples.map((sample) => ({
+      label: new Date(sample.ts).toLocaleTimeString([], { minute: '2-digit', second: '2-digit' }),
+      heapUsedMb: sample.heapUsedBytes / (1024 * 1024),
+      heapTotalMb: sample.heapTotalBytes / (1024 * 1024),
+      activeConnections: sample.activeConnections,
+      rpcLatencyMs: sample.rpcLatencyMs,
+      memoryRatio: sample.heapUsedBytes / sample.heapTotalBytes,
+    })),
+    [metricSamples],
+  );
+
+  const currentMemoryRatio = performanceChartData.at(-1)?.memoryRatio ?? 0;
+  const memorySeverity = currentMemoryRatio >= OPERATIONAL_MEMORY_CRITICAL_RATIO
+    ? 'critical'
+    : currentMemoryRatio >= OPERATIONAL_MEMORY_WARNING_RATIO
+      ? 'warning'
+      : 'normal';
 
   const activeFilters = useMemo(
     () => ({
@@ -147,6 +246,25 @@ export default function OperationsDashboardPage() {
     [report],
   );
 
+  const idempotencySeries = useMemo(() => {
+    if (now === null) return [];
+    const bucketMinutes = Math.max(1, Math.round(windowMinutes / 12));
+    return buildIdempotencyRateSeries(idempotencyEvents, {
+      windowMs: windowMinutes * MINUTE_MS,
+      bucketMs: bucketMinutes * MINUTE_MS,
+      now,
+    }).map((bucket) => ({
+      label: bucket.label,
+      hits: bucket.hits,
+      collisions: bucket.collisions,
+      duplicateRatePct: Number((bucket.duplicateRate * 100).toFixed(1)),
+    }));
+  }, [now, idempotencyEvents, windowMinutes]);
+
+  const overallDuplicateRate = duplicateRequestRate(idempotency);
+  const duplicateRateBreached =
+    idempotency.idempotency_requests > 0 && overallDuplicateRate > DUPLICATE_RATE_WARNING_THRESHOLD;
+
   function updateFilter(key: keyof FilterState, value: string) {
     setFilters((current) => ({ ...current, [key]: value }));
   }
@@ -181,6 +299,78 @@ export default function OperationsDashboardPage() {
             A redacted view of unresolved work, stale records, reconciliation drift, and user-impacting incidents.
           </p>
         </header>
+
+        <section aria-labelledby="performance-heading" className="mb-10">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 id="performance-heading" className="text-2xl font-bold">Live system performance</h2>
+              <p className="mt-1 text-sm text-gray-400">Gateway heap, connected clients, and configured RPC probe latency.</p>
+            </div>
+            <p
+              className={`flex items-center gap-2 text-sm ${metricConnection === 'connected' ? 'text-green-300' : metricConnection === 'connecting' ? 'text-yellow-200' : 'text-gray-400'}`}
+              role="status"
+              aria-live="polite"
+            >
+              <span className={`h-2 w-2 rounded-full ${metricConnection === 'connected' ? 'bg-green-400' : metricConnection === 'connecting' ? 'bg-yellow-300' : 'bg-gray-500'}`} aria-hidden="true" />
+              {metricConnection === 'connected' ? 'Live stream connected' : metricConnection === 'connecting' ? 'Connecting to telemetry' : metricConnection === 'unconfigured' ? 'Telemetry URL not configured' : 'Telemetry disconnected'}
+            </p>
+          </div>
+
+          {memorySeverity !== 'normal' && performanceChartData.length > 0 && (
+            <p role="alert" className={`mt-4 rounded-md border p-3 text-sm ${memorySeverity === 'critical' ? 'border-red-500/60 bg-red-500/15 text-red-100' : 'border-yellow-500/60 bg-yellow-500/10 text-yellow-100'}`}>
+              {memorySeverity === 'critical' ? 'Critical' : 'Warning'}: heap usage is {Math.round(currentMemoryRatio * 100)}% of the current heap allocation.
+            </p>
+          )}
+
+          <div className="mt-4 grid gap-4 lg:grid-cols-3">
+            <article className={`rounded-lg border p-4 ${memorySeverity === 'critical' ? 'border-red-500/70 bg-red-500/10' : memorySeverity === 'warning' ? 'border-yellow-500/70 bg-yellow-500/10' : 'border-trellis-vine/30 bg-trellis-vine/10'}`}>
+              <h3 className="font-semibold">Heap memory (MB)</h3>
+              <div className="mt-3 h-56">
+                {mounted && <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={performanceChartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(79, 191, 155, 0.2)" />
+                    <XAxis dataKey="label" tick={{ fill: '#cbd5e1', fontSize: 10 }} />
+                    <YAxis tick={{ fill: '#cbd5e1', fontSize: 10 }} />
+                    <Tooltip />
+                    <ReferenceLine y={performanceChartData.at(-1)?.heapTotalMb} stroke="#facc15" strokeDasharray="4 4" />
+                    <Line type="monotone" dataKey="heapUsedMb" name="Heap used" stroke={memorySeverity === 'normal' ? '#4fbf9b' : memorySeverity === 'warning' ? '#facc15' : '#f87171'} strokeWidth={2} dot={false} isAnimationActive={false} />
+                  </LineChart>
+                </ResponsiveContainer>}
+              </div>
+              <p className="text-xs text-gray-400">Warning at 80%; critical at 90% of allocated heap.</p>
+            </article>
+            <article className="rounded-lg border border-trellis-vine/30 bg-trellis-vine/10 p-4">
+              <h3 className="font-semibold">Active WebSocket connections</h3>
+              <div className="mt-3 h-56">
+                {mounted && <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={performanceChartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(79, 191, 155, 0.2)" />
+                    <XAxis dataKey="label" tick={{ fill: '#cbd5e1', fontSize: 10 }} />
+                    <YAxis allowDecimals={false} tick={{ fill: '#cbd5e1', fontSize: 10 }} />
+                    <Tooltip />
+                    <Line type="monotone" dataKey="activeConnections" name="Connections" stroke="#38bdf8" strokeWidth={2} dot={false} isAnimationActive={false} />
+                  </LineChart>
+                </ResponsiveContainer>}
+              </div>
+            </article>
+            <article className="rounded-lg border border-trellis-vine/30 bg-trellis-vine/10 p-4">
+              <h3 className="font-semibold">RPC latency (ms)</h3>
+              <div className="mt-3 h-56">
+                {mounted && <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={performanceChartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(79, 191, 155, 0.2)" />
+                    <XAxis dataKey="label" tick={{ fill: '#cbd5e1', fontSize: 10 }} />
+                    <YAxis tick={{ fill: '#cbd5e1', fontSize: 10 }} />
+                    <Tooltip />
+                    <Line type="monotone" dataKey="rpcLatencyMs" name="RPC latency" stroke="#fb923c" strokeWidth={2} dot={false} connectNulls={false} isAnimationActive={false} />
+                  </LineChart>
+                </ResponsiveContainer>}
+              </div>
+              {!process.env.NEXT_PUBLIC_TELEMETRY_WS_URL && <p className="text-xs text-gray-400">Configure the telemetry WebSocket URL to receive samples.</p>}
+              {process.env.NEXT_PUBLIC_TELEMETRY_WS_URL && !metricSamples.some((sample) => sample.rpcLatencyMs !== null) && <p className="text-xs text-gray-400">Configure OPERATIONAL_HEALTH_RPC_URL on the gateway to collect RPC latency.</p>}
+            </article>
+          </div>
+        </section>
 
         {error && <p role="alert" className="rounded-lg border border-red-500/50 bg-red-500/10 p-4 text-red-200">{error}</p>}
         {!health && !error && <p aria-live="polite" className="text-gray-300">Loading operational health...</p>}
@@ -327,6 +517,70 @@ export default function OperationsDashboardPage() {
               ))}
             </div>
           )}
+        </section>
+
+        <section aria-labelledby="idempotency-heading" className="mt-10" data-testid="idempotency-telemetry">
+          <h2 id="idempotency-heading" className="text-2xl font-bold">Duplicate requests</h2>
+          <p className="mt-1 text-sm text-gray-400">
+            Idempotency key hits (duplicate submissions absorbed) and collisions (key reuse refused). A rising rate
+            points to double-submit bugs or network retry storms.
+          </p>
+
+          {duplicateRateBreached && (
+            <p role="alert" className="mt-4 rounded-lg border border-yellow-500/60 bg-yellow-500/10 p-4 text-yellow-100">
+              Duplicate request rate is {formatPercent(overallDuplicateRate)}, above the{' '}
+              {formatPercent(DUPLICATE_RATE_WARNING_THRESHOLD)} warning threshold.
+            </p>
+          )}
+
+          <dl className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {[
+              { label: 'Idempotent requests', value: idempotency.idempotency_requests },
+              { label: 'Key hits', value: idempotency.idempotency_hits },
+              { label: 'Key collisions', value: idempotency.idempotency_collisions },
+              { label: 'Retries', value: idempotency.idempotency_retries },
+              { label: 'Duplicate rate', value: formatPercent(overallDuplicateRate) },
+            ].map((item) => (
+              <div key={item.label} className="rounded-lg border border-trellis-vine/30 bg-trellis-vine/10 p-4">
+                <dt className="text-sm text-gray-300">{item.label}</dt>
+                <dd className="mt-1 text-2xl font-bold">{item.value}</dd>
+              </div>
+            ))}
+          </dl>
+
+          <div className="mt-6 rounded-lg border border-trellis-vine/30 bg-trellis-vine/10 p-5">
+            {mounted && now !== null ? (
+              <div style={{ width: '100%', height: 280 }}>
+                <ResponsiveContainer>
+                  <LineChart data={idempotencySeries} margin={{ top: 10, right: 24, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(79, 191, 155, 0.2)" />
+                    <XAxis dataKey="label" stroke="rgba(79, 191, 155, 0.6)" tick={{ fill: '#cbd5e1', fontSize: 12 }} />
+                    <YAxis yAxisId="count" allowDecimals={false} stroke="rgba(79, 191, 155, 0.6)" tick={{ fill: '#cbd5e1', fontSize: 12 }} />
+                    <YAxis yAxisId="rate" orientation="right" unit="%" domain={[0, 100]} stroke="rgba(234, 179, 8, 0.6)" tick={{ fill: '#cbd5e1', fontSize: 12 }} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'rgba(10, 14, 39, 0.9)',
+                        border: '1px solid rgba(79, 191, 155, 0.5)',
+                        borderRadius: '8px',
+                      }}
+                      labelStyle={{ color: 'rgb(139, 92, 246)' }}
+                    />
+                    <Legend />
+                    <Line yAxisId="count" type="monotone" dataKey="hits" name="Key hits" stroke="rgb(6, 182, 212)" strokeWidth={2} dot={false} isAnimationActive={false} />
+                    <Line yAxisId="count" type="monotone" dataKey="collisions" name="Collisions" stroke="rgb(239, 68, 68)" strokeWidth={2} dot={false} isAnimationActive={false} />
+                    <Line yAxisId="rate" type="monotone" dataKey="duplicateRatePct" name="Duplicate rate %" stroke="rgb(234, 179, 8)" strokeWidth={2} dot={false} isAnimationActive={false} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <p className="text-gray-400">Loading duplicate request telemetry...</p>
+            )}
+            <p className="mt-3 text-xs text-gray-400">
+              {idempotencyEvents.length === 0
+                ? 'No idempotent requests recorded yet.'
+                : `${idempotencyEvents.length} recent idempotency event${idempotencyEvents.length === 1 ? '' : 's'} tracked.`}
+            </p>
+          </div>
         </section>
 
         <section aria-labelledby="rules-heading" className="mt-10">

@@ -1,5 +1,6 @@
 import {
   DEFAULT_ALERT_RULES,
+  appendOperationalMetricSample,
   bugReportToExceptionEvent,
   buildErrorTrend,
   buildExceptionTrendReport,
@@ -8,8 +9,9 @@ import {
   evaluateAlertRules,
   filterExceptionEvents,
   groupExceptionEvents,
+  isOperationalMetricSample,
 } from "@/lib/operational-health";
-import type { ExceptionEvent } from "@/lib/operational-health";
+import type { ExceptionEvent, OperationalMetricSample } from "@/lib/operational-health";
 import type { BugReport } from "@/types/bug-report";
 
 const baseReport: BugReport = {
@@ -36,6 +38,31 @@ test("aggregates actionable categories without exposing report details", () => {
   expect(health.categories.map((category) => category.count)).toEqual([1, 1, 0, 1]);
   expect(JSON.stringify(health)).not.toContain("private@example.com");
   expect(JSON.stringify(health)).not.toContain("private-address");
+});
+
+describe("operational metric stream buffer", () => {
+  const sample = (ts: number): OperationalMetricSample => ({
+    ts,
+    heapUsedBytes: 64,
+    heapTotalBytes: 128,
+    activeConnections: 3,
+    rpcLatencyMs: 42,
+  });
+
+  test("retains only the newest samples without mutating the previous buffer", () => {
+    const original = [sample(1), sample(2)];
+    const buffered = appendOperationalMetricSample(original, sample(3), 2);
+
+    expect(buffered.map((entry) => entry.ts)).toEqual([2, 3]);
+    expect(original.map((entry) => entry.ts)).toEqual([1, 2]);
+  });
+
+  test("validates incoming performance samples", () => {
+    expect(isOperationalMetricSample(sample(1))).toBe(true);
+    expect(isOperationalMetricSample({ ...sample(1), rpcLatencyMs: null })).toBe(true);
+    expect(isOperationalMetricSample({ ...sample(1), heapTotalBytes: 0 })).toBe(false);
+    expect(isOperationalMetricSample({ ...sample(1), activeConnections: -1 })).toBe(false);
+  });
 });
 
 const MINUTE = 60 * 1000;

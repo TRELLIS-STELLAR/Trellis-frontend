@@ -8,6 +8,7 @@
  *   2. the mock wallet balance generator
  *   3. the scenario preset selector
  *   4. the transaction scenario recorder + replay adapter
+ *   5. the Soroban storage state stubber
  *
  * The recorder state lives here so the scenario selector can push a preset
  * straight into the tape.
@@ -21,6 +22,7 @@ import { useSandboxSnapshot, useScenarioRecorder } from "../hooks/useScenarioRec
 import { WalletBalanceGenerator } from "./WalletBalanceGenerator";
 import { ScenarioPresetSelector } from "./ScenarioPresetSelector";
 import { TransactionScenarioRecorder } from "./TransactionScenarioRecorder";
+import { StorageStubEditor } from "./StorageStubEditor";
 import type { SandboxPanelProps } from "../types";
 
 const MODES: SandboxMode[] = ["disabled", "enabled", "mock_only"];
@@ -106,7 +108,7 @@ export function SandboxPanel({ className = "" }: SandboxPanelProps) {
           </Button>
         </div>
 
-        <dl className="mt-5 grid grid-cols-2 gap-3 text-xs sm:grid-cols-4" data-testid="sandbox-snapshot">
+        <dl className="mt-5 grid grid-cols-2 gap-3 text-xs sm:grid-cols-5" data-testid="sandbox-snapshot">
           <div>
             <dt className="uppercase tracking-wide text-gray-500">Mock wallet</dt>
             <dd className="text-gray-200">
@@ -131,6 +133,14 @@ export function SandboxPanel({ className = "" }: SandboxPanelProps) {
                 : "none"}
             </dd>
           </div>
+          <div>
+            <dt className="uppercase tracking-wide text-gray-500">Storage stubs</dt>
+            <dd className="text-gray-200">
+              {snapshot.storage
+                ? `${snapshot.storage.byType.instance}i · ${snapshot.storage.byType.persistent}p · ${snapshot.storage.byType.temporary}t`
+                : "none"}
+            </dd>
+          </div>
         </dl>
       </Card>
 
@@ -139,6 +149,8 @@ export function SandboxPanel({ className = "" }: SandboxPanelProps) {
       <ScenarioPresetSelector onLoadIntoRecorder={(id) => recorder.recordScenario(id)} />
 
       <TransactionScenarioRecorder recorder={recorder} />
+
+      <StorageStubEditor />
     </div>
   );
 }

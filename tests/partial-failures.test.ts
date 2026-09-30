@@ -14,12 +14,14 @@ import {
   getFailureReport,
   partialFailureTracker,
 } from '@/lib/partial-failures';
+import { deadLetterQueue } from '@/lib/retry';
 
 describe('Partial Failure Tracker', () => {
   beforeEach(() => {
+    partialFailureTracker.reset();
+    deadLetterQueue.clear();
     partialFailureTracker.setStaleThreshold(7 * 24 * 60 * 60 * 1000);
-    partialFailureTracker.setMaxRetries(3);
-    partialFailureTracker.setRetryDelay(60000);
+    partialFailureTracker.setRetryPolicy({ maxRetries: 3, initialDelayMs: 60000 });
   });
 
   describe('Failure Recording', () => {
@@ -131,7 +133,7 @@ describe('Partial Failure Tracker', () => {
     });
 
     it('should enforce max retry limit', () => {
-      partialFailureTracker.setMaxRetries(2);
+      partialFailureTracker.setRetryPolicy({ maxRetries: 2 });
       const failure = recordFailure('transaction', 'tx_1', {}, 'Timeout');
 
       retryFailure(failure.id);
@@ -139,7 +141,7 @@ describe('Partial Failure Tracker', () => {
 
       expect(() => {
         retryFailure(failure.id);
-      }).toThrow('Max retries exceeded');
+      }).toThrow('Max retries (2) exceeded');
     });
 
     it('should not retry non-retryable failures', () => {
@@ -151,21 +153,49 @@ describe('Partial Failure Tracker', () => {
     });
 
     it('should schedule next retry with exponential backoff', () => {
-      partialFailureTracker.setRetryDelay(1000);
+      // Jitter is disabled so the schedule is exact rather than a random sample.
+      partialFailureTracker.setRetryPolicy({
+        initialDelayMs: 1000,
+        maxDelayMs: 60000,
+        backoffMultiplier: 2,
+        jitter: 'none',
+      });
       const failure = recordFailure('transaction', 'tx_1', {}, 'Timeout');
+      const startedAt = Date.now();
 
       retryFailure(failure.id);
-      const updated1 = partialFailureTracker.getFailure(failure.id);
-      const firstRetryTime = updated1?.nextRetryAt;
+      const firstDelay =
+        new Date(partialFailureTracker.getFailure(failure.id)?.nextRetryAt ?? 0).getTime() - startedAt;
 
       retryFailure(failure.id);
-      const updated2 = partialFailureTracker.getFailure(failure.id);
-      const secondRetryTime = updated2?.nextRetryAt;
+      const secondDelay =
+        new Date(partialFailureTracker.getFailure(failure.id)?.nextRetryAt ?? 0).getTime() - startedAt;
 
-      // Second retry should be further in the future
-      if (firstRetryTime && secondRetryTime) {
-        expect(new Date(secondRetryTime) > new Date(firstRetryTime)).toBe(true);
-      }
+      // The clock advances a little between calls, so allow a small tolerance.
+      expect(firstDelay).toBeGreaterThanOrEqual(1000);
+      expect(firstDelay).toBeLessThan(1100);
+      expect(secondDelay).toBeGreaterThanOrEqual(2000);
+      expect(secondDelay).toBeLessThan(2150);
+    });
+
+    it('should apply jitter so retries do not synchronise after an outage', () => {
+      partialFailureTracker.setRetryPolicy({
+        initialDelayMs: 1000,
+        maxDelayMs: 60000,
+        backoffMultiplier: 2,
+        jitter: 'full',
+      });
+      const failure = recordFailure('transaction', 'tx_1', {}, 'Timeout');
+      const startedAt = Date.now();
+
+      retryFailure(failure.id);
+      const delay =
+        new Date(partialFailureTracker.getFailure(failure.id)?.nextRetryAt ?? 0).getTime() - startedAt;
+
+      // Full jitter samples within [0, initialDelayMs], so the first retry can land
+      // anywhere in that window rather than always at the ceiling.
+      expect(delay).toBeGreaterThanOrEqual(0);
+      expect(delay).toBeLessThanOrEqual(1000);
     });
 
     it('should get retryable failures', () => {
@@ -231,6 +261,102 @@ describe('Partial Failure Tracker', () => {
     });
   });
 
+  describe('Dead-Letter Visibility', () => {
+    it('should not dead-letter a failure while it is still retryable', () => {
+      const failure = recordFailure('transaction', 'tx_1', {}, 'Timeout');
+
+      retryFailure(failure.id);
+
+      expect(partialFailureTracker.getDeadLetterId(failure.id)).toBeNull();
+      expect(partialFailureTracker.getDeadLetteredFailures()).toHaveLength(0);
+    });
+
+    it('should dead-letter a failure once its retry budget is exhausted', () => {
+      partialFailureTracker.setRetryPolicy({ maxRetries: 1 });
+      const failure = recordFailure('transaction', 'tx_1', { resourceId: 'user_1' }, 'Timeout');
+
+      retryFailure(failure.id);
+      expect(() => retryFailure(failure.id)).toThrow(/Max retries/);
+
+      const deadLetterId = partialFailureTracker.getDeadLetterId(failure.id);
+      expect(deadLetterId).not.toBeNull();
+
+      const record = deadLetterQueue.get(deadLetterId!);
+      expect(record).not.toBeNull();
+      expect(record?.reason).toBe('retries_exhausted');
+      expect(record?.operationId).toBe('tx_1');
+      expect(record?.context).toMatchObject({ resourceId: 'user_1', failureId: failure.id });
+    });
+
+    it('should dead-letter a non-retryable failure on the first attempt', () => {
+      const failure = recordFailure('import', 'imp_1', {}, 'Import failed');
+
+      expect(() => retryFailure(failure.id)).toThrow('cannot be retried');
+
+      const deadLetterId = partialFailureTracker.getDeadLetterId(failure.id);
+      const record = deadLetterQueue.get(deadLetterId!);
+
+      expect(record?.reason).toBe('non_retryable');
+      expect(record?.operationClass).toBe('import');
+    });
+
+    it('should record the classification that made a failure terminal', () => {
+      partialFailureTracker.setRetryPolicy({ maxRetries: 1 });
+      const failure = recordFailure('transaction', 'tx_1', {}, 'Unauthorized: bad signature');
+
+      retryFailure(failure.id);
+      expect(() => retryFailure(failure.id)).toThrow(/Max retries/);
+
+      const record = deadLetterQueue.get(partialFailureTracker.getDeadLetterId(failure.id)!);
+      expect(record?.classification.kind).toBe('permanent');
+    });
+
+    it('should dead-letter a failure only once', () => {
+      partialFailureTracker.setRetryPolicy({ maxRetries: 1 });
+      const failure = recordFailure('transaction', 'tx_1', {}, 'Timeout');
+
+      retryFailure(failure.id);
+      expect(() => retryFailure(failure.id)).toThrow(/Max retries/);
+      const firstId = partialFailureTracker.getDeadLetterId(failure.id);
+
+      expect(() => retryFailure(failure.id)).toThrow(/Max retries/);
+
+      // Repeated attempts must not pile up duplicate records for one failure.
+      expect(partialFailureTracker.getDeadLetterId(failure.id)).toBe(firstId);
+      expect(deadLetterQueue.list({ operationId: 'tx_1' })).toHaveLength(1);
+    });
+
+    it('should drop a dead-lettered failure from the retryable list', () => {
+      partialFailureTracker.setRetryPolicy({ maxRetries: 1 });
+      const failure = recordFailure('transaction', 'tx_1', {}, 'Timeout');
+
+      expect(getRetryableFailures().some((f) => f.id === failure.id)).toBe(true);
+
+      retryFailure(failure.id);
+      expect(() => retryFailure(failure.id)).toThrow(/Max retries/);
+
+      expect(getRetryableFailures().some((f) => f.id === failure.id)).toBe(false);
+      expect(partialFailureTracker.getDeadLetteredFailures().some((f) => f.id === failure.id)).toBe(
+        true,
+      );
+    });
+
+    it('should hide a resolved failure from the dead-lettered list', () => {
+      partialFailureTracker.setRetryPolicy({ maxRetries: 1 });
+      const failure = recordFailure('transaction', 'tx_1', {}, 'Timeout');
+
+      retryFailure(failure.id);
+      expect(() => retryFailure(failure.id)).toThrow(/Max retries/);
+      markFailureResolved(failure.id, 'handled');
+
+      expect(partialFailureTracker.getDeadLetteredFailures()).toHaveLength(0);
+    });
+
+    it('should return null for a dead-letter id on an unknown failure', () => {
+      expect(partialFailureTracker.getDeadLetterId('missing')).toBeNull();
+    });
+  });
+
   describe('Critical Failures', () => {
     it('should identify critical failures', () => {
       recordFailure('transaction', 'tx_1', {}, 'Error', undefined, 'low');
@@ -252,25 +378,53 @@ describe('Partial Failure Tracker', () => {
   });
 
   describe('Stale Failures', () => {
-    it('should identify stale failures', () => {
-      partialFailureTracker.setStaleThreshold(0.1); // ~100ms
-      recordFailure('transaction', 'tx_1', {}, 'Error');
+    // The threshold is in milliseconds and age is computed from `createdAt`, so a
+    // failure has to actually age past it. The clock is controlled rather than
+    // slept on, so this is deterministic instead of racing real time.
+    const STALE_AFTER_MS = 100;
+    const base = new Date('2026-02-01T12:00:00.000Z');
 
-      // Wait for threshold to pass
-      const stale = partialFailureTracker.getStaleFailures();
-      expect(stale.length).toBeGreaterThanOrEqual(1);
+    it('should identify stale failures', () => {
+      jest.useFakeTimers();
+      try {
+        partialFailureTracker.setStaleThreshold(STALE_AFTER_MS);
+        jest.setSystemTime(base);
+
+        const failure = recordFailure('transaction', 'tx_1', {}, 'Error');
+
+        // Freshly recorded: not yet stale.
+        expect(
+          partialFailureTracker.getStaleFailures().some((f) => f.id === failure.id),
+        ).toBe(false);
+
+        jest.setSystemTime(new Date(base.getTime() + STALE_AFTER_MS + 1));
+
+        expect(
+          partialFailureTracker.getStaleFailures().some((f) => f.id === failure.id),
+        ).toBe(true);
+      } finally {
+        jest.useRealTimers();
+      }
     });
 
     it('should not include resolved stale failures', () => {
-      partialFailureTracker.setStaleThreshold(0.1);
-      const failure = recordFailure('transaction', 'tx_1', {}, 'Error');
+      jest.useFakeTimers();
+      try {
+        partialFailureTracker.setStaleThreshold(STALE_AFTER_MS);
+        jest.setSystemTime(base);
 
-      const stale1 = partialFailureTracker.getStaleFailures();
-      expect(stale1.some((f) => f.id === failure.id)).toBe(true);
+        const failure = recordFailure('transaction', 'tx_1', {}, 'Error');
+        jest.setSystemTime(new Date(base.getTime() + STALE_AFTER_MS + 1));
 
-      markFailureResolved(failure.id);
-      const stale2 = partialFailureTracker.getStaleFailures();
-      expect(stale2.some((f) => f.id === failure.id)).toBe(false);
+        const stale1 = partialFailureTracker.getStaleFailures();
+        expect(stale1.some((f) => f.id === failure.id)).toBe(true);
+
+        markFailureResolved(failure.id);
+        const stale2 = partialFailureTracker.getStaleFailures();
+        expect(stale2.some((f) => f.id === failure.id)).toBe(false);
+      } finally {
+        jest.useRealTimers();
+      }
     });
   });
 

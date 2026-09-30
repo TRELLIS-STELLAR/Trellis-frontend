@@ -13,9 +13,30 @@ import {
   getOrFetchCachedValue,
   subscribeToCachedValue,
 } from "@/lib/cache-manager";
+import { ApiError, RetryScheduler, type RetryPolicy } from "@/lib/retry";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 const REQUEST_CACHE_TTL_MS = 60_000;
+
+/**
+ * Reads an error body without letting a malformed payload mask the HTTP status.
+ *
+ * A 503 with an HTML error page is still a retryable 503, so a JSON parse failure
+ * must not turn into the thrown error.
+ */
+async function readErrorBody(response: Response): Promise<unknown> {
+  try {
+    const text = await response.text();
+    if (!text) return undefined;
+    try {
+      return JSON.parse(text) as unknown;
+    } catch {
+      return text.slice(0, 500);
+    }
+  } catch {
+    return undefined;
+  }
+}
 
 const makeCacheKey = (endpoint: string, options: RequestInit) =>
   JSON.stringify({
@@ -33,10 +54,22 @@ const reportRequest = (payload: { cacheHit: boolean; networkRequest: boolean; ba
   useApiMetricsStore.getState().recordRequest(payload);
 };
 
+export interface ApiCallRetryOptions {
+  /** Merged over the `http_request` defaults. Pass `{ maxRetries: 0 }` to disable. */
+  policy?: Partial<RetryPolicy> & { retryable?: boolean };
+  /**
+   * Whether to run the request through the retry scheduler. Defaults to true for
+   * GET and false for everything else, because replaying a non-idempotent write
+   * risks a duplicate side effect. `postIdempotent` opts in explicitly.
+   */
+  retry?: boolean;
+}
+
 export async function apiCall(
   endpoint: string,
   options: RequestInit = {},
-  cacheOptions: CacheOptions = {}
+  cacheOptions: CacheOptions = {},
+  retryOptions: ApiCallRetryOptions = {},
 ) {
   const method = (options.method || "GET").toUpperCase();
 
@@ -51,7 +84,17 @@ export async function apiCall(
     });
 
     if (!response.ok) {
-      throw new Error(`API error: ${response.statusText}`);
+      // Carry the status and body so `classifyError` can separate a retryable
+      // 503 from a permanent 422. A plain `Error` here made both look identical.
+      throw new ApiError(
+        `API error ${response.status}: ${response.statusText || 'request failed'}`,
+        {
+          status: response.status,
+          statusText: response.statusText,
+          body: await readErrorBody(response),
+          url,
+        },
+      );
     }
 
     const data = await response.json();
@@ -59,12 +102,33 @@ export async function apiCall(
     return data;
   };
 
+  // GET is safe to replay. Writes default to no retry so this stays
+  // backward-compatible for every existing call site.
+  const shouldRetry = retryOptions.retry ?? method === "GET";
+  const run = () => fetchData();
+
   if (method !== "GET") {
-    return fetchData();
+    if (!shouldRetry) return run();
+    return new RetryScheduler().execute(run, {
+      operationClass: 'http_request',
+      operationId: `${method} ${endpoint}`,
+      policy: retryOptions.policy,
+      context: { endpoint, method },
+    });
   }
 
+  const execute = (fetcher: () => Promise<unknown>) => {
+    if (!shouldRetry) return fetcher();
+    return new RetryScheduler().execute(fetcher, {
+      operationClass: 'http_request',
+      operationId: `GET ${endpoint}`,
+      policy: retryOptions.policy,
+      context: { endpoint, method },
+    });
+  };
+
   const cacheKey = `api:${makeCacheKey(endpoint, options)}`;
-  return getOrFetchCachedValue(cacheKey, fetchData, {
+  return getOrFetchCachedValue(cacheKey, () => execute(run), {
     staleTime: cacheOptions.staleTime ?? REQUEST_CACHE_TTL_MS,
     cacheTime: cacheOptions.cacheTime ?? REQUEST_CACHE_TTL_MS * 5,
     onCacheHit: () => reportRequest({ cacheHit: true, networkRequest: false, batched: false }),
@@ -100,6 +164,10 @@ export const apiClient = {
    * payouts). Sends the key as `Idempotency-Key` so the server can recognise
    * the retry, and returns whether the result was replayed from a stored
    * outcome instead of a second request reaching the network.
+   *
+   * Network retries are enabled here because the idempotency key makes a repeat
+   * safe — a replayed request returns the stored outcome rather than performing
+   * the side effect twice. `post` deliberately does not do this.
    */
   postIdempotent: async <T = unknown>(
     endpoint: string,
@@ -114,11 +182,16 @@ export const apiClient = {
     return executeIdempotent<T>(
       { key, fingerprint, ttlMs: options.ttlMs, store: options.store },
       () =>
-        apiCall(endpoint, {
-          method: 'POST',
-          body,
-          headers: { 'Idempotency-Key': key },
-        }) as Promise<T>,
+        apiCall(
+          endpoint,
+          {
+            method: 'POST',
+            body,
+            headers: { 'Idempotency-Key': key },
+          },
+          {},
+          { retry: true },
+        ) as Promise<T>,
     );
   },
 

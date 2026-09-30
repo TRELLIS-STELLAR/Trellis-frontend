@@ -1,4 +1,12 @@
 import { z } from 'zod';
+import {
+  classifyError,
+  computeBackoffDelay,
+  deadLetterQueue,
+  type DeadLetterReason,
+  type JitterStrategy,
+  type RetryAttempt,
+} from '@/lib/retry';
 
 /**
  * Partial failure dashboard for background and external integrations
@@ -42,6 +50,12 @@ export interface PartialFailure {
   resolutionNotes?: string;
   canRetry: boolean;
   canIgnore: boolean;
+  /**
+   * Id of the dead-letter record created when this failure reached a terminal
+   * state, or `undefined` while it is still retryable. Lets a maintainer jump
+   * from a partial failure to its full attempt history and classification.
+   */
+  deadLetterId?: string;
   diagnosticData?: Record<string, unknown>;
 }
 
@@ -72,6 +86,13 @@ export interface RetryPolicy {
   initialDelayMs: number;
   maxDelayMs: number;
   backoffMultiplier: number;
+  /**
+   * Shared with `lib/retry` so this tracker's backoff and `lib/api.ts` use one
+   * algorithm. Previously this type had no `jitter` field and the delay was
+   * computed locally, which is why every partial failure retried on exactly the
+   * same schedule as every other one.
+   */
+  jitter: JitterStrategy;
 }
 
 export const PartialFailureSchema = z.object({
@@ -92,6 +113,7 @@ export const PartialFailureSchema = z.object({
   resolutionNotes: z.string().optional(),
   canRetry: z.boolean(),
   canIgnore: z.boolean(),
+  deadLetterId: z.string().optional(),
   diagnosticData: z.record(z.unknown()).optional(),
 });
 
@@ -103,6 +125,7 @@ const defaultRetryPolicy: RetryPolicy = {
   initialDelayMs: 60000, // 1 minute
   maxDelayMs: 24 * 60 * 60 * 1000, // 24 hours
   backoffMultiplier: 2,
+  jitter: 'full',
 };
 
 /**
@@ -141,6 +164,21 @@ class PartialFailureTracker {
     if (this.retryPolicy.initialDelayMs <= 0) {
       throw new Error('Initial delay must be positive');
     }
+  }
+
+  /**
+   * Drops all recorded failures and restores the default retry policy.
+   *
+   * The tracker is a module-level singleton, so without this every test in a file
+   * observes failures recorded by the tests before it — which makes count-based
+   * assertions depend on execution order. Call this from `beforeEach`.
+   */
+  reset(): void {
+    this.failures.clear();
+    this.failuresByType.clear();
+    this.failuresByResource.clear();
+    this.failuresByStatus.clear();
+    this.retryPolicy = { ...defaultRetryPolicy };
   }
 
   recordFailure(
@@ -211,6 +249,14 @@ class PartialFailureTracker {
     return this.failures.get(failureId) || null;
   }
 
+  /**
+   * Advances a failure by one retry.
+   *
+   * Both terminal conditions — budget exhausted and non-retryable class — now
+   * write a dead-letter record before throwing. Previously they only threw, so a
+   * failure that could never succeed left no durable trace and a maintainer had
+   * no way to review it.
+   */
   retryFailure(failureId: string): boolean {
     const failure = this.getFailure(failureId);
     if (!failure) {
@@ -218,10 +264,12 @@ class PartialFailureTracker {
     }
 
     if (failure.retryCount >= failure.maxRetries) {
+      this.deadLetter(failure, 'retries_exhausted');
       throw new Error(`Max retries (${failure.maxRetries}) exceeded`);
     }
 
     if (!failure.canRetry) {
+      this.deadLetter(failure, 'non_retryable');
       throw new Error('This failure cannot be retried');
     }
 
@@ -230,17 +278,48 @@ class PartialFailureTracker {
     failure.lastAttemptAt = new Date().toISOString();
     failure.updatedAt = new Date().toISOString();
 
-    // Schedule next retry with exponential backoff
+    // Schedule next retry with exponential backoff plus jitter. Jitter is what
+    // stops every failed operation from retrying on the same instant after a
+    // shared outage.
     if (failure.retryCount < failure.maxRetries) {
-      const backoffMs = Math.min(
-        this.retryPolicy.initialDelayMs * Math.pow(this.retryPolicy.backoffMultiplier, failure.retryCount - 1),
-        this.retryPolicy.maxDelayMs
-      );
+      const backoffMs = computeBackoffDelay(failure.retryCount - 1, this.retryPolicy);
       const nextRetryTime = new Date(Date.now() + backoffMs);
       failure.nextRetryAt = nextRetryTime.toISOString();
     }
 
     return true;
+  }
+
+  /**
+   * Writes a terminal-failure record to the dead-letter queue, once per failure.
+   *
+   * Guarded by `deadLetterId` so repeated `retryFailure` calls on an already
+   * dead-lettered failure do not accumulate duplicate records.
+   */
+  private deadLetter(failure: PartialFailure, reason: DeadLetterReason): void {
+    if (failure.deadLetterId) {
+      return;
+    }
+
+    const classification = classifyError(new Error(failure.errorMessage));
+    const attempts: RetryAttempt[] = Array.from({ length: Math.max(failure.retryCount, 1) }, (_, index) => ({
+      attempt: index,
+      startedAt: failure.lastAttemptAt ?? failure.updatedAt,
+      durationMs: 0,
+      classification,
+    }));
+
+    const record = deadLetterQueue.record({
+      operationClass: failure.operationType,
+      operationId: failure.operationId,
+      reason,
+      classification,
+      attempts,
+      context: { ...failure.internalState, failureId: failure.id, severity: failure.severity },
+    });
+
+    failure.deadLetterId = record.id;
+    failure.updatedAt = new Date().toISOString();
   }
 
   markResolved(failureId: string, notes?: string): boolean {
@@ -350,6 +429,22 @@ class PartialFailureTracker {
     );
   }
 
+  /**
+   * Failures that reached a terminal state and have a dead-letter record.
+   *
+   * This is the maintainer triage view for operations that stopped retrying.
+   */
+  getDeadLetteredFailures(): PartialFailure[] {
+    return Array.from(this.failures.values()).filter(
+      (failure) => failure.deadLetterId !== undefined && failure.status !== 'resolved'
+    );
+  }
+
+  /** Links a failure to its dead-letter record, or null while it is still retryable. */
+  getDeadLetterId(failureId: string): string | null {
+    return this.getFailure(failureId)?.deadLetterId ?? null;
+  }
+
   generateReport(): FailureReport {
     const now = new Date();
     const failures = Array.from(this.failures.values());
@@ -446,6 +541,18 @@ class PartialFailureTracker {
     return Array.from(groups.values());
   }
 
+  /**
+   * Automatic-retry eligibility, deliberately narrower than
+   * `DEFAULT_OPERATION_POLICIES`.
+   *
+   * The policy registry treats `import`, `export`, and `background_job` as
+   * retryable because a caller that explicitly asks to retry them should get
+   * one. This tracker will *schedule* retries on its own, so it holds to the
+   * narrower set: an import or export may be long, expensive, and partially
+   * applied, and re-running it unattended is a worse outcome than surfacing it
+   * for a human. Callers that know an operation is safe to replay should drive
+   * it through `RetryScheduler` instead of relying on this.
+   */
   private isRetryable(operationType: OperationType): boolean {
     return ['transaction', 'sync', 'webhook'].includes(operationType);
   }

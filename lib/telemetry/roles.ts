@@ -1,5 +1,5 @@
 import {
-  can,
+  isGranted,
   normalizeRole,
   type Action,
   type Role,
@@ -65,7 +65,12 @@ const CAPABILITY_ACTIONS: Readonly<Record<keyof TelemetryCapabilities, Action>> 
 function derive(role: Role): TelemetryCapabilities {
   const derived = {} as Record<keyof TelemetryCapabilities, boolean>;
   for (const capability of Object.keys(CAPABILITY_ACTIONS) as (keyof TelemetryCapabilities)[]) {
-    derived[capability] = can(CAPABILITY_ACTIONS[capability], {
+    // `isGranted`, not `can`: a capability is an affordance, so it reflects the
+    // grant rather than the conditions. `export_telemetry` carries
+    // `requires_confirmation`, and an admin must still be *able* to export — the
+    // confirmation is enforced when the export is performed, not when the button
+    // is drawn.
+    derived[capability] = isGranted(CAPABILITY_ACTIONS[capability], {
       role,
       resourceScope: TELEMETRY_SCOPE,
     });

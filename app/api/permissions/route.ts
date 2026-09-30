@@ -24,10 +24,16 @@ import {
  * describes, and a client that needs to know what it may do has to be able to
  * ask.
  */
+
+/** Scope the matrix is read at: the widest a maintainer may read it. */
+const MATRIX_SCOPE = 'project' as const;
 export async function GET(request: NextRequest) {
+  // Checked at `project` scope, the widest scope a maintainer may read. Checking
+  // at `global` would fail a maintainer's own `project`-scoped grant and make the
+  // endpoint admin-only, which is not the intent.
   const auth = await requirePermission(request, {
     action: 'view_permissions',
-    resourceScope: 'global',
+    resourceScope: MATRIX_SCOPE,
   });
   if (!auth.ok) return auth.response;
 
@@ -65,13 +71,17 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       role,
       level: roleLevel(role),
-      actions: getAllowedActions(role),
+      actions: getAllowedActions(role, MATRIX_SCOPE),
       entries: PERMISSION_MATRIX.filter((entry) => entry.role === role),
     });
   }
 
   return NextResponse.json({
-    roles: ROLES.map((role) => ({ role, level: roleLevel(role), actions: getAllowedActions(role) })),
+    roles: ROLES.map((candidate) => ({
+      role: candidate,
+      level: roleLevel(candidate),
+      actions: getAllowedActions(candidate, MATRIX_SCOPE),
+    })),
     actions: ACTIONS.map((action) => ({ action, description: describeAction(action) })),
     matrix: PERMISSION_MATRIX,
   });

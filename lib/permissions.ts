@@ -735,6 +735,31 @@ export function can(
 }
 
 /**
+ * Whether a role holds a grant for `action` that is wide enough for `scope`.
+ *
+ * Deliberately ignores conditions, so it answers "is this available to me at
+ * all" rather than "may I perform it right now, given these facts". Use
+ * `checkPermission` for the second question — that is the one a route handler
+ * must call before acting.
+ *
+ * The split exists because a condition like `requires_confirmation` describes
+ * how an action is *performed*, not whether the actor is entitled to it. Folding
+ * that into an entitlement check makes an admin look as though they cannot export
+ * anything until they have already confirmed the export, which is circular and
+ * makes capability tables and UI affordance gates wrong.
+ */
+export function isGranted(
+  action: Action,
+  input: { role: Role; resourceScope?: Scope },
+): boolean {
+  const entry = getPermissionEntry(action, input.role);
+  if (entry.effect === 'deny') return false;
+  if (entry.scope === 'any') return true;
+  if (!input.resourceScope) return false;
+  return SCOPE_RANK[entry.scope] >= SCOPE_RANK[input.resourceScope];
+}
+
+/**
  * True when `actor` outranks `target`.
  *
  * Refuses self-escalation and any promotion to a role at or above the actor's
@@ -759,9 +784,9 @@ export function getPermissionsForRole(role: Role): PermissionEntry[] {
   return PERMISSION_MATRIX.filter((entry) => entry.role === role && entry.effect === 'allow');
 }
 
-/** Actions available to a role within a scope, ignoring conditions. */
+/** Actions a role holds a grant for within a scope, ignoring conditions. */
 export function getAllowedActions(role: Role, scope: Scope = 'global'): Action[] {
-  return ACTIONS.filter((action) => can(action, { role, resourceScope: scope }));
+  return ACTIONS.filter((action) => isGranted(action, { role, resourceScope: scope }));
 }
 
 export function describeAction(action: Action): string {

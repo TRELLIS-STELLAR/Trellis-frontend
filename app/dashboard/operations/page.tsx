@@ -34,6 +34,7 @@ import {
   duplicateRequestRate,
 } from '@/lib/idempotency';
 import { useApiMetricsStore } from '@/store/apiMetricsStore';
+import { ReleaseReadinessSection } from '@/components/operations/ReleaseReadinessSection';
 
 const MINUTE_MS = 60 * 1000;
 
@@ -299,6 +300,8 @@ export default function OperationsDashboardPage() {
             A redacted view of unresolved work, stale records, reconciliation drift, and user-impacting incidents.
           </p>
         </header>
+
+        <ReleaseReadinessSection />
 
         <section aria-labelledby="performance-heading" className="mb-10">
           <div className="flex flex-wrap items-center justify-between gap-3">
